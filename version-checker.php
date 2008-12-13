@@ -5,7 +5,7 @@ Plugin URI: http://www.semiologic.com/software/wp-tweaks/version-checker/
 Description: Allows to hook into WordPress' version checking API with in a distributed environment.
 Author: Denis de Bernardy
 Version: 1.2
-Author URI: http://www.semiologic.com
+Author URI: http://www.getsemiologic.com
 Update Service: http://version.semiologic.com/wordpress
 Update Tag: version_checker
 Update Package: http://www.semiologic.com/media/software/wp-tweaks/version-checker/version-checker.zip
