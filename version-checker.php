@@ -6,7 +6,7 @@ Description: Allows to hook into WordPress' version checking API with in a distr
 Author: Denis de Bernardy
 Version: 1.2 alpha
 Author URI: http://www.getsemiologic.com
-Update Service: http://version.semiologic.com/wordpress
+Update Service: http://version.semiologic.com/plugins
 Update Tag: version_checker
 Update Package: http://www.semiologic.com/media/software/wp-tweaks/version-checker/version-checker.zip
 */
