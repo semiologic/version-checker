@@ -146,6 +146,7 @@ class version_checker
 
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 				curl_setopt($ch, CURLOPT_USERAGENT, 'WordPress');
 				curl_setopt($ch, CURLOPT_HEADER, 0);
 
@@ -236,14 +237,15 @@ class version_checker
 			|| $options['last_checked'] + 3600 * 24 * 2 < time()
 			)
 		{
-			$url = 'http://version.semiologic.com/sem_pro/';
+			$url = 'http://version.semiologic.com/sem-pro/';
 
 			if ( function_exists('curl_init') )
 			{
 				$ch = curl_init();
-
+				
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 				curl_setopt($ch, CURLOPT_USERAGENT, 'WordPress');
 				curl_setopt($ch, CURLOPT_HEADER, 0);
 
@@ -353,7 +355,9 @@ class version_checker
 	function check_plugins()
 	{
 		$options = get_option('version_checker');
-
+		
+		$options = array();
+		
 		if ( $options === false )
 		{
 			$options = array();
@@ -390,6 +394,7 @@ class version_checker
 			
 			update_option('version_checker', $options);
 		}
+		dump($options);
 	} # check_plugins()
 	
 	
