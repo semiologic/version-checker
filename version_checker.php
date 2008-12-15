@@ -199,7 +199,7 @@ class version_checker
 				}
 			}
 		}
-
+		
 		foreach ( array_keys((array) $response) as $file )
 		{
 			if ( !version_compare(
@@ -356,7 +356,8 @@ class version_checker
 	{
 		$options = get_option('version_checker');
 		
-		$options = array();
+		# debug:
+		#$options = array();
 		
 		if ( $options === false )
 		{
@@ -394,7 +395,9 @@ class version_checker
 			
 			update_option('version_checker', $options);
 		}
-		dump($options);
+		
+		# debug:
+		#dump($options);
 	} # check_plugins()
 	
 	
@@ -425,7 +428,12 @@ class version_checker
 		
 		foreach ( array_keys((array) $options['plugins']['response']) as $file )
 		{
-			$update_plugins->response[$file] = $options['plugins']['response'][$file];
+			$extra = $options['plugins']['response'][$file];
+			
+			# disable this until we install amember
+			unset($extra->package);
+			
+			$update_plugins->response[$file] = $extra;
 		}
 		
 		return $update_plugins;
