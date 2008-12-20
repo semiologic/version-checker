@@ -22,6 +22,10 @@ class version_checker
 		add_action('admin_notices', array('version_checker', 'nag_user'));
 		add_action('load-wizards_page_sem-wizards/upgrade/wizard', array('version_checker', 'dont_nag_user'));
 		
+		add_action('admin_init', array('version_checker', 'admin_init'));
+		
+		#add_filter( 'pre_option_update_core', array('sem_fixes_admin', 'kill_wp_version_check'));
+		
 		add_filter('sem_api_key_protected', array('version_checker', 'sem_api_key_protected'));
 	} # init()
 	
@@ -36,6 +40,34 @@ class version_checker
 		
 		return $array;
 	} # sem_api_key_protected()
+	
+	
+	#
+	# admin_init()
+	#
+	
+	function admin_init()
+	{
+		# kill wp notifications
+		remove_filter( 'update_footer', 'core_update_footer' );
+		remove_action( 'admin_notices', 'update_nag', 3 );
+	} # admin_init()
+	
+	
+	#
+	# kill_wp_version_check()
+	#
+	
+	function kill_wp_version_check($o)
+	{
+		global $wp_version;
+		
+		$o = (object) null;
+		$o->last_checked = time();
+		$o->version_checked = $wp_version;
+		
+		return $o;
+	} # kill_wp_version_check()
 	
 
 	#

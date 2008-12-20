@@ -20,6 +20,9 @@ This software is copyright Mesoconcepts and is distributed under the terms of th
 http://www.mesoconcepts.com/license/
 **/
 
+# kill wp version check (it should be on shutdown)
+remove_action( 'init', 'wp_version_check' );
+
 if ( is_admin() )
 {
 	include dirname(__FILE__) . '/version_checker.php';
