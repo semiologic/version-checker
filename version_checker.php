@@ -50,13 +50,10 @@ class version_checker
 	
 	function update_core($o)
 	{
-		global $sem_options;
-		
 		$package = get_option('sem_package');
 		$api_key = get_option('sem_api_key');
 		
-		if ( !defined('sem_version')
-			|| !$api_key
+		if ( !$api_key
 			|| !in_array($package, array('stable', 'bleeding'))
 			|| !is_array($o->updates)
 			) return $o;
@@ -85,7 +82,9 @@ class version_checker
 			$update->package = 'http://www.semiologic.com/media/members/sem-pro/bleeding/sem-pro-bleeding.zip';
 		}
 		
-		if ( version_compare(sem_version, $versions['versions'][$package], '<') )
+		if ( defined('sem_version')
+			&& version_compare(sem_version, $versions['versions'][$package], '<')
+			)
 		{
 			$update->response = 'upgrade';
 		}
