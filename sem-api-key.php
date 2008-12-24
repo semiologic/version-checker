@@ -1,5 +1,5 @@
 <?php
-@define('sem_api_key_debug', true);
+@define('sem_api_key_debug', false);
 
 class sem_api_key
 {
@@ -293,8 +293,8 @@ class sem_api_key
 					. '<li>'
 						. '<label>'
 						. '<input type="radio" name="package"'
-							. ' value="sem_pro"'
-							. ( $package == 'sem_pro'
+							. ' value="stable"'
+							. ( $package == 'stable'
 								? ' checked="checked"'
 								: ''
 								)
@@ -305,8 +305,8 @@ class sem_api_key
 					. '<li>'
 						. '<label>'
 						. '<input type="radio" name="package"'
-							. ' value="sem_pro_bleeding"'
-							. ( $package == 'sem_pro_bleeding'
+							. ' value="bleeding"'
+							. ( $package == 'bleeding'
 								? ' checked="checked"'
 								: ''
 								)
@@ -386,7 +386,7 @@ EOF;
 		
 		$package = $_POST['package'];
 		
-		if ( !in_array($package, array('wp', 'sem_pro', 'sem_pro_bleeding')) || !$sem_api_key )
+		if ( !in_array($package, array('wp', 'stable', 'bleeding')) || !$sem_api_key )
 		{
 			$package = 'wp';
 		}

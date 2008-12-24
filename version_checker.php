@@ -39,7 +39,70 @@ class version_checker
 			
 			update_option('sem_package', $package);
 		}
+		
+		add_filter('option_update_core', array('version_checker', 'update_core'));
 	} # init()
+	
+	
+	#
+	# update_core()
+	#
+	
+	function update_core($o)
+	{
+		global $sem_options;
+		
+		$package = get_option('sem_package');
+		$api_key = get_option('sem_api_key');
+		
+		if ( !defined('sem_version')
+			|| !$api_key
+			|| !in_array($package, array('stable', 'bleeding'))
+			|| !is_array($o->updates)
+			) return $o;
+		
+		$versions = get_option('sem_versions');
+		
+		if ( !isset($versions['versions']) )
+		{
+			version_checker::check_sem_pro(true);
+		}
+		
+		if ( !isset($versions['versions'][$package]) ) return $o;
+		
+		$update = $o->updates[0];
+		
+		$update->current = $versions['versions'][$package];
+		
+		if ( $package == 'stable' )
+		{
+			$update->url = 'http://www.semiologic.com/members/sem-pro/download/';
+			$update->package = 'http://www.semiologic.com/media/members/sem-pro/download/sem-pro.zip';
+		}
+		else
+		{
+			$update->url = 'http://www.semiologic.com/members/sem-pro/bleeding/';
+			$update->package = 'http://www.semiologic.com/media/members/sem-pro/bleeding/sem-pro-bleeding.zip';
+		}
+		
+		if ( version_compare(sem_version, $versions['versions'][$package], '<') )
+		{
+			$update->response = 'upgrade';
+		}
+		else
+		{
+			$update->response = 'latest';
+		}
+		
+		if ( current_user_can('administrator') )
+		{
+			$update->package .= '?user_key=' . urlencode($api_key);
+		}
+		
+		$o->updates = array($update);
+		
+		return $o;
+	} # update_core()
 	
 	
 	#
@@ -64,22 +127,6 @@ class version_checker
 		remove_filter( 'update_footer', 'core_update_footer' );
 		remove_action( 'admin_notices', 'update_nag', 3 );
 	} # admin_init()
-	
-	
-	#
-	# kill_wp_version_check()
-	#
-	
-	function kill_wp_version_check($o)
-	{
-		global $wp_version;
-		
-		$o = (object) null;
-		$o->last_checked = time();
-		$o->version_checked = $wp_version;
-		
-		return $o;
-	} # kill_wp_version_check()
 	
 
 	#
