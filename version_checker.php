@@ -41,7 +41,49 @@ class version_checker
 		}
 		
 		add_filter('option_update_core', array('version_checker', 'update_core'));
+		add_action('load-update-core.php', array('version_checker', 'load_update_core'));
 	} # init()
+	
+	
+	#
+	# load_update_core()
+	#
+	
+	function load_update_core()
+	{
+		$package = get_option('sem_package');
+		
+		if ( $package != 'wp' )
+		{
+			ob_start(array('version_checker', 'update_captions'));
+		}
+	} # load_update_core()
+	
+	
+	#
+	# update_captions()
+	#
+	
+	function update_captions($buffer)
+	{
+		$package = get_option('sem_package');
+		
+		$version = ( $package == 'stable' ) ? 'stable version' : 'bleeding edge version';
+		
+		$captions = array(
+			__('Upgrade WordPress') => 'Update Semiologic Pro',
+			__('There is a new version of WordPress available for upgrade') => "There is a new $version of Semiologic Pro available for upgrade",
+			__('You have the latest version of WordPress. You do not need to upgrade') => "You have the latest $version of Semiologic Pro. You do not need to upgrade",
+			__('WordPress upgraded successfully') => 'Semiologic Pro upgraded successfully'
+			);
+		
+		$find = array_keys($captions);
+		$replace = array_values($captions);
+		
+		$buffer = str_replace($find, $replace, $buffer);
+		
+		return $buffer;
+	} # update_captions()
 	
 	
 	#
@@ -56,20 +98,28 @@ class version_checker
 		if ( !$api_key
 			|| !in_array($package, array('stable', 'bleeding'))
 			|| !is_array($o->updates)
+			|| !current_user_can('administrator')
 			) return $o;
 		
 		$versions = get_option('sem_versions');
 		
 		if ( !isset($versions['versions']) )
 		{
-			version_checker::check_sem_pro(true);
+			version_checker::check_sem_pro();
 		}
 		
-		if ( !isset($versions['versions'][$package]) ) return $o;
+		if ( !isset($versions['versions']) )
+		{
+			return $o;
+		}
+		
+		$versions = $versions['versions'];
+		
+		if ( !isset($versions[$package]) ) return $o;
 		
 		$update = $o->updates[0];
 		
-		$update->current = $versions['versions'][$package];
+		$update->current = $versions[$package];
 		
 		if ( $package == 'stable' )
 		{
@@ -82,21 +132,19 @@ class version_checker
 			$update->package = 'http://www.semiologic.com/media/members/sem-pro/bleeding/sem-pro-bleeding.zip';
 		}
 		
-		if ( defined('sem_version')
-			&& version_compare(sem_version, $versions['versions'][$package], '<')
+		if ( !defined('sem_version')
+			|| version_compare(sem_version, $versions[$package], '<')
 			)
 		{
 			$update->response = 'upgrade';
+			$update->response = 'latest';
 		}
 		else
 		{
 			$update->response = 'latest';
 		}
 		
-		if ( current_user_can('administrator') )
-		{
-			$update->package .= '?user_key=' . urlencode($api_key);
-		}
+		$update->package .= '?user_key=' . urlencode($api_key);
 		
 		$o->updates = array($update);
 		
@@ -290,7 +338,6 @@ class version_checker
 	function check_sem_pro($force = false)
 	{
 		if ( !defined('sem_version')
-			|| !defined('sem_wizards_path')
 			) return false;
 		
 		$options = get_option('sem_versions');
@@ -358,7 +405,6 @@ class version_checker
 	function nag_user()
 	{
 		if ( !defined('sem_version')
-			|| !defined('sem_wizards_path')
 			|| !current_user_can('administrator')
 			) return;
 		

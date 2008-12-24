@@ -1,5 +1,5 @@
 <?php
-@define('sem_api_key_debug', false);
+@define('sem_api_key_debug', true);
 
 class sem_api_key
 {
@@ -156,7 +156,10 @@ class sem_api_key
 				
 				if ( sem_api_key_debug )
 				{
-					$res = '<?xml version="1.0" encoding="UTF-8" ?>
+					$res = array();
+					
+					$res['response']['code'] = 200;
+					$res['body'] = '<?xml version="1.0" encoding="UTF-8" ?>
 					<memberships>
 					<membership>
 					<name>Semiologic Pro</name>
@@ -199,86 +202,92 @@ class sem_api_key
 					
 					echo '</div>' . "\n";
 				}
-				elseif ( preg_match_all("|
-					<error>
-						(.*)
-					</error>
-					|isUx", $res, $errors, PREG_SET_ORDER))
-				{
-					echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
-					
-					echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
-					
-					echo '<ul style="margin-left: 1.8em; list-style: square;">';
-					
-					foreach ( $errors as $msg )
-					{
-						$msg = $msg[1];
-						$msg = strip_tags($msg);
-						
-						echo '<li>' . $msg . '</li>';
-					}
-					
-					echo '</ul>';
-					
-					echo '</div>' . "\n";
-				}
 				else
 				{
-					preg_match_all("|
-						<membership>\s*
-						<name>(.*)</name>\s*
-						<key>(.*)</key>\s*
-						<expires>(.*)</expires>\s*
-						</membership>
-						|isUx", $res, $memberships, PREG_SET_ORDER);
+					$res = $res['body'];
 					
-					echo '<table width="100%" style="border: solid 1px #000; border-collapse: collapse;">'
-						. '<tr>'
-						. '<th style="border-bottom: solid 1px #000;">' . 'Membership' . '</th>'
-						. '<th style="border-bottom: solid 1px #000;">' . 'Expires' . '</th>'
-						. '</tr>';
-					
-					$date_format = get_option('date_format');
-					
-					foreach ( $memberships as $membership )
+					if ( preg_match_all("|
+						<error>
+							(.*)
+						</error>
+						|isUx", $res, $errors, PREG_SET_ORDER))
 					{
-						$name = $membership[1];
-						$key = $membership[2];
-						$expires = $membership[3];
-						
-						$name = strip_tags($name);
-						$key = strip_tags($key);
-						$expires = strip_tags($expires);
-						
-						if ( !$expires )
+						echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
+
+						echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
+
+						echo '<ul style="margin-left: 1.8em; list-style: square;">';
+
+						foreach ( $errors as $msg )
 						{
-							$expires = 'Never';
-							$renew = '';
+							$msg = $msg[1];
+							$msg = strip_tags($msg);
+
+							echo '<li>' . $msg . '</li>';
 						}
-						else
+
+						echo '</ul>';
+
+						echo '</div>' . "\n";
+					}
+					else
+					{
+						preg_match_all("|
+							<membership>\s*
+							<name>(.*)</name>\s*
+							<key>(.*)</key>\s*
+							<expires>(.*)</expires>\s*
+							</membership>
+							|isUx", $res, $memberships, PREG_SET_ORDER);
+
+						echo '<table width="100%" style="border: solid 1px #000; border-collapse: collapse;">'
+							. '<tr>'
+							. '<th style="border-bottom: solid 1px #000;">' . 'Membership' . '</th>'
+							. '<th style="border-bottom: solid 1px #000;">' . 'Expires' . '</th>'
+							. '</tr>';
+
+						$date_format = get_option('date_format');
+
+						foreach ( $memberships as $membership )
 						{
-							if ( strtotime($expires) >= time() )
+							$name = $membership[1];
+							$key = $membership[2];
+							$expires = $membership[3];
+
+							$name = strip_tags($name);
+							$key = strip_tags($key);
+							$expires = strip_tags($expires);
+
+							if ( !$expires )
 							{
+								$expires = 'Never';
 								$renew = '';
 							}
 							else
 							{
-								$renew = ' &rarr; <a href="http://members.semiologic.com">Renew</a>';
+								if ( strtotime($expires) >= time() )
+								{
+									$renew = '';
+								}
+								else
+								{
+									$renew = ' &rarr; <a href="http://members.semiologic.com">Renew</a>';
+								}
+
+								$expires = mysql2date($date_format, $expires);
 							}
-							
-							$expires = mysql2date($date_format, $expires);
+
+							if ( $key == 'sem_pro' )
+							{
+								$sem_pro = true;
+							}
+
+							echo '<tr>'
+								. '<td>' . $name . '</td>'
+								. '<td>' . $expires . $renew . '</td>'
+								. '</tr>';
 						}
-						
-						if ( $key == 'sem_pro' )
-						{
-							$sem_pro = true;
-						}
-						
-						echo '<tr>'
-							. '<td>' . $name . '</td>'
-							. '<td>' . $expires . $renew . '</td>'
-							. '</tr>';
+					
 					}
 					
 					echo '</table>';
