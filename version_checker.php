@@ -234,37 +234,6 @@ class version_checker
 			$new_version = wp_remote_fopen($url);
 			
 			if ( $new_version === false ) continue;
-			
-			// if ( function_exists('curl_init') )
-			// 			{
-			// 				$ch = curl_init();
-			// 
-			// 				curl_setopt($ch, CURLOPT_URL, $url);
-			// 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			// 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-			// 				curl_setopt($ch, CURLOPT_USERAGENT, 'WordPress');
-			// 				curl_setopt($ch, CURLOPT_HEADER, 0);
-			// 
-			// 				$new_version = @ curl_exec($ch);
-			// 
-			// 				curl_close($ch);
-			// 			}
-			// 			else
-			// 			{
-			// 				require_once ABSPATH . WPINC . '/class-snoopy.php';
-			// 
-			// 				static $snoopy;
-			// 				
-			// 				if ( !isset($snoopy) )
-			// 				{
-			// 					$snoopy =& new snoopy;
-			// 					$snoopy->agent = 'WordPress';
-			// 				}
-			// 
-			// 				@ $snoopy->fetch($url);
-			// 
-			// 				$new_version = $snoopy->results;
-			// 			}
 
 			if ( is_wp_error($new_version) || $new_version === false ) continue;
 			
@@ -333,37 +302,8 @@ class version_checker
 			)
 		{
 			$url = 'http://version.semiologic.com/sem-pro/';
-
-			if ( function_exists('curl_init') )
-			{
-				$ch = curl_init();
-				
-				curl_setopt($ch, CURLOPT_URL, $url);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-				curl_setopt($ch, CURLOPT_USERAGENT, 'WordPress');
-				curl_setopt($ch, CURLOPT_HEADER, 0);
-
-				$lines = @ curl_exec($ch);
-
-				curl_close($ch);
-			}
-			else
-			{
-				require_once ABSPATH . WPINC . '/class-snoopy.php';
-
-				static $snoopy;
-				
-				if ( !isset($snoopy) )
-				{
-					$snoopy =& new snoopy;
-					$snoopy->agent = 'WordPress';
-				}
-
-				@ $snoopy->fetch($url);
-
-				$lines = $snoopy->results;
-			}
+			
+			$lines = wp_remote_fopen($url);
 			
 			if ( $lines === false)
 			{
