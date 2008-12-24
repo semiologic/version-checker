@@ -24,9 +24,21 @@ class version_checker
 		
 		add_action('admin_init', array('version_checker', 'admin_init'));
 		
-		#add_filter( 'pre_option_update_core', array('sem_fixes_admin', 'kill_wp_version_check'));
-		
 		add_filter('sem_api_key_protected', array('version_checker', 'sem_api_key_protected'));
+		
+		if ( !( $package = get_option('sem_package')) || !get_option('sem_api_key') )
+		{
+			if ( get_option('sem_api_key') )
+			{
+				$package = 'sem_pro';
+			}
+			else
+			{
+				$package = 'wp';
+			}
+			
+			update_option('sem_package', $package);
+		}
 	} # init()
 	
 	

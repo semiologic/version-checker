@@ -112,9 +112,58 @@ class sem_api_key
 			. ' />';
 
 		echo '<div class="wrap">'
-			. '<h2>' . __('Semiologic API Key') . '</h2>';
+			. '<h2>' . __('Semiologic Pro') . '</h2>';
 
 		echo '<table class="form-table">';
+		
+		$package = get_option('sem_package');
+		
+		echo '<tr valign="top">'
+		 	. '<th scrope="row">'
+			. 'Core Updates'
+			. '</th>'
+			. '<td>'
+			. '<p>' . 'Under Tools / Upgrade, use the following package to update my site:' . '</p>'
+			. '<ul>'
+			. '<li>'
+				. '<label>'
+				. '<input type="radio" name="package"'
+					. ' value="wp"'
+					. ( $package == 'wp'
+						? ' checked="checked"'
+						: ''
+						)
+					. ' /> '
+				. 'WordPress, Stable version'
+				. '</label>'
+				. '</li>'
+			. '<li>'
+				. '<label>'
+				. '<input type="radio" name="package"'
+					. ' value="sem_pro"'
+					. ( $package == 'sem_pro'
+						? ' checked="checked"'
+						: ''
+						)
+					. ' /> '
+				. 'Semiologic Pro, Stable version'
+				. '</label>'
+				. '</li>'
+			. '<li>'
+				. '<label>'
+				. '<input type="radio" name="package"'
+					. ' value="sem_pro_bleeding"'
+					. ( $package == 'sem_pro_bleeding'
+						? ' checked="checked"'
+						: ''
+						)
+					. ' /> '
+				. 'Semiologic Pro, Bleeding Edge version'
+				. '</label>'
+				. '</li>'
+			. '</ul>'
+			. '</td>'
+			. '</tr>';
 		
 		echo '<tr valign="top">'
 		 	. '<th scrope="row">'
@@ -131,19 +180,17 @@ class sem_api_key
 		
 		$faq = <<<EOF
 
-			<p>You'll find your Semiologic API key and your membership details in the <a href="http://members.semiologic.com">Semiologic back end</a>.</p>
-			
-			<p>Unless otherwise specified, software from semiologic.com is licensed under the <a href="http://www.mesoconcepts.com/license/">Mesoconcepts License</a>. Its terms are liberal: You're granted unrestricted use of the software, <strong>provided you're using it for yourself</strong>.</p>
+Entering your Semiologic API key is required to keep your site updated as Semiologic Pro. You'll find yours in the <a href="http://members.semiologic.com">Semiologic back end</a>.
 
-			<p>Paying customers get a limited duration membership that entitles them to free updates and value-added services, such as automated updates. These extra services work provided you enter your API key in the above field, and for as long as your membership is running. (The software itself will continue to work normally after when the membership expires.)</p>
+Semiologic Pro customers get a limited duration membership that entitles them to updates and support. Automated updates will cease to work when your membership expires. (The software itself will continue to work normally.)
 
-			<p>Do not share your API key. It is a password in every respect.</p>
-			
-			<p>Moreover, please do not use it for the benefit of others. If you (or your organization) aren't a site's primary user, that site should not be using your API key (*). If you wish to power your customers' sites with Semiologic Pro, please <a href="mailto:sales@semiologic.com">sign up as a reseller</a>.</p>
-			
-			<p>(*) We reserve the right to lock an API key if we monitor suspicious usage patterns.</p>
+Do not share your API key. It is a password in every respect. Please do not use it for the benefit of others either. If you or your organization aren't a site's primary user, that site should not be using your API key.
+
+Please <a href="mailto:sales@semiologic.com">contact sales</a> for any further information.
 
 EOF;
+
+		$faq = wpautop($faq);
 
 		echo '<tr>'
 			. '<th scope="row">'
@@ -187,7 +234,15 @@ EOF;
 			$sem_api_key = '';
 		}
 		
+		$package = $_POST['package'];
+		
+		if ( !in_array($package, array('wp', 'sem_pro', 'sem_pro_bleeding')) || !$sem_api_key )
+		{
+			$package = 'wp';
+		}
+		
 		update_option('sem_api_key', $sem_api_key);
+		update_option('sem_package', $package);
 	} # update()
 } # sem_api_key
 
