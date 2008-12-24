@@ -231,38 +231,42 @@ class version_checker
 				$url .= '?tag[]=' . implode('&tag[]=', $tags);
 			}
 			
-			if ( function_exists('curl_init') )
-			{
-				$ch = curl_init();
-
-				curl_setopt($ch, CURLOPT_URL, $url);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-				curl_setopt($ch, CURLOPT_USERAGENT, 'WordPress');
-				curl_setopt($ch, CURLOPT_HEADER, 0);
-
-				$new_version = @ curl_exec($ch);
-
-				curl_close($ch);
-			}
-			else
-			{
-				require_once ABSPATH . WPINC . '/class-snoopy.php';
-
-				static $snoopy;
-				
-				if ( !isset($snoopy) )
-				{
-					$snoopy =& new snoopy;
-					$snoopy->agent = 'WordPress';
-				}
-
-				@ $snoopy->fetch($url);
-
-				$new_version = $snoopy->results;
-			}
-
+			$new_version = wp_remote_fopen($url);
+			
 			if ( $new_version === false ) continue;
+			
+			// if ( function_exists('curl_init') )
+			// 			{
+			// 				$ch = curl_init();
+			// 
+			// 				curl_setopt($ch, CURLOPT_URL, $url);
+			// 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			// 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			// 				curl_setopt($ch, CURLOPT_USERAGENT, 'WordPress');
+			// 				curl_setopt($ch, CURLOPT_HEADER, 0);
+			// 
+			// 				$new_version = @ curl_exec($ch);
+			// 
+			// 				curl_close($ch);
+			// 			}
+			// 			else
+			// 			{
+			// 				require_once ABSPATH . WPINC . '/class-snoopy.php';
+			// 
+			// 				static $snoopy;
+			// 				
+			// 				if ( !isset($snoopy) )
+			// 				{
+			// 					$snoopy =& new snoopy;
+			// 					$snoopy->agent = 'WordPress';
+			// 				}
+			// 
+			// 				@ $snoopy->fetch($url);
+			// 
+			// 				$new_version = $snoopy->results;
+			// 			}
+
+			if ( is_wp_error($new_version) || $new_version === false ) continue;
 			
 			if ( count($files) == 1 )
 			{
@@ -448,7 +452,7 @@ class version_checker
 		$options = get_option('version_checker');
 		
 		# debug:
-		#$options = array();
+		$options = array();
 		
 		if ( $options === false )
 		{

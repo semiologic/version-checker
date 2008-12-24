@@ -184,6 +184,21 @@ class sem_api_key
 					
 					echo '</div>' . "\n";
 				}
+				elseif ( $res['response']['code'] != 200 )
+				{
+					echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
+					
+					echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
+					
+					echo '<ul style="margin-left: 1.8em; list-style: square;">';
+					
+					$msg = $res['response']['code'] . ': ' . $res['response']['message'];
+					echo '<li>' . $msg . '</li>';
+					
+					echo '</ul>';
+					
+					echo '</div>' . "\n";
+				}
 				elseif ( preg_match_all("|
 					<error>
 						(.*)
