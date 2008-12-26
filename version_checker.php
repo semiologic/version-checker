@@ -41,7 +41,28 @@ class version_checker
 		
 		add_filter('option_update_core', array('version_checker', 'update_core'));
 		add_action('load-update-core.php', array('version_checker', 'load_update_core'));
-	} # init()
+		
+		if ( isset($_GET['action']) && $_GET['action'] == 'do-core-reinstall' )
+		{
+			# todo: remove the fix when this ticket gets fixed:
+			# http://trac.wordpress.org/ticket/8724
+			ob_start(array('version_checker', 'fix_core_reinstall'));
+		}
+	} # load_update_core()
+	
+	
+	#
+	# fix_core_reinstall()
+	#
+	
+	function fix_core_reinstall($buffer)
+	{
+		$from = '<form action="' . wp_nonce_url('update-core.php?action=upgrade-core', 'upgrade-core') . '"';
+		$to = '<form action="' . wp_nonce_url('update-core.php?action=do-core-reinstall', 'upgrade-core') . '"';
+		$buffer = str_replace($from, $to, $buffer);
+		
+		return $buffer;
+	} # fix_core_reinstall()
 	
 	
 	#
@@ -135,15 +156,14 @@ class version_checker
 		}
 		
 		if ( !defined('sem_version')
-			|| version_compare(sem_version, $versions[$package], '<')
+			|| version_compare(sem_version, $versions[$package], '>=')
 			)
 		{
-			$update->response = 'upgrade';
 			$update->response = 'latest';
 		}
 		else
 		{
-			$update->response = 'latest';
+			$update->response = 'upgrade';
 		}
 		
 		$update->package .= '?user_key=' . urlencode($api_key);
