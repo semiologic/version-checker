@@ -57,7 +57,7 @@ class version_checker
 	
 	function fix_core_reinstall($buffer)
 	{
-		$from = '<form action="' . wp_nonce_url('update-core.php?action=upgrade-core', 'upgrade-core') . '"';
+		$from = '<form action="' . wp_nonce_url('update-core.php?action=do-core-upgrade', 'upgrade-core') . '"';
 		$to = '<form action="' . wp_nonce_url('update-core.php?action=do-core-reinstall', 'upgrade-core') . '"';
 		$buffer = str_replace($from, $to, $buffer);
 		
