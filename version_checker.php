@@ -41,14 +41,7 @@ class version_checker
 		
 		add_filter('option_update_core', array('version_checker', 'update_core'));
 		add_action('load-update-core.php', array('version_checker', 'load_update_core'));
-		
-		if ( isset($_GET['action']) && $_GET['action'] == 'do-core-reinstall' )
-		{
-			# todo: remove the fix when this ticket gets fixed:
-			# http://trac.wordpress.org/ticket/8724
-			ob_start(array('version_checker', 'fix_core_reinstall'));
-		}
-	} # load_update_core()
+	} # init()
 	
 	
 	#
@@ -78,6 +71,13 @@ class version_checker
 		if ( $package != 'wp' )
 		{
 			ob_start(array('version_checker', 'update_core_captions'));
+		}
+		
+		if ( isset($_GET['action']) && $_GET['action'] == 'do-core-reinstall' )
+		{
+			# todo: remove the fix when this ticket gets fixed:
+			# http://trac.wordpress.org/ticket/8724
+			ob_start(array('version_checker', 'fix_core_reinstall'));
 		}
 	} # load_update_core()
 	
