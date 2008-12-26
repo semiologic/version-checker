@@ -303,7 +303,7 @@ class sem_api_key
 			{
 				if ( $package == 'wp' )
 				{
-					$package = 'sem_pro';
+					$package = 'stable';
 					update_option('sem_package', $package);
 				}
 				

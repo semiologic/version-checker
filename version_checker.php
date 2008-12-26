@@ -20,17 +20,16 @@ class version_checker
 		
 		add_action('shutdown', array('version_checker', 'check_sem_pro'));
 		add_action('admin_notices', array('version_checker', 'nag_user'));
-		add_action('load-wizards_page_sem-wizards/upgrade/wizard', array('version_checker', 'dont_nag_user'));
 		
 		add_action('admin_init', array('version_checker', 'admin_init'));
 		
 		add_filter('sem_api_key_protected', array('version_checker', 'sem_api_key_protected'));
 		
-		if ( !( $package = get_option('sem_package')) || !get_option('sem_api_key') )
+		if ( !( $package = get_option('sem_package')) || !( $api_key = get_option('sem_api_key') ) )
 		{
-			if ( get_option('sem_api_key') )
+			if ( $api_key )
 			{
-				$package = 'sem_pro';
+				$package = 'stable';
 			}
 			else
 			{
@@ -51,20 +50,22 @@ class version_checker
 	
 	function load_update_core()
 	{
+		remove_action('admin_notices', array('version_checker', 'nag_user'));
+		
 		$package = get_option('sem_package');
 		
 		if ( $package != 'wp' )
 		{
-			ob_start(array('version_checker', 'update_captions'));
+			ob_start(array('version_checker', 'update_core_captions'));
 		}
 	} # load_update_core()
 	
 	
 	#
-	# update_captions()
+	# update_core_captions()
 	#
 	
-	function update_captions($buffer)
+	function update_core_captions($buffer)
 	{
 		$package = get_option('sem_package');
 		
@@ -83,7 +84,7 @@ class version_checker
 		$buffer = str_replace($find, $replace, $buffer);
 		
 		return $buffer;
-	} # update_captions()
+	} # update_core_captions()
 	
 	
 	#
@@ -106,6 +107,7 @@ class version_checker
 		if ( !isset($versions['versions']) )
 		{
 			version_checker::check_sem_pro();
+			$versions = get_option('sem_versions');
 		}
 		
 		if ( !isset($versions['versions']) )
@@ -337,8 +339,9 @@ class version_checker
 	
 	function check_sem_pro($force = false)
 	{
-		if ( !defined('sem_version')
-			) return false;
+		$package = get_option('sem_package');
+		
+		if ( !in_array($package, array('stable', 'bleeding')) ) return false;
 		
 		$options = get_option('sem_versions');
 		
@@ -386,16 +389,6 @@ class version_checker
 			update_option('sem_versions', $options);
 		}
 	} # check_sem_pro()
-	
-	
-	#
-	# dont_nag_user()
-	#
-	
-	function dont_nag_user()
-	{
-		remove_action('admin_notices', array('version_checker', 'nag_user'));
-	} # dont_nag_user()
 	
 	
 	#
