@@ -41,7 +41,22 @@ class version_checker
 		
 		add_filter('option_update_core', array('version_checker', 'update_core'));
 		add_action('load-update-core.php', array('version_checker', 'load_update_core'));
+		
+		add_filter('update_feedback', array('version_checker', 'extend_timeout'));
 	} # init()
+	
+	
+	#
+	# extend_timeout()
+	#
+	
+	function extend_timeout($in)
+	{
+		# add 5 minutes
+		@set_time_limit(300);
+		
+		return $in;
+	} # extend_timeout()
 	
 	
 	#
