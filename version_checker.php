@@ -95,7 +95,11 @@ class version_checker
 		$captions = array(
 			__('Upgrade WordPress') => 'Update Semiologic Pro',
 			__('There is a new version of WordPress available for upgrade') => "There is a new $version of Semiologic Pro available for upgrade",
-			__('You have the latest version of WordPress. You do not need to upgrade') => "You have the latest $version of Semiologic Pro. You do not need to upgrade",
+			__('You have the latest version of WordPress. You do not need to upgrade') => (
+				defined('sem_version')
+				? "No version information found. Click Re-install to get the latest $version of Semiologic Pro."
+				: "You have the latest $version of Semiologic Pro. You do not need to upgrade"
+				),
 			__('WordPress upgraded successfully') => 'Semiologic Pro upgraded successfully'
 			);
 		
