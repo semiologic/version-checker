@@ -1,5 +1,5 @@
 <?php
-@define('sem_api_key_debug', true);
+@define('sem_api_key_debug', false);
 
 class sem_api_key
 {
@@ -137,7 +137,7 @@ class sem_api_key
 		if ( $sem_api_key )
 		{
 			$sem_pro = false;
-		
+			
 			echo '<tr valign="top">'
 			 	. '<th scrope="row">'
 				. '<a href="http://members.semiologic.com">Memberships</a>'
@@ -150,7 +150,7 @@ class sem_api_key
 			}
 			else
 			{
-				$url = "https://api.semiologic.com/memberships/0.1/$sem_api_key";
+				$url = "https://api.semiologic.com/memberships/0.1/" . urlencode($sem_api_key);
 				
 				$res = wp_remote_request($url);
 				
@@ -277,7 +277,7 @@ class sem_api_key
 								$expires = mysql2date($date_format, $expires);
 							}
 
-							if ( $key == 'sem_pro' )
+							if ( $key == 'sem_pro' && !$renew )
 							{
 								$sem_pro = true;
 							}

@@ -41,8 +41,6 @@ class version_checker
 		
 		add_filter('option_update_core', array('version_checker', 'update_core'));
 		add_action('load-update-core.php', array('version_checker', 'load_update_core'));
-		
-		add_filter('update_feedback', array('version_checker', 'extend_timeout'));
 	} # init()
 	
 	
@@ -81,11 +79,38 @@ class version_checker
 	{
 		remove_action('admin_notices', array('version_checker', 'nag_user'));
 		
-		$package = get_option('sem_package');
+		add_filter('update_feedback', array('version_checker', 'extend_timeout'));
 		
-		if ( $package != 'wp' )
+		if ( !$_POST && in_array(get_option('sem_package'), array('stable', 'bleeding')) )
+		{
+			# check version status
+			$api_key = get_option('sem_api_key');
+			$url = 'https://api.semiologic.com/memberships/0.1/sem_pro/' . urlencode($api_key);
+			
+			$expires = wp_remote_fopen($url);
+			
+			if ( !is_wp_error($res) && !preg_match("|<error>.*</error>|is", $expires) )
+			{
+				preg_match("|<expires>(.*)</expires>|isU", $expires, $expires);
+				$expires = $expires[1];
+				
+				if ( $expires && strtotime($expires) < time() )
+				{
+					update_option('sem_package', 'wp');
+				}
+			}
+		}
+		
+		
+		if ( in_array(get_option('sem_package'), array('stable', 'bleeding')) )
 		{
 			ob_start(array('version_checker', 'update_core_captions'));
+		
+			if ( !$_POST )
+			{
+				# force an update check on load
+				version_checker::check_sem_pro(true);
+			}
 		}
 		
 		if ( isset($_GET['action']) && $_GET['action'] == 'do-core-reinstall' )
@@ -133,6 +158,8 @@ class version_checker
 	
 	function update_core($o)
 	{
+		if ( !is_admin() ) return $o;
+		
 		$package = get_option('sem_package');
 		$api_key = get_option('sem_api_key');
 		
