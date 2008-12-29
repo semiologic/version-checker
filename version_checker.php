@@ -242,20 +242,17 @@ class version_checker
 		remove_filter( 'update_footer', 'core_update_footer' );
 		remove_action( 'admin_notices', 'update_nag', 3 );
 		
-		if ( defined('sem_version') )
-		{
-			global $wp_filter;
+		global $wp_filter;
 
-			$keys = array_keys((array) $wp_filter['in_admin_footer']);
-			sort($keys);
-			$key = $key[0] + 1000;
-			add_action('in_admin_footer', array('version_checker', 'flush_footer'), $key);
+		$keys = array_keys((array) $wp_filter['in_admin_footer']);
+		sort($keys);
+		$key = $key[0] + 1000;
+		add_action('in_admin_footer', array('version_checker', 'flush_footer'), $key);
 
-			$keys = array_keys((array) $wp_filter['admin_footer']);
-			sort($keys);
-			$key = $key[0] - 1000;
-			add_action('admin_footer', array('version_checker', 'display_links'), $key);
-		}
+		$keys = array_keys((array) $wp_filter['admin_footer']);
+		sort($keys);
+		$key = $key[0] - 1000;
+		add_action('admin_footer', array('version_checker', 'display_links'), $key);
 	} # admin_init()
 	
 	
@@ -279,7 +276,7 @@ class version_checker
 		
 		$upgrade = apply_filters( 'update_footer', '' );
 		
-		if ( current_user_can('administrator') )
+		if ( current_user_can('administrator') && defined('sem_version') )
 		{
 			echo '<a href="'
 					. ( ( $api_key = get_option('sem_api_key') )
@@ -298,14 +295,28 @@ class version_checker
 				. __('Community Forum')
 				. '</a>';
 		}
-		else
+		elseif ( defined('sem_version') )
 		{
 			echo '<a href="http://www.getsemiologic.com">'
 				. 'Semiologic Pro v.' . sem_version
 				. '</a>'
 				. ' &bull; '
 				. '<a href="http://www.semiologic.com/resources/">'
-				. __('Resources')
+				. __('Documentation &amp; Resources')
+				. '</a>';
+		}
+		else
+		{
+			echo '<a href="http://wordpress.org">'
+				. 'WordPress v.' . $GLOBALS['wp_version']
+				. '</a>'
+				. ' &bull; '
+				. '<a href="http://codex.wordpress.org">'
+				. __('Documentation')
+				. '</a>'
+				. ' &bull; '
+				. '<a href="http://wordpress.org/support">'
+				. __('Support')
 				. '</a>';
 		}
 		
