@@ -45,25 +45,6 @@ class version_checker
 	
 	
 	#
-	# extend_timeout()
-	#
-	
-	function extend_timeout($in)
-	{
-		# flush buffer
-		while ( @ob_end_flush() );
-		
-		# restart buffer
-		ob_start(array('version_checker', 'update_core_captions'));
-		
-		# add 5 minutes
-		@set_time_limit(300);
-		
-		return $in;
-	} # extend_timeout()
-	
-	
-	#
 	# fix_core_reinstall()
 	#
 	
@@ -125,6 +106,25 @@ class version_checker
 			ob_start(array('version_checker', 'fix_core_reinstall'));
 		}
 	} # load_update_core()
+	
+	
+	#
+	# extend_timeout()
+	#
+	
+	function extend_timeout($in)
+	{
+		# flush buffer
+		while ( @ob_end_flush() );
+		
+		# restart buffer
+		ob_start(array('version_checker', 'update_core_captions'));
+		
+		# add 5 minutes
+		@set_time_limit(300);
+		
+		return $in;
+	} # extend_timeout()
 	
 	
 	#
