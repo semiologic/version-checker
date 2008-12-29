@@ -50,6 +50,12 @@ class version_checker
 	
 	function extend_timeout($in)
 	{
+		# flush buffer
+		while ( @ob_end_flush() );
+		
+		# restart buffer
+		ob_start(array('version_checker', 'update_core_captions'));
+		
 		# add 5 minutes
 		@set_time_limit(300);
 		
@@ -79,8 +85,6 @@ class version_checker
 	{
 		remove_action('admin_notices', array('version_checker', 'nag_user'));
 		
-		add_filter('update_feedback', array('version_checker', 'extend_timeout'));
-		
 		if ( !$_POST && in_array(get_option('sem_package'), array('stable', 'bleeding')) )
 		{
 			# check version status
@@ -104,6 +108,7 @@ class version_checker
 		
 		if ( in_array(get_option('sem_package'), array('stable', 'bleeding')) )
 		{
+			add_filter('update_feedback', array('version_checker', 'extend_timeout'));
 			ob_start(array('version_checker', 'update_core_captions'));
 		
 			if ( !$_POST )
