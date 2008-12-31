@@ -22,6 +22,20 @@ http://www.mesoconcepts.com/license/
 
 if ( is_admin() )
 {
-	include dirname(__FILE__) . '/version_checker.php';
+	if ( version_compare($GLOBALS['wp_version'], '2.7', '>=') )
+	{
+		include dirname(__FILE__) . '/version_checker.php';
+	}
+	else
+	{
+		function version_checker_warning()
+		{
+			echo '<div class="error">'
+				. '<p>' . 'Version checker 1.2 requires WP 2.7 or later.'
+				. '</div>' . "\n";
+		} # version_checker_warning()
+		
+		add_action('admin_notices', 'version_checker_warning');
+	}
 }
 ?>
