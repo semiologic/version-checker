@@ -31,7 +31,7 @@ if ( is_admin() )
 		function version_checker_warning()
 		{
 			echo '<div class="error">'
-				. '<p>' . 'Version checker 1.2 requires WP 2.7 or later.'
+				. '<p>' . 'The Version Checker plugin requires WP 2.7 or later.'
 				. '</div>' . "\n";
 		} # version_checker_warning()
 		
