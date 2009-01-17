@@ -140,7 +140,7 @@ class sem_api_key
 			
 			echo '<tr valign="top">'
 			 	. '<th scrope="row">'
-				. '<a href="http://members.semiologic.com">Memberships</a>'
+				. '<a href="http://oldbackend.semiologic.com">Memberships</a>'
 				. '</th>'
 				. '<td>';
 		
@@ -271,7 +271,7 @@ class sem_api_key
 								}
 								else
 								{
-									$renew = ' &rarr; <a href="http://members.semiologic.com">Renew</a>';
+									$renew = ' &rarr; <a href="http://oldbackend.semiologic.com">Renew</a>';
 								}
 
 								$expires = mysql2date($date_format, $expires);
@@ -354,7 +354,7 @@ class sem_api_key
 		
 		$faq = <<<EOF
 
-Entering your Semiologic API key is required to keep your site updated using packages located on semiologic.com. You'll find yours in the <a href="http://members.semiologic.com">Semiologic back-end</a>.
+Entering your Semiologic API key is required to keep your site updated using packages located on semiologic.com. You'll find yours in the <a href="http://oldbackend.semiologic.com">Semiologic back-end</a>.
 
 Automated updates using packages located on semiologic.com will cease to work when your membership expires. (The software itself will of course continue to work normally.)
 
