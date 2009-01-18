@@ -140,7 +140,12 @@ class sem_api_key
 			
 			echo '<tr valign="top">'
 			 	. '<th scrope="row">'
-				. '<a href="http://oldbackend.semiologic.com">Memberships</a>'
+				. '<a href="http://oldbackend.semiologic.com'
+					. ( $sem_api_key
+						? ( '?user_key=' . urlencode($sem_api_key) )
+						: ''
+						)
+					. '">Memberships</a>'
 				. '</th>'
 				. '<td>';
 		
