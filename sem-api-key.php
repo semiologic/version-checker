@@ -172,35 +172,39 @@ class sem_api_key
 				
 				if ( is_wp_error($res) )
 				{
-					echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
+					// echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
+					// 
+					// echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
+					// 
+					// echo '<ul style="margin-left: 1.8em; list-style: square;">';
+					// 
+					// foreach ( $res->get_error_messages() as $msg )
+					// {
+					// 	echo '<li>' . $msg . '</li>';
+					// }
+					// 
+					// echo '</ul>';
+					// 
+					// echo '</div>' . "\n";
 					
-					echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
-					
-					echo '<ul style="margin-left: 1.8em; list-style: square;">';
-					
-					foreach ( $res->get_error_messages() as $msg )
-					{
-						echo '<li>' . $msg . '</li>';
-					}
-					
-					echo '</ul>';
-					
-					echo '</div>' . "\n";
+					$sem_pro = true;
 				}
 				elseif ( $res['response']['code'] != 200 )
 				{
-					echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
+					// echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
+					// 
+					// echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
+					// 
+					// echo '<ul style="margin-left: 1.8em; list-style: square;">';
+					// 
+					// $msg = $res['response']['code'] . ': ' . $res['response']['message'];
+					// echo '<li>' . $msg . '</li>';
+					// 
+					// echo '</ul>';
+					// 
+					// echo '</div>' . "\n";
 					
-					echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
-					
-					echo '<ul style="margin-left: 1.8em; list-style: square;">';
-					
-					$msg = $res['response']['code'] . ': ' . $res['response']['message'];
-					echo '<li>' . $msg . '</li>';
-					
-					echo '</ul>';
-					
-					echo '</div>' . "\n";
+					$sem_pro = true;
 				}
 				else
 				{
@@ -286,11 +290,10 @@ class sem_api_key
 								. '<td>' . $name . '</td>'
 								. '<td>' . $expires . $renew . '</td>'
 								. '</tr>';
+					
+							echo '</table>';
 						}
-					
 					}
-					
-					echo '</table>';
 				}
 			}
 		
