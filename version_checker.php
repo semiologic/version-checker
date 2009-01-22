@@ -23,8 +23,6 @@ class version_checker
 		
 		add_action('admin_init', array('version_checker', 'admin_init'));
 		
-		add_filter('sem_api_key_protected', array('version_checker', 'sem_api_key_protected'));
-		
 		if ( !( $package = get_option('sem_package')) || !( $api_key = get_option('sem_api_key') ) )
 		{
 			if ( $api_key )
@@ -223,18 +221,6 @@ class version_checker
 		
 		return $o;
 	} # update_core()
-	
-	
-	#
-	# sem_api_key_protected()
-	#
-	
-	function sem_api_key_protected($array)
-	{
-		$array[] = 'http://www.semiologic.com/media/software/wp-tweaks/wp-tweaks/version-checker.zip';
-		
-		return $array;
-	} # sem_api_key_protected()
 	
 	
 	#
