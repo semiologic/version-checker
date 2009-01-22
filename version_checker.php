@@ -97,7 +97,10 @@ class version_checker
 			}
 		}
 		
-		if ( isset($_GET['action']) && $_GET['action'] == 'do-core-reinstall' )
+		if ( isset($_GET['action'])
+			&& $_GET['action'] == 'do-core-reinstall'
+			&& version_compare($GLOBALS['wp_version'], '2.7.1', '<')
+			)
 		{
 			# todo: remove the fix when this ticket gets fixed:
 			# http://trac.wordpress.org/ticket/8724
@@ -330,41 +333,20 @@ class version_checker
 		{
 			$src = file_get_contents($src);
 			
-			if ( !preg_match("/Update Service:(.*)/i", $src, $service) )
+			if ( !preg_match("/Update Service: *https:\//members\.semiologic\.com\//i", $src, $service) )
 			{
 				continue;
 			}
 
-			$service = trim(end($service));
-
-			if ( strpos($service, '://') === false )
-			{
-				$service = 'http://' . $service;
-			}
+			$service = 'http://version.semiologic.com';
 
 			$response[$file]->service = $service;
 			$todo[$service][] = $file;
 
-			if ( preg_match("/Update Tag:(.*)/i", $src, $tag) )
-			{
-				$tag = trim(end($tag));
-			}
-			else
-			{
-				$tag = basename($file, '.php');
-			}
-
+			$tag = basename($file, '.php');
 			$response[$file]->tag = $tag;
 
-			if ( preg_match("/Update URI:(.*)/i", $src, $url) )
-			{
-				$url = trim(end($url));
-			}
-			elseif ( preg_match("/Plugin URI:(.*)/i", $src, $url) )
-			{
-				$url = trim(end($url));
-			}
-			elseif ( preg_match("/Theme URI:(.*)/i", $src, $url) )
+			if ( preg_match("/Plugin URI:(.*)/i", $src, $url) )
 			{
 				$url = trim(end($url));
 			}
