@@ -331,17 +331,22 @@ class version_checker
 
 		foreach ( $files as $file => $src )
 		{
-			$src = file_get_contents($src);
+			$fp = fopen($src, 'r');
+			$src = fread($fp, 1024);
+			fclose($fp);
 			
-			if ( !preg_match("/Update Service: *https:\//members\.semiologic\.com\//i", $src, $service) )
+			if ( !preg_match("/Update Package: *(https:\/\/members\.semiologic\.com\/.+\.zip)/i", $src, $package) )
 			{
 				continue;
 			}
 
-			$service = 'http://version.semiologic.com';
+			$service = 'http://version.semiologic.com/plugins';
+			$package = trim(end($package));
 
 			$response[$file]->service = $service;
 			$todo[$service][] = $file;
+
+			$response[$file]->package = $package;
 
 			$tag = basename($file, '.php');
 			$response[$file]->tag = $tag;
@@ -367,17 +372,6 @@ class version_checker
 			}
 
 			$response[$file]->version = $version;
-
-			if ( preg_match("/Update Package:(.*)/i", $src, $package) )
-			{
-				$package = trim(end($package));
-			}
-			else
-			{
-				$package = '';
-			}
-
-			$response[$file]->package = $package;
 		}
 		
 		foreach ( $todo as $service => $files )
@@ -400,6 +394,8 @@ class version_checker
 
 				$url .= '?tag[]=' . implode('&tag[]=', $tags);
 			}
+			
+			#dump($url);
 			
 			$new_version = wp_remote_fopen($url);
 			
@@ -551,7 +547,7 @@ class version_checker
 		$options = get_option('version_checker');
 		
 		# debug:
-		$options = array();
+		#$options = array();
 		
 		if ( $options === false )
 		{
