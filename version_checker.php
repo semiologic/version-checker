@@ -604,7 +604,7 @@ class version_checker
 			version_checker::check_plugins();
 			$options = get_option('version_checker');
 		}
-		
+		#dump($update_plugins); dump($options);
 		if ( $update_plugins->response )
 		{
 			foreach ( (array) $update_plugins->checked as $plugin => $version )
@@ -622,6 +622,9 @@ class version_checker
 			
 			# disable this until we install amember
 			unset($extra->package);
+			
+			# disable erroneous more info link
+			$extra->slug = $extra->tag;
 			
 			$update_plugins->response[$file] = $extra;
 		}
