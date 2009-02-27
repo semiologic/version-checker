@@ -531,7 +531,7 @@ class version_checker
 		{
 			echo '<div class="updated">'
 				. '<p>'
-				. sprintf('<strong>Version Checker Notice</strong> - A Semiologic Pro update is available (<a href="http://www.semiologic.com">more info</a>). Browse <a href="%s">Tools / Upgrade</a> to upgrade your site. <a href="http://www.semiologic.com/resources/wp-basics/why-upgrade/">Why this is important</a>.', trailingslashit(get_option('siteurl')) . 'wp-admin/update-core.php')
+				. sprintf('<strong>Version Checker Notice</strong> - A Semiologic Pro update is available (<a href="http://www.semiologic.com">more info</a>). Browse <a href="%s">Tools / Upgrade</a> to upgrade your site. <a href="http://www.semiologic.com/resources/wp-basics/why-upgrade/">Why this is important</a>.', trailingslashit(site_url()) . 'wp-admin/update-core.php')
 				. '</p>'
 				. '</div>';
 		}
