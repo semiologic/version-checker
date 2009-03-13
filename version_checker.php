@@ -237,15 +237,23 @@ class version_checker
 		remove_action( 'admin_notices', 'update_nag', 3 );
 		
 		global $wp_filter;
-
-		$keys = array_keys((array) $wp_filter['in_admin_footer']);
-		sort($keys);
-		$key = $key[0] + 1000;
+		
+		if ( isset($wp_filter['in_admin_footer']) ) {
+			$keys = array_keys((array) $wp_filter['in_admin_footer']);
+			sort($keys);
+			$key = $key[0] + 1000;
+		} else {
+			$key = 1000;
+		}
 		add_action('in_admin_footer', array('version_checker', 'flush_footer'), $key);
-
-		$keys = array_keys((array) $wp_filter['admin_footer']);
-		sort($keys);
-		$key = $key[0] - 1000;
+		
+		if ( isset($wp_filter['admin_footer']) ) {
+			$keys = array_keys((array) $wp_filter['admin_footer']);
+			sort($keys);
+			$key = $key[0] - 1000;
+		} else {
+			$key = -1000;
+		}
 		add_action('admin_footer', array('version_checker', 'display_links'), $key);
 	} # admin_init()
 	
@@ -604,8 +612,8 @@ class version_checker
 			version_checker::check_plugins();
 			$options = get_option('version_checker');
 		}
-		#dump($update_plugins); dump($options);
-		if ( $update_plugins->response )
+		
+		if ( isset($update_plugins->response) && $update_plugins->response )
 		{
 			foreach ( (array) $update_plugins->checked as $plugin => $version )
 			{
