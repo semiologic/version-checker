@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Version Checker
-Plugin URI: http://www.semiologic.com/software/wp-tweaks/version-checker/
+Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to hook into WordPress' version checking API with in a distributed environment.
 Version: 1.3.1 alpha
 Author: Denis de Bernardy
