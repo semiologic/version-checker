@@ -19,7 +19,7 @@ http://www.mesoconcepts.com/license/
 
 if ( is_admin() )
 {
-	if ( version_compare($GLOBALS['wp_version'], '2.7', '>=') )
+	if ( function_exists('wp_remote_fopen') )
 	{
 		include dirname(__FILE__) . '/version_checker.php';
 	}
