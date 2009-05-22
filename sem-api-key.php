@@ -129,7 +129,7 @@ class sem_api_key
 			. '<input type="text"'
 				. ' size="58" class="code"'
 				. ' name="api_key"'
-				. ' value="' . attribute_escape($sem_api_key) . '"'
+				. ' value="' . esc_attr($sem_api_key) . '"'
 				. ' />'
 			. '</td>'
 			. '</tr>';
@@ -386,7 +386,7 @@ EOF;
 		echo '</table>';
 
 		echo '<div class="submit">';
-		echo '<input type="submit" value="' . attribute_escape(__('Save Changes')) . '" />';
+		echo '<input type="submit" value="' . esc_attr(__('Save Changes')) . '" />';
 		echo '</div>';
 
 ?>
