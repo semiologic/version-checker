@@ -1,433 +1,199 @@
 <?php
-@define('sem_api_key_debug', false);
+/**
+ * sem_api_key
+ *
+ * @package Version Checker
+ **/
 
-class sem_api_key
-{
-	#
-	# init()
-	#
+add_action('settings_page_sem-api-key', array('sem_api_key', 'save_options'), 0);
 
-	function init()
-	{
-		add_action('admin_menu', array('sem_api_key', 'admin_menu'));
+class sem_api_key {
+	/**
+	 * save_options()
+	 *
+	 * @return void
+	 **/
+
+	function save_options() {
+		if ( !$_POST )
+			return;
 		
-		add_filter('version_checker', array('sem_api_key', 'version_checker'));
+		check_admin_referer('sem_api_key');
 		
-		if ( get_option('sem_api_key') === false )
-		{
-			update_option('sem_api_key', '');
-		}
-	} # init()
-
-
-	#
-	# add_key()
-	#
-
-	function add_key($url, $return = null)
-	{
-		if ( $api_key = get_option('sem_api_key') )
-		{
-			return $url . ( strpos($url, '?') === false ? '?' : '&' ) . 'user_key=' . $api_key;
-		}
-		elseif ( isset($return) )
-		{
-			return $return;
-		}
-		else
-		{
-			return $url;
-		}
-	} # add_key()
-
-
-	#
-	# version_checker()
-	#
-
-	function version_checker($response)
-	{
-		if ( !current_user_can('administrator') ) return $response;
+		$sem_api_key = trim(stripslashes($_POST['sem_api_key']));
 		
-		$protected = apply_filters('sem_api_key_protected', array());
+		if ( $sem_api_key && !preg_match("/^[0-9a-f]{32}$/i", $sem_api_key) )
+			$sem_api_key = '';
 		
-		foreach ( array_keys($response) as $file )
-		{
-			if ( in_array($response[$file]->url, $protected) )
-			{
-				$response[$file]->url = sem_api_key::add_key($response[$file]->url, '');
-			}
-			if ( in_array($response[$file]->package, $protected) )
-			{
-				$response[$file]->package = sem_api_key::add_key($response[$file]->package, '');
-			}
+		if ( $sem_api_key !== get_option('sem_api_key') ) {
+			update_option('sem_api_key', $sem_api_key);
+			delete_transient('sem_memberships');
 		}
+		
+		if ( isset($_POST['sem_package']) ) {
+			$sem_package = stripslashes($_POST['sem_package']);
 
-		return $response;
-	} # version_checker()
-
-
-	#
-	# admin_menu()
-	#
-
-	function admin_menu()
-	{
-		if ( current_user_can('administrator') )
-		{
-			add_options_page(
-				__('Semiologic API Key'),
-				__('Semiologic API Key'),
-				'administrator',
-				__FILE__,
-				array('sem_api_key', 'admin_page')
-				);
+			if ( !in_array($sem_package, array('wp', 'stable', 'bleeding')) )
+				$sem_package = 'wp';
+			
+			update_option('sem_package', $sem_package);
 		}
-	} # admin_menu()
+		
+		echo '<div class="updated fade">' . "\n"
+			. '<p>'
+				. '<strong>'
+				. __('Settings saved.', 'version-checker')
+				. '</strong>'
+			. '</p>' . "\n"
+			. '</div>' . "\n";
+	} # save_options()
+	
+	
+	/**
+	 * edit_options()
+	 *
+	 * @return void
+	 **/
 
+	function edit_options() {
+		echo '<div class="wrap">' . "\n"
+			. '<form method="post" action="">';
 
-	#
-	# admin_page()
-	#
+		wp_nonce_field('sem_api_key');
 
-	function admin_page()
-	{
-		if ( $_POST['update_sem_api_key'] )
-		{
-			sem_api_key::update();
-
-			echo "<div class=\"updated\">\n"
-				. "<p>"
-					. "<strong>"
-					. __('Settings saved.')
-					. "</strong>"
-				. "</p>\n"
-				. "</div>\n";
-		}
-
-		echo '<form method="post" action="">';
-
-		if ( function_exists('wp_nonce_field') ) wp_nonce_field('sem_api_key');
-
-		echo '<input type="hidden"'
-			. ' name="update_sem_api_key"'
-			. ' value="1"'
-			. ' />';
-
-		echo '<div class="wrap">'
-			. '<h2>' . __('Semiologic Memberships') . '</h2>';
-
-		echo '<table class="form-table">';
+		screen_icon();
+		
+		echo '<h2>' . __('Semiologic API Key', 'version-checker') . '</h2>' . "\n";
+		
+		echo '<table class="form-table">' . "\n";
 		
 		$sem_api_key = get_option('sem_api_key');
+		$sem_package = get_option('sem_package');
+		$memberships = version_checker::get_memberships(true);
 		
-		echo '<tr valign="top">'
-		 	. '<th scrope="row">'
-			. 'API Key'
-			. '</th>'
+		echo '<tr>' . "\n"
+			. '<th scope="row">'
+			. __('API Key', 'version-checker')
+			. '</th>' . "\n"
 			. '<td>'
-			. '<input type="text"'
-				. ' size="58" class="code"'
-				. ' name="api_key"'
+			. '<input type="text" name="sem_api_key" class="widefat code"'
 				. ' value="' . esc_attr($sem_api_key) . '"'
 				. ' />'
-			. '</td>'
-			. '</tr>';
+			. '</td>' . "\n"
+			. '</tr>' . "\n";
 		
-		if ( $sem_api_key )
-		{
-			$sem_pro = false;
-			
-			echo '<tr valign="top">'
-			 	. '<th scrope="row">'
-				. '<a href="http://oldbackend.semiologic.com'
-					. ( $sem_api_key
-						? ( '?user_key=' . urlencode($sem_api_key) )
-						: ''
-						)
-					. '">Memberships</a>'
-				. '</th>'
-				. '<td>';
-		
-			if ( !$sem_api_key )
-			{
-				echo '<p>Please enter your API Key.</p>';
-			}
-			else
-			{
-				$url = "https://api.semiologic.com/memberships/0.1/" . urlencode($sem_api_key);
-				
-				$res = wp_remote_request($url);
-				
-				if ( sem_api_key_debug )
-				{
-					$res = array();
-					
-					$res['response']['code'] = 200;
-					$res['body'] = '<?xml version="1.0" encoding="UTF-8" ?>
-					<memberships>
-					<membership>
-					<name>Semiologic Pro</name>
-					<key>sem_pro</key>
-					<expires></expires>
-					</membership>
-					</memberships>
-					';
-				}
-				
-				if ( is_wp_error($res) )
-				{
-					// echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
-					// 
-					// echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
-					// 
-					// echo '<ul style="margin-left: 1.8em; list-style: square;">';
-					// 
-					// foreach ( $res->get_error_messages() as $msg )
-					// {
-					// 	echo '<li>' . $msg . '</li>';
-					// }
-					// 
-					// echo '</ul>';
-					// 
-					// echo '</div>' . "\n";
-					
-					$sem_pro = true;
-				}
-				elseif ( $res['response']['code'] != 200 )
-				{
-					// echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
-					// 
-					// echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
-					// 
-					// echo '<ul style="margin-left: 1.8em; list-style: square;">';
-					// 
-					// $msg = $res['response']['code'] . ': ' . $res['response']['message'];
-					// echo '<li>' . $msg . '</li>';
-					// 
-					// echo '</ul>';
-					// 
-					// echo '</div>' . "\n";
-					
-					$sem_pro = true;
-				}
-				else
-				{
-					$res = $res['body'];
-					
-					if ( preg_match_all("|
-						<error>
-							(.*)
-						</error>
-						|isUx", $res, $errors, PREG_SET_ORDER))
-					{
-						echo '<div style="background-color: #ffebe8; border: solid 1px #c00; padding: 0px 10px;">' . "\n";
-
-						echo '<p>The following errors occurred while trying to contact https://api.semiologic.com:</p>';
-
-						echo '<ul style="margin-left: 1.8em; list-style: square;">';
-
-						foreach ( $errors as $msg )
-						{
-							$msg = $msg[1];
-							$msg = strip_tags($msg);
-
-							echo '<li>' . $msg . '</li>';
-						}
-
-						echo '</ul>';
-
-						echo '</div>' . "\n";
-					}
-					else
-					{
-						preg_match_all("|
-							<membership>\s*
-							<name>(.*)</name>\s*
-							<key>(.*)</key>\s*
-							<expires>(.*)</expires>\s*
-							</membership>
-							|isUx", $res, $memberships, PREG_SET_ORDER);
-
-						echo '<table width="100%" style="border: solid 1px #000; border-collapse: collapse;">'
-							. '<tr>'
-							. '<th style="border-bottom: solid 1px #000;">' . 'Membership' . '</th>'
-							. '<th style="border-bottom: solid 1px #000;">' . 'Expires' . '</th>'
-							. '</tr>';
-
-						$date_format = get_option('date_format');
-
-						foreach ( $memberships as $membership )
-						{
-							$name = $membership[1];
-							$key = $membership[2];
-							$expires = $membership[3];
-
-							$name = strip_tags($name);
-							$key = strip_tags($key);
-							$expires = strip_tags($expires);
-
-							if ( !$expires )
-							{
-								$expires = 'Never';
-								$renew = '';
-							}
-							else
-							{
-								if ( strtotime($expires) >= time() )
-								{
-									$renew = '';
-								}
-								else
-								{
-									$renew = ' &rarr; <a href="http://oldbackend.semiologic.com">Renew</a>';
-								}
-
-								$expires = mysql2date($date_format, $expires);
-							}
-
-							if ( $key == 'sem_pro' && !$renew )
-							{
-								$sem_pro = true;
-							}
-
-							echo '<tr>'
-								. '<td>' . $name . '</td>'
-								. '<td>' . $expires . $renew . '</td>'
-								. '</tr>';
-					
-							echo '</table>';
-						}
-					}
-				}
-			}
-		
-			echo '</td>'
-				. '</tr>';
-			
-			$package = get_option('sem_package');
-			
-			if ( $sem_pro )
-			{
-				if ( $package == 'wp' )
-				{
-					$package = 'stable';
-					update_option('sem_package', $package);
-				}
-				
-				echo '<tr valign="top">'
-				 	. '<th scrope="row">'
-					. 'Core Updates'
-					. '</th>'
-					. '<td>'
-					. '<p>' . 'Under Tools / Upgrade, use the following package to update my site:' . '</p>'
-					. '<ul>'
-					. '<li>'
-						. '<label>'
-						. '<input type="radio" name="package"'
-							. ' value="stable"'
-							. ( $package == 'stable'
-								? ' checked="checked"'
-								: ''
-								)
-							. ' /> '
-						. 'Semiologic Pro, Stable version'
-						. '</label>'
-						. '</li>'
-					. '<li>'
-						. '<label>'
-						. '<input type="radio" name="package"'
-							. ' value="bleeding"'
-							. ( $package == 'bleeding'
-								? ' checked="checked"'
-								: ''
-								)
-							. ' /> '
-						. 'Semiologic Pro, Bleeding Edge version'
-						. '</label>'
-						. '</li>'
-					. '</ul>'
-					. '</td>'
-					. '</tr>';
-			}
-			else
-			{
-				if ( $package != 'wp' )
-				{
-					$package = 'wp';
-					update_option('sem_package', $package);
-				}
-			}
-		}
-		
-		$faq = <<<EOF
-
-Entering your Semiologic API key is required to keep your site updated using packages located on semiologic.com. You'll find yours in the <a href="http://oldbackend.semiologic.com">Semiologic back-end</a>.
-
-Automated updates using packages located on semiologic.com will cease to work when your membership expires. (The software itself will of course continue to work normally.)
-
-Do not share your API key. It is a password in every respect. Please do not use it for the benefit of others either. If you or your organization aren't a site's primary user, that site should not be using your API key.
-
-Please <a href="mailto:sales@semiologic.com">contact sales</a> for any further information.
-
-EOF;
-
-		$faq = wpautop($faq);
-
-		echo '<tr>'
+		echo '<tr>' . "\n"
 			. '<th scope="row">'
-			. '<p>' . 'FAQ' . '</p>'
-			. '</th>'
+			. __('Core Updates', 'version-checker')
+			. '</th>' . "\n"
 			. '<td>'
-			. $faq
-			. '</td>'
-			. '</tr>';
-
-		echo '</table>';
-
-		echo '<div class="submit">';
-		echo '<input type="submit" value="' . esc_attr(__('Save Changes')) . '" />';
-		echo '</div>';
-
-?>
-
-
-<?php
-		echo '<div style="clear: both;"></div>';
+			. '<p>'
+			. __('Under Tools / Upgrade, use the following package to update my site:', ' version-checker')
+			. '</p>' . "\n"
+			. '<ul>'
+			. '<li>'
+			. '<label>'
+			. '<input type="radio" name="sem_package" value="wp"'
+				. checked($sem_package, 'wp', false)
+				. ' />'
+			. '&nbsp;'
+			. __('The latest version of WordPress', 'version-checker')
+			. '</label>'
+			. '</li>' . "\n"
+			. '<li>'
+			. '<label>'
+			. '<input type="radio" name="sem_package" value="stable"'
+				. checked($sem_package, 'stable', false)
+				. ' />'
+			. '&nbsp;'
+			. __('The latest version of Semiologic Pro (recommended)', 'version-checker')
+			. '</label>'
+			. '</li>' . "\n"
+			. '<li>'
+			. '<label>'
+			. '<input type="radio" name="sem_package" value="bleeding"'
+				. checked($sem_package, 'bleeding', false)
+				. ' />'
+			. '&nbsp;'
+			. __('The bleeding edge version of Semiologic Pro (for test sites)', 'version-checker')
+			. '</label>'
+			. '</li>' . "\n"
+			. '</ul>' . "\n"
+			. '</td>' . "\n"
+			. '</tr>' . "\n";
 		
-		echo '</div>';
-
-		echo '</form>';
-	} # admin_page()
-
-
-	#
-	# update()
-	#
-
-	function update()
-	{
-		check_admin_referer('sem_api_key');
-
-		$sem_api_key = $_POST['api_key'];
-
-		if ( !preg_match("/^[0-9a-f]{32}$/", $sem_api_key) )
-		{
-			$sem_api_key = '';
+		if ( $memberships ) {
+			echo '<tr>' . "\n"
+				. '<th scope="row">'
+				. '<a href="http://oldbackend.semiologic.com/memberships.php' . ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ) . '">'
+				. __('Memberships', 'version-checker')
+				. '</a>'
+				. '</th>' . "\n"
+				. '<td>'
+				. '<table style="width: 100%; margin: 0px; padding: 0px;">' . "\n";
+			
+			foreach ( $memberships as $slug => $membership ) {
+				echo '<tr>'
+					. '<td>'
+					. strip_tags($membership['name'])
+					. '</td>' . "\n"
+					. '<td style="width: 200px;">';
+				if ( !$membership['expires'] ) {
+					echo __('Never expires', 'version-checker');
+				} elseif ( !version_checker::check($slug) ) {
+					echo sprintf(__('Expired %1$s - <a href="%2$s">Renew</a>'),
+						date_i18n('F j, Y', strtotime($membership['expires'])),
+						'http://oldbackend.semiologic.com/memberships.php'
+							. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
+				} elseif ( strtotime($membership['expires']) <= time() + 2678400 ) { // 1 month
+					echo sprintf(__('Expires %1$s - <a href="%2$s">Renew</a>'),
+						date_i18n('F j, Y', strtotime($membership['expires'])),
+						'http://oldbackend.semiologic.com/memberships.php'
+							. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
+				} else {
+					echo sprintf(__('Expires %s'), date_i18n('F j, Y', strtotime($membership['expires'])));
+				}
+				
+				echo '</td>' . "\n"
+					. '</tr>' . "\n";
+				
+			}
+			
+			echo '</table>'
+				. '</td>' . "\n"
+				. '</tr>' . "\n";
 		}
 		
-		$package = $_POST['package'];
+		echo '<tr>' . "\n"
+			. '<th scope="row">'
+			. __('FAQ', 'version-checker')
+			. '</th>' . "\n"
+			. '<td>'
+			. '<p>'
+			. sprintf(__('Your Semiologic API key entitles you (as an individual Semiologic customer) to software updates from semiologic.com for as long as you\'ve a running membership.  You\'ll find your API Key in the <a href="%s">Semiologic back-end</a>.', 'version-checker'), 'http://oldbackend.semiologic.com' . ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ) )
+			. '</p>' . "\n"
+			. '<p>'
+			. sprintf(__('The software itself will of course continue to work normally when your membership expires. Upgrades from semiologic.com will merely cease to work. It is, however, <a href="%s">highly recommended</a> that you keep your site up to date at all times.', 'version-checker'), 'http://www.semiologic.com/resources/wp-basics/why-upgrade/')
+			. '</p>' . "\n"
+			. '<p>'
+			. __('Please do not share your API key, or use it for the benefit of others. It is a password in every respect, and you\'d be breaching our terms of use. If you or your organization aren\'t a site\'s primary user, that site should not be using your API key.', 'version-checker')
+			. '</p>' . "\n"
+			. '<p>'
+			. sprintf(__('Please <a href="%s">email sales</a> or skype Denis (ddebernardy) for any further information.', 'version-checker'), 'mailto:sales@semiologic.com')
+			. '</p>' . "\n"
+			. '</td>' . "\n"
+			. '</tr>' . "\n";
 		
-		if ( !in_array($package, array('wp', 'stable', 'bleeding')) || !$sem_api_key )
-		{
-			$package = 'wp';
-		}
+		echo '</table>' . "\n";
+
+		echo '<p class="submit">'
+			. '<input type="submit"'
+				. ' value="' . esc_attr(__('Save Changes', 'version-checker')) . '"'
+				. ' />'
+			. '</p>' . "\n";
 		
-		update_option('sem_api_key', $sem_api_key);
-		update_option('sem_package', $package);
-	} # update()
+		echo '</form>' . "\n"
+			. '</div>' . "\n";
+	} # edit_options()
 } # sem_api_key
-
-sem_api_key::init();
-
 ?>
