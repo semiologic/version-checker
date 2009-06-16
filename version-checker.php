@@ -107,7 +107,7 @@ class version_checker {
 		if ( !sem_version_checker_debug ) {
 			$url = "https://api.semiologic.com/memberships/0.2/" . $sem_api_key;
 		} else {
-			$url = "http://localhost/~denis/api/memberships/" . $sem_api_key;
+			$url = "http://api.semiologic.com/memberships/trunk/" . $sem_api_key;
 		}
 		
 		$body = array(
@@ -189,7 +189,7 @@ class version_checker {
 		if ( !sem_version_checker_debug ) {
 			$url = "https://api.semiologic.com/version/0.2/plugins/" . $sem_api_key;
 		} else {
-			$url = "http://localhost/~denis/api/version/plugins/" . $sem_api_key;
+			$url = "http://api.semiologic.com/version/trunk/plugins/" . $sem_api_key;
 		}
 		
 		$check = get_plugins();
