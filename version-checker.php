@@ -2,7 +2,7 @@
 /*
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
-Description: Allows to hook into WordPress' version checking API with in a distributed environment.
+Description: Allows to update plugins and themes from semiologic.com through the WordPress API.
 Version: 2.0 alpha
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
@@ -33,15 +33,16 @@ if ( !defined('sem_version_checker_debug') )
  **/
 
 add_option('sem_api_key', '');
-add_option('sem_package', 'wp');
+add_option('sem_packages', 'stable');
 
 if ( is_admin() && function_exists('get_transient') ) {
 	add_action('admin_menu', array('version_checker', 'admin_menu'));
 	
 	foreach ( array(
-		'load-plugins.php',
-		'load-update-core.php',
 		'load-settings_page_sem-api-key',
+		'load-update-core.php',
+		'load-themes.php',
+		'load-plugins.php',
 		'wp_version_check',
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_memberships'));
@@ -53,11 +54,19 @@ if ( is_admin() && function_exists('get_transient') ) {
 		add_action($hook, array('version_checker', 'get_core'));
 	
 	foreach ( array(
+		'load-themes.php',
+		'wp_update_themes',
+		) as $hook )
+		add_action($hook, array('version_checker', 'get_themes'));
+	;
+	
+	foreach ( array(
 		'load-plugins.php',
 		'wp_update_plugins',
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_plugins'));
 	
+	add_filter('transient_update_themes', array('version_checker', 'update_themes'));
 	add_filter('transient_update_plugins', array('version_checker', 'update_plugins'));
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
@@ -75,7 +84,7 @@ class version_checker {
 		$sem_api_key = get_option('sem_api_key');
 		
 		if ( !$sem_api_key )
-			return false;
+			return array();
 		
 		$obj = get_transient('sem_memberships');
 		
@@ -113,6 +122,7 @@ class version_checker {
 			$url = "https://api.semiologic.com/memberships/0.2/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/memberships/trunk/" . $sem_api_key;
+			$url = "http://localhost/~denis/api/memberships/" . $sem_api_key;
 		}
 		
 		$body = array(
@@ -136,7 +146,7 @@ class version_checker {
 		if ( $response !== false ) {
 			$obj->response = $response; // keep old response in case of error
 			set_transient('sem_memberships', $obj);
-			delete_transient('sem_plugins');
+			delete_transient('sem_update_plugins');
 		}
 		
 		return $obj->response;
@@ -154,18 +164,144 @@ class version_checker {
 	
 	
 	/**
-	 * get_plugins()
+	 * get_themes()
 	 *
+	 * @param array $checked
 	 * @return array $response
 	 **/
 
-	function get_plugins() {
+	function get_themes($checked = null) {
 		$sem_api_key = get_option('sem_api_key');
 		
 		if ( !$sem_api_key )
 			return array();
 		
-		$obj = get_transient('sem_plugins');
+		$obj = get_transient('sem_update_themes');
+		
+		if ( !is_object($obj) ) {
+			$obj = new stdClass;
+			$obj->last_checked = false;
+			$obj->checked = array();
+			$obj->response = array();
+		}
+		
+		if ( current_filter() == 'load-themes.php' ) {
+			$timeout = 3600;
+		} else {
+			$timeout = 43200;
+		}
+		
+		if ( is_array($checked) && $checked != $obj->checked )
+			$timeout = 0;
+		
+		if ( $obj->last_checked >= time() - $timeout )
+			return $obj->response;
+		
+		global $wpdb;
+		global $wp_version;
+		
+		if ( !function_exists('get_themes') )
+			require_once ABSPATH . 'wp-includes/theme.php';
+		
+		$obj->last_checked = time();
+		set_transient('sem_update_themes', $obj);
+		
+		if ( !sem_version_checker_debug ) {
+			$url = "https://api.semiologic.com/version/0.2/themes/" . $sem_api_key;
+		} else {
+			$url = "https://api.semiologic.com/version/trunk/themes/" . $sem_api_key;
+			$url = "http://localhost/~denis/api/version/themes/" . $sem_api_key;
+		}
+		
+		$to_check = get_themes();
+		$check = array();
+		
+		foreach ( $to_check as $themes )
+			$check[$themes['Stylesheet']] = $themes['Version'];
+		
+		$body = array(
+			'check' => $check,
+			'packages' => get_option('sem_packages'),
+			);
+		
+		$options = array(
+			'timeout' => 3,
+			'body' => $body,
+			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
+		);
+		
+		$raw_response = wp_remote_post($url, $options);
+		
+		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
+			$response = false;
+		else
+			$response = @unserialize($raw_response['body']);
+		
+		if ( $response !== false ) { // keep old response in case of error
+			foreach ( $response as $key => $package ) {
+				if ( !empty($package->package) )
+					#$response[$key]->package = $package->package . '?user_key=' . $sem_api_key;
+					unset($response[$key]->package);
+				$response[$key] = (array) $package;
+			}
+			$obj->checked = $check;
+			$obj->response = $response;
+			set_transient('sem_update_themes', $obj);
+		}
+		
+		return $obj->response;
+	} # get_themes()
+	
+	
+	/**
+	 * update_themes()
+	 *
+	 * @param object $ops
+	 * @return object $ops
+	 **/
+
+	function update_themes($ops) {
+		static $new_ops;
+		
+		if ( isset($new_ops) )
+			return $new_ops;
+		
+		if ( !is_object($ops) )
+			$ops = new stdClass;
+		
+		if ( !is_array($ops->checked) )
+			$ops->checked = array();
+		
+		if ( !is_array($ops->response) )
+			$ops->response = array();
+		
+		foreach ( $ops->checked as $plugin => $version ) {
+			if ( isset($ops->response[$plugin]) && strpos($version, 'fork') !== false )
+				unset($ops->response[$plugin]);
+		}
+		
+		$ops->response = array_merge($ops->response, version_checker::get_themes($ops->checked));
+		
+		$new_ops = $ops;
+		
+		return $new_ops;
+	} # update_themes()
+	
+	
+	/**
+	 * get_plugins()
+	 *
+	 * @param array $checked
+	 * @return array $response
+	 **/
+
+	function get_plugins($checked = null) {
+		$sem_api_key = get_option('sem_api_key');
+		
+		if ( !$sem_api_key )
+			return array();
+		
+		$obj = get_transient('sem_update_plugins');
 		
 		if ( !is_object($obj) ) {
 			$obj = new stdClass;
@@ -180,6 +316,9 @@ class version_checker {
 			$timeout = 43200;
 		}
 		
+		if ( is_array($checked) && $checked != $obj->checked )
+			$timeout = 0;
+		
 		if ( $obj->last_checked >= time() - $timeout )
 			return $obj->response;
 		
@@ -190,24 +329,24 @@ class version_checker {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		
 		$obj->last_checked = time();
-		set_transient('sem_plugins', $obj);
+		set_transient('sem_update_plugins', $obj);
 		
 		if ( !sem_version_checker_debug ) {
 			$url = "https://api.semiologic.com/version/0.2/plugins/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/version/trunk/plugins/" . $sem_api_key;
+			$url = "http://localhost/~denis/api/version/plugins/" . $sem_api_key;
 		}
 		
-		$check = get_plugins();
+		$to_check = get_plugins();
+		$check = array();
 		
-		foreach ( $check as $key => $plugin )
-			$check[$key] = $plugin['Version'];
+		foreach ( $to_check as $file => $plugin )
+			$check[$file] = $plugin['Version'];
 		
 		$body = array(
-			'php_version' => phpversion(),
-			'mysql_version' => $wpdb->db_version(),
-			'active' => get_option('active_plugins'),
 			'check' => $check,
+			'packages' => get_option('sem_packages'),
 			);
 		
 		$options = array(
@@ -230,7 +369,7 @@ class version_checker {
 			}
 			$obj->checked = $check;
 			$obj->response = $response;
-			set_transient('sem_plugins', $obj);
+			set_transient('sem_update_plugins', $obj);
 		}
 		
 		return $obj->response;
@@ -260,11 +399,11 @@ class version_checker {
 			$ops->response = array();
 		
 		foreach ( $ops->checked as $plugin => $version ) {
-			if ( strpos($version, 'fork') !== false && isset($ops->response[$plugin]) )
+			if ( isset($ops->response[$plugin]) && strpos($version, 'fork') !== false )
 				unset($ops->response[$plugin]);
 		}
 		
-		$ops->response = array_merge($ops->response, version_checker::get_plugins());
+		$ops->response = array_merge($ops->response, version_checker::get_plugins($ops->checked));
 		
 		$new_ops = $ops;
 		
@@ -331,17 +470,17 @@ function sem_api_key() {
 
 add_action('load-settings_page_sem-api-key', 'sem_api_key');
 
-function sem_core() {
-	if ( !class_exists('sem_core') )
+function sem_update_core() {
+	if ( !class_exists('sem_update_core') )
 		include dirname(__FILE__) . '/core.php';
 }
 
-add_action('load-update-core.php', 'sem_core');
+add_action('load-update-core.php', 'sem_update_core');
 
-function sem_plugins() {
-	if ( !class_exists('sem_plugins') )
+function sem_update_plugins() {
+	if ( !class_exists('sem_update_plugins') )
 		include dirname(__FILE__) . '/plugins.php';
 }
 
-add_action('load-plugin-install.php', 'sem_plugins');
+add_action('load-plugin-install.php', 'sem_update_plugins');
 ?>

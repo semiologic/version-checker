@@ -25,19 +25,18 @@ class sem_api_key {
 		if ( $sem_api_key && !preg_match("/^[0-9a-f]{32}$/i", $sem_api_key) )
 			$sem_api_key = '';
 		
-		if ( $sem_api_key !== get_option('sem_api_key') ) {
-			update_option('sem_api_key', $sem_api_key);
-			delete_transient('sem_memberships');
-			delete_transient('sem_plugins');
-		}
-		
-		if ( isset($_POST['sem_package']) ) {
-			$sem_package = stripslashes($_POST['sem_package']);
+		$sem_packages = stripslashes($_POST['sem_packages']);
 
-			if ( !in_array($sem_package, array('wp', 'stable', 'bleeding')) )
-				$sem_package = 'wp';
-			
-			update_option('sem_package', $sem_package);
+		if ( !in_array($sem_packages, array('stable', 'bleeding')) )
+			$sem_packages = 'stable';
+		
+		update_option('sem_api_key', $sem_api_key);
+		update_option('sem_packages', $sem_packages);
+		
+		delete_transient('sem_memberships');
+		foreach ( array('core', 'themes', 'plugins') as $transient ) {
+			delete_transient('update_' . $transient);
+			delete_transient('sem_update_' . $transient);
 		}
 		
 		echo '<div class="updated fade">' . "\n"
@@ -69,8 +68,8 @@ class sem_api_key {
 		echo '<table class="form-table">' . "\n";
 		
 		$sem_api_key = get_option('sem_api_key');
-		$sem_package = get_option('sem_package');
-		$memberships = version_checker::get_memberships(true);
+		$sem_packages = get_option('sem_packages');
+		$memberships = version_checker::get_memberships();
 		
 		echo '<tr>' . "\n"
 			. '<th scope="row">'
@@ -85,85 +84,74 @@ class sem_api_key {
 		
 		echo '<tr>' . "\n"
 			. '<th scope="row">'
-			. __('Core Updates', 'version-checker')
+			. __('Packages', 'version-checker')
 			. '</th>' . "\n"
 			. '<td>'
 			. '<p>'
-			. __('Under Tools / Upgrade, use the following package to update my site:', ' version-checker')
+			. __('Keep WordPress, themes and plugins updated using:', ' version-checker')
 			. '</p>' . "\n"
 			. '<ul>'
 			. '<li>'
 			. '<label>'
-			. '<input type="radio" name="sem_package" value="wp"'
-				. checked($sem_package, 'wp', false)
+			. '<input type="radio" name="sem_packages" value="stable"'
+				. checked($sem_packages, 'stable', false)
 				. ' />'
 			. '&nbsp;'
-			. __('The latest version of WordPress', 'version-checker')
+			. __('Stable packages from wordpress.org and semiologic.com (recommended)', 'version-checker')
 			. '</label>'
 			. '</li>' . "\n"
 			. '<li>'
 			. '<label>'
-			. '<input type="radio" name="sem_package" value="stable"'
-				. checked($sem_package, 'stable', false)
+			. '<input type="radio" name="sem_packages" value="bleeding"'
+				. checked($sem_packages, 'bleeding', false)
 				. ' />'
 			. '&nbsp;'
-			. __('The latest version of Semiologic Pro (recommended)', 'version-checker')
-			. '</label>'
-			. '</li>' . "\n"
-			. '<li>'
-			. '<label>'
-			. '<input type="radio" name="sem_package" value="bleeding"'
-				. checked($sem_package, 'bleeding', false)
-				. ' />'
-			. '&nbsp;'
-			. __('The bleeding edge version of Semiologic Pro (for test sites)', 'version-checker')
+			. __('Stable packages from wordpress.org, and bleeding edge packages from semiologic.com (for test sites)', 'version-checker')
 			. '</label>'
 			. '</li>' . "\n"
 			. '</ul>' . "\n"
 			. '</td>' . "\n"
 			. '</tr>' . "\n";
 		
-		if ( $memberships ) {
-			echo '<tr>' . "\n"
-				. '<th scope="row">'
-				. '<a href="http://oldbackend.semiologic.com/memberships.php' . ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ) . '">'
-				. __('Memberships', 'version-checker')
-				. '</a>'
-				. '</th>' . "\n"
+		echo '<tr>' . "\n"
+			. '<th scope="row">'
+			. '<a href="http://oldbackend.semiologic.com/memberships.php' . ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ) . '">'
+			. __('Memberships', 'version-checker')
+			. '</a>'
+			. '</th>' . "\n"
+			. '<td>'
+			. '<table style="width: 100%; margin: 0px; padding: 0px;">' . "\n";
+		
+		foreach ( $memberships as $slug => $membership ) {
+			echo '<tr>'
 				. '<td>'
-				. '<table style="width: 100%; margin: 0px; padding: 0px;">' . "\n";
-			
-			foreach ( $memberships as $slug => $membership ) {
-				echo '<tr>'
-					. '<td>'
-					. strip_tags($membership['name'])
-					. '</td>' . "\n"
-					. '<td style="width: 200px;">';
-				if ( !$membership['expires'] ) {
-					echo __('Never expires', 'version-checker');
-				} elseif ( !version_checker::check($slug) ) {
-					echo sprintf(__('Expired %1$s - <a href="%2$s">Renew</a>'),
-						date_i18n('F j, Y', strtotime($membership['expires'])),
-						'http://oldbackend.semiologic.com/memberships.php'
-							. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
-				} elseif ( strtotime($membership['expires']) <= time() + 2678400 ) { // 1 month
-					echo sprintf(__('Expires %1$s - <a href="%2$s">Renew</a>'),
-						date_i18n('F j, Y', strtotime($membership['expires'])),
-						'http://oldbackend.semiologic.com/memberships.php'
-							. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
-				} else {
-					echo sprintf(__('Expires %s'), date_i18n('F j, Y', strtotime($membership['expires'])));
-				}
-				
-				echo '</td>' . "\n"
-					. '</tr>' . "\n";
-				
+				. strip_tags($membership['name'])
+				. '</td>' . "\n"
+				. '<td style="width: 200px;">';
+			if ( !$membership['expires'] ) {
+				echo __('Never expires', 'version-checker');
+			} elseif ( !version_checker::check($slug) ) {
+				echo sprintf(__('Expired %1$s - <a href="%2$s">Renew</a>'),
+					date_i18n('F j, Y', strtotime($membership['expires'])),
+					'http://oldbackend.semiologic.com/memberships.php'
+						. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
+			} elseif ( strtotime($membership['expires']) <= time() + 2678400 ) { // 1 month
+				echo sprintf(__('Expires %1$s - <a href="%2$s">Renew</a>'),
+					date_i18n('F j, Y', strtotime($membership['expires'])),
+					'http://oldbackend.semiologic.com/memberships.php'
+						. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
+			} else {
+				echo sprintf(__('Expires %s'), date_i18n('F j, Y', strtotime($membership['expires'])));
 			}
 			
-			echo '</table>'
-				. '</td>' . "\n"
+			echo '</td>' . "\n"
 				. '</tr>' . "\n";
+			
 		}
+		
+		echo '</table>'
+			. '</td>' . "\n"
+			. '</tr>' . "\n";
 		
 		echo '<tr>' . "\n"
 			. '<th scope="row">'
