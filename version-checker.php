@@ -82,14 +82,19 @@ class version_checker {
 		if ( !is_object($obj) ) {
 			$obj = new stdClass;
 			$obj->last_checked = false;
-			$obj->response = false;
+			$obj->response = array();
 		}
 		
 		$current_filter = current_filter();
 		
-		if ( $current_filter == 'load-settings_page_sem-api-key' ) {
-			$timeout = 120; // user might place an order here
-		} elseif ( in_array($current_filter, array('load-plugins.php', 'load-update-core.php')) ) {
+		if ( $current_filter == 'load-settings_page_sem-api-key' && is_object($obj->response['sem_pro']) && $obj->response['sem_pro']->expires ) {
+			# user might decide to place an order here
+			if ( strtotime($obj->response['sem_pro']->expires) <= time() + 2678400 ) {
+				$timeout = 120;
+			} else {
+				$timeout = 3600;
+			}
+		} elseif ( in_array($current_filter, array('load-plugins.php', 'load-update-core.php', 'load-settings_page_sem-api-key')) ) {
 			$timeout = 3600;
 		} else {
 			$timeout = 43200;
@@ -128,9 +133,10 @@ class version_checker {
 		else
 			$response = @unserialize($raw_response['body']);
 		
-		if ( $response ) {
+		if ( $response !== false ) {
 			$obj->response = $response; // keep old response in case of error
 			set_transient('sem_memberships', $obj);
+			delete_transient('sem_plugins');
 		}
 		
 		return $obj->response;
