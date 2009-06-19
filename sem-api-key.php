@@ -28,6 +28,7 @@ class sem_api_key {
 		if ( $sem_api_key !== get_option('sem_api_key') ) {
 			update_option('sem_api_key', $sem_api_key);
 			delete_transient('sem_memberships');
+			delete_transient('sem_plugins');
 		}
 		
 		if ( isset($_POST['sem_package']) ) {

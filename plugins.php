@@ -34,13 +34,12 @@ class sem_plugins {
 						. strip_tags($plugin['Author'])
 						. '</a>' )
 					: strip_tags($plugin['Author']);
-				$res->requires = $wp_version;
-				$res->tested = $wp_version;
 				$res->homepage = $resp->url;
 				$res->download_link = $resp->package;
 				$res->slug = $resp->slug;
 				$res->sections = array(
 					'description' => $plugin['Description'],
+					'compatibility' => __('Compatible with the latest version of WordPress.', 'version-checker'),
 					);
 				break;
 			}
