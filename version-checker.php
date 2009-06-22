@@ -304,7 +304,7 @@ class version_checker {
 		
 		$obj = get_transient('sem_update_core');
 		
-		global $sem_pro_version;
+		$sem_pro_version = get_option('sem_pro_version');
 		
 		if ( !is_object($obj) ) {
 			$obj = new stdClass;
@@ -384,10 +384,8 @@ class version_checker {
 		if ( !is_object($ops) )
 			$ops = new stdClass;
 		
-		if ( !is_array($ops->checked) ) {
-			global $sem_pro_version;
-			$ops->checked = array('sem-pro' => $sem_pro_version);
-		}
+		if ( !is_array($ops->checked) )
+			$ops->checked = array('sem-pro' => get_option('sem_pro_version'));
 		
 		if ( !is_array($ops->updates) )
 			$ops->response = array();
