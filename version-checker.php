@@ -81,7 +81,61 @@ add_filter('transient_update_plugins', array('version_checker', 'update_plugins'
 
 add_filter('http_request_args', array('version_checker', 'http_request_args'), 10, 2);
 
+add_action('admin_init', array('version_checker', 'init'));
+
 class version_checker {
+	/**
+	 * init()
+	 *
+	 * @return void
+	 **/
+
+	function init() {
+		remove_action('admin_notices', 'update_nag', 3);
+		add_action('admin_notices', array('version_checker', 'update_nag'), 3);
+		add_action('settings_page_sem-api-key', array('version_checker', 'update_nag'), 9);
+	} # init()
+	
+	
+	/**
+	 * update_nag()
+	 *
+	 * @return void
+	 **/
+
+	function update_nag() {
+		global $pagenow, $page_hook;
+		
+		if ( 'update-core.php' == $pagenow || 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
+			return;
+		
+		$cur = get_preferred_from_update_core();
+		
+		if ( ! isset( $cur->response ) || $cur->response != 'upgrade' || !current_user_can('manage_options') )
+			return false;
+		
+		if ( isset($cur->response) && isset($cur->package) ) {
+			if ( get_option('sem_pro_version') ) {
+				$msg = sprintf(__('Semiologic Pro %1$s is available! <a href="%2$s">Please update now</a>.', 'version-checker'),
+					$cur->current,
+					'update-core.php');
+			} else {
+				$msg = sprintf(__('Browse <a href="%1$s">Tools / Upgrade</a> to install Semiologic Pro %2$s.', 'version-checker'),
+					'update-core.php',
+					$cur->current);
+			}
+		} else {
+			$msg = sprintf(__('WordPress %1$s is available! Be wary of not <a href="%2$s">upgrading</a> before checking your plugin and theme compatibility.', 'version-checker'),
+				$cur->current,
+				'update-core.php');
+		}
+		
+		echo '<div id="update-nag">' . "\n"
+			. $msg
+			. '</div>' . "\n";
+	} # update_nag()
+	
+	
 	/**
 	 * http_request_args()
 	 *
