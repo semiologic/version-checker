@@ -3,10 +3,10 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins and themes from semiologic.com through the WordPress API.
-Version: 2.0 alpha
+Version: 2.0 beta
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
-Text Domain: version-checker-info
+Text Domain: version-checker
 Domain Path: /lang
 */
 
@@ -39,8 +39,10 @@ add_option('sem_packages', 'stable');
 if ( !isset($sem_pro_version) )
 	$sem_pro_version = '';
 
-if ( $sem_pro_version && get_option('sem_pro_version') !== $sem_pro_version )
+if ( $sem_pro_version && get_option('sem_pro_version') !== $sem_pro_version ) {
 	update_option('sem_pro_version', $sem_pro_version);
+	delete_transient('sem_update_core');
+}
 
 if ( is_admin() && function_exists('get_transient') ) {
 	add_action('admin_menu', array('version_checker', 'admin_menu'));
@@ -71,6 +73,9 @@ if ( is_admin() && function_exists('get_transient') ) {
 		'wp_update_plugins',
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_plugins'), 12);
+	
+	add_filter('http_request_args', array('version_checker', 'http_request_args'), 10, 2);
+	add_action('admin_init', array('version_checker', 'init'));
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
 }
@@ -78,10 +83,6 @@ if ( is_admin() && function_exists('get_transient') ) {
 add_filter('transient_update_core', array('version_checker', 'update_core'));
 add_filter('transient_update_themes', array('version_checker', 'update_themes'));
 add_filter('transient_update_plugins', array('version_checker', 'update_plugins'));
-
-add_filter('http_request_args', array('version_checker', 'http_request_args'), 10, 2);
-
-add_action('admin_init', array('version_checker', 'init'));
 
 class version_checker {
 	/**
@@ -94,6 +95,8 @@ class version_checker {
 		remove_action('admin_notices', 'update_nag', 3);
 		add_action('admin_notices', array('version_checker', 'update_nag'), 3);
 		add_action('settings_page_sem-api-key', array('version_checker', 'update_nag'), 9);
+		add_filter('update_footer', array('version_checker', 'core_update_footer'), 20);
+		add_filter('admin_footer_text', array('version_checker', 'admin_footer_text'), 20);
 	} # init()
 	
 	
@@ -106,8 +109,12 @@ class version_checker {
 	function update_nag() {
 		global $pagenow, $page_hook;
 		
-		if ( 'update-core.php' == $pagenow || 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
+		if ( 'update-core.php' == $pagenow || !current_user_can('manage_options')
+			|| 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
 			return;
+		
+		if ( 'settings_page_sem-api-key' == $page_hook && $_POST )
+			wp_version_check();
 		
 		$cur = get_preferred_from_update_core();
 		
@@ -134,6 +141,74 @@ class version_checker {
 			. $msg
 			. '</div>' . "\n";
 	} # update_nag()
+	
+	
+	/**
+	 * core_update_footer()
+	 *
+	 * @param string $msg
+	 * @return string $msg
+	 **/
+
+	function core_update_footer($msg = '') {
+		global $wp_version;
+		$update_core = get_transient('update_core');
+		
+		if ( empty($update_core->response) || empty($update_core->response->package) )
+			return $msg;
+		
+		$sem_pro_version = get_option('sem_pro_version');
+		
+		if ( !current_user_can('manage_options') )
+			return sprintf(__('<a href="%1$s">Semiologic Pro</a> Version %2$s', 'http://www.getsemiologic.com', 'version-checker'), $sem_pro_version);
+
+		$cur = get_preferred_from_update_core();
+		if ( ! isset( $cur->current ) )
+			$cur->current = '';
+		
+		if ( ! isset( $cur->url ) )
+			$cur->url = '';
+		
+		if ( ! isset( $cur->response ) )
+			$cur->response = '';
+		
+		switch ( $cur->response ) {
+		case 'development':
+			return sprintf(__( 'You are using a development version of Semiologic Pro (%1$s). Cool! Please <a href="%2$s">stay updated</a>.', 'version-checker'), $sem_pro_version, 'update-core.php');
+		
+		case 'upgrade':
+			if ( current_user_can('manage_options') ) {
+				return sprintf('<strong>' . __( '<a href="%1$s">Get Semiologic Pro Version %2$s</a>', 'version-checker') . '</strong>', 'update-core.php', $cur->current);
+			}
+
+		case 'latest':
+		default:
+			return sprintf(__( 'Semiologic Pro Version %s', 'version-checker'), $sem_pro_version);
+		}
+	} # core_update_footer()
+	
+	
+	/**
+	 * admin_footer_text()
+	 *
+	 * @param string $text
+	 * @return string $text
+	 **/
+
+	function admin_footer_text($text = '') {
+		$sem_pro_version = get_option('sem_pro_version');
+		$update_core = get_transient('update_core');
+		
+		if ( !$sem_pro_version || empty($update_core->response) || empty($update_core->response->package) )
+			return $text;
+		
+		return '<span id="footer-thankyou">'
+			. sprintf(__('Thank you for creating with <a href="%s">Semiologic Pro</a>.', 'version-checker'), 'http://www.getsemiologic.com')
+			. '</span> | '
+			. __('<a href="http://www.semiologic.com/resources/">Resources</a>', 'version-checker')
+			. ' | '
+			. __('<a href="http://forum.semiologic.com">Community</a>', 'version-checker');
+	} # admin_footer_text()
 	
 	
 	/**
@@ -321,7 +396,7 @@ class version_checker {
 		
 		if ( is_array($checked) && $checked != $obj->checked )
 			$timeout = 0;
-		$timeout = 0;
+		
 		if ( $obj->last_checked >= time() - $timeout )
 			return $obj->response;
 		
@@ -376,11 +451,6 @@ class version_checker {
 	 **/
 
 	function update_core($ops) {
-		static $new_ops;
-		
-		if ( isset($new_ops) )
-			return $new_ops;
-		
 		if ( !is_object($ops) )
 			$ops = new stdClass;
 		
@@ -396,9 +466,7 @@ class version_checker {
 			$ops->updates = array($ops->response);
 		}
 		
-		$new_ops = $ops;
-		
-		return $new_ops;
+		return $ops;
 	} # update_core()
 	
 	
@@ -499,11 +567,6 @@ class version_checker {
 	 **/
 
 	function update_themes($ops) {
-		static $new_ops;
-		
-		if ( isset($new_ops) )
-			return $new_ops;
-		
 		if ( !is_object($ops) )
 			$ops = new stdClass;
 		
@@ -520,9 +583,7 @@ class version_checker {
 		
 		$ops->response = array_merge($ops->response, version_checker::get_themes($ops->checked));
 		
-		$new_ops = $ops;
-		
-		return $new_ops;
+		return $ops;
 	} # update_themes()
 	
 	
@@ -618,11 +679,6 @@ class version_checker {
 	 **/
 
 	function update_plugins($ops) {
-		static $new_ops;
-		
-		if ( isset($new_ops) )
-			return $new_ops;
-		
 		if ( !is_object($ops) )
 			$ops = new stdClass;
 		
@@ -639,9 +695,7 @@ class version_checker {
 		
 		$ops->response = array_merge($ops->response, version_checker::get_plugins($ops->checked));
 		
-		$new_ops = $ops;
-		
-		return $new_ops;
+		return $ops;
 	} # update_plugins()
 	
 	

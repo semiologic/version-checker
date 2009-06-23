@@ -131,7 +131,7 @@ class sem_api_key {
 			if ( !$membership['expires'] ) {
 				echo __('Never expires', 'version-checker');
 			} elseif ( !version_checker::check($slug) ) {
-				echo sprintf(__('Expired %1$s - <a href="%2$s">Renew</a>'),
+				echo sprintf(__('Expired %1$s - <a href="%2$s">Renew</a>', 'version-checker'),
 					date_i18n('F j, Y', strtotime($membership['expires'])),
 					'http://oldbackend.semiologic.com/memberships.php'
 						. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
@@ -141,7 +141,7 @@ class sem_api_key {
 					'http://oldbackend.semiologic.com/memberships.php'
 						. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
 			} else {
-				echo sprintf(__('Expires %s'), date_i18n('F j, Y', strtotime($membership['expires'])));
+				echo sprintf(__('Expires %s', 'version-checker'), date_i18n('F j, Y', strtotime($membership['expires'])));
 			}
 			
 			echo '</td>' . "\n"
@@ -162,10 +162,10 @@ class sem_api_key {
 			. sprintf(__('Your Semiologic API key entitles you (as an individual Semiologic customer) to software updates from semiologic.com for as long as you\'ve a running membership.  You\'ll find your API Key in the <a href="%s">Semiologic back-end</a>.', 'version-checker'), 'http://oldbackend.semiologic.com' . ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ) )
 			. '</p>' . "\n"
 			. '<p>'
-			. sprintf(__('The software itself will of course continue to work normally when your membership expires. Upgrades from semiologic.com will merely cease to work. It is, however, <a href="%s">highly recommended</a> that you keep your site up to date at all times.', 'version-checker'), 'http://www.semiologic.com/resources/wp-basics/why-upgrade/')
+			. sprintf(__('The software itself will of course continue to work normally when your membership expires. Upgrades from semiologic.com will merely cease to work. It is <a href="%s">highly recommended</a> that you keep your site up to date at all times.', 'version-checker'), 'http://www.semiologic.com/resources/wp-basics/why-upgrade/')
 			. '</p>' . "\n"
 			. '<p>'
-			. __('Please do not share your API key, or use it for the benefit of others. It is a password in every respect, and you\'d be breaching our terms of use. If you or your organization aren\'t a site\'s primary user, that site should not be using your API key.', 'version-checker')
+			. __('Please do not share your API key, or use it for the benefit of others. It is a password in every respect, and you\'d be breaching our terms of use. If you or your organization aren\'t a site\'s primary user, that site should not be using a separate API key.', 'version-checker')
 			. '</p>' . "\n"
 			. '<p>'
 			. sprintf(__('Please <a href="%s">email sales</a> or skype Denis (ddebernardy) for any further information.', 'version-checker'), 'mailto:sales@semiologic.com')

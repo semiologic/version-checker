@@ -1,0 +1,205 @@
+# Version Checker pot file.
+# Copyright (C) 2009 Mesoconcepts <http://www.mesoconcepts.com>
+# This file is distributed under the same license as the Version Checker package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 2.0\n"
+"Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
+"POT-Creation-Date: 2009-06-23 17:20+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: core.php:52
+msgid "Upgrade WordPress"
+msgstr ""
+
+#: core.php:52
+msgid "Upgrade Semiologic Pro"
+msgstr ""
+
+#: core.php:53
+msgid "You are using a development version of WordPress."
+msgstr ""
+
+#: core.php:53
+msgid "You are using a development version of Semiologic Pro."
+msgstr ""
+
+#: core.php:54
+msgid "There is a new version of WordPress available for upgrade"
+msgstr ""
+
+#: core.php:54
+msgid "There is a new version of Semiologic Pro available for upgrade"
+msgstr ""
+
+#: core.php:55
+msgid "You have the latest version of WordPress."
+msgstr ""
+
+#: core.php:55
+msgid "You have the latest version of Semiologic Pro."
+msgstr ""
+
+#: plugins.php:42
+msgid "Compatible with the latest version of WordPress."
+msgstr ""
+
+#: sem-api-key.php:45
+msgid "Settings saved."
+msgstr ""
+
+#: sem-api-key.php:66 version-checker.php:729 version-checker.php:730
+msgid "Semiologic API Key"
+msgstr ""
+
+#: sem-api-key.php:76
+msgid "API Key"
+msgstr ""
+
+#: sem-api-key.php:87
+msgid "Packages"
+msgstr ""
+
+#: sem-api-key.php:91
+msgid "Keep WordPress, themes and plugins updated using:"
+msgstr ""
+
+#: sem-api-key.php:100
+msgid "Stable packages from wordpress.org and semiologic.com (recommended)"
+msgstr ""
+
+#: sem-api-key.php:109
+msgid ""
+"Stable packages from wordpress.org, and bleeding edge packages from "
+"semiologic.com (for test sites)"
+msgstr ""
+
+#: sem-api-key.php:119
+msgid "Memberships"
+msgstr ""
+
+#: sem-api-key.php:132
+msgid "Never expires"
+msgstr ""
+
+#: sem-api-key.php:134
+#, php-format
+msgid "Expired %1$s - <a href=\"%2$s\">Renew</a>"
+msgstr ""
+
+#: sem-api-key.php:139
+#, php-format
+msgid "Expires %1$s - <a href=\"%2$s\">Renew</a>"
+msgstr ""
+
+#: sem-api-key.php:144
+#, php-format
+msgid "Expires %s"
+msgstr ""
+
+#: sem-api-key.php:158
+msgid "FAQ"
+msgstr ""
+
+#: sem-api-key.php:162
+#, php-format
+msgid ""
+"Your Semiologic API key entitles you (as an individual Semiologic customer) "
+"to software updates from semiologic.com for as long as you've a running "
+"membership.  You'll find your API Key in the <a href=\"%s\">Semiologic back-"
+"end</a>."
+msgstr ""
+
+#: sem-api-key.php:165
+#, php-format
+msgid ""
+"The software itself will of course continue to work normally when your "
+"membership expires. Upgrades from semiologic.com will merely cease to work. "
+"It is <a href=\"%s\">highly recommended</a> that you keep your site up to "
+"date at all times."
+msgstr ""
+
+#: sem-api-key.php:168
+msgid ""
+"Please do not share your API key, or use it for the benefit of others. It is "
+"a password in every respect, and you'd be breaching our terms of use. If you "
+"or your organization aren't a site's primary user, that site should not be "
+"using a separate API key."
+msgstr ""
+
+#: sem-api-key.php:171
+#, php-format
+msgid ""
+"Please <a href=\"%s\">email sales</a> or skype Denis (ddebernardy) for any "
+"further information."
+msgstr ""
+
+#: sem-api-key.php:180
+msgid "Save Changes"
+msgstr ""
+
+#: version-checker.php:126
+#, php-format
+msgid ""
+"Semiologic Pro %1$s is available! <a href=\"%2$s\">Please update now</a>."
+msgstr ""
+
+#: version-checker.php:130
+#, php-format
+msgid ""
+"Browse <a href=\"%1$s\">Tools / Upgrade</a> to install Semiologic Pro %2$s."
+msgstr ""
+
+#: version-checker.php:135
+#, php-format
+msgid ""
+"WordPress %1$s is available! Be wary of not <a href=\"%2$s\">upgrading</a> "
+"before checking your plugin and theme compatibility."
+msgstr ""
+
+#: version-checker.php:163
+#, php-format
+msgid "<a href=\"%1$s\">Semiologic Pro</a> Version %2$s"
+msgstr ""
+
+#: version-checker.php:177
+#, php-format
+msgid ""
+"You are using a development version of Semiologic Pro (%1$s). Cool! Please "
+"<a href=\"%2$s\">stay updated</a>."
+msgstr ""
+
+#: version-checker.php:181
+#, php-format
+msgid "<a href=\"%1$s\">Get Semiologic Pro Version %2$s</a>"
+msgstr ""
+
+#: version-checker.php:186
+#, php-format
+msgid "Semiologic Pro Version %s"
+msgstr ""
+
+#: version-checker.php:206
+#, php-format
+msgid "Thank you for creating with <a href=\"%s\">Semiologic Pro</a>."
+msgstr ""
+
+#: version-checker.php:208
+msgid "<a href=\"http://www.semiologic.com/resources/\">Resources</a>"
+msgstr ""
+
+#: version-checker.php:210
+msgid "<a href=\"http://forum.semiologic.com\">Community</a>"
+msgstr ""
+
+#: version-checker.php:747
+msgid "The Version Checker plugin requires WP 2.8 or later."
+msgstr ""
