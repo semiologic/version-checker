@@ -244,7 +244,7 @@ class version_checker {
 		$sem_api_key = get_option('sem_api_key');
 		
 		if ( !$sem_api_key )
-			return array();
+			wp_die(__('The Url you\'ve tried to access is restricted. Please enter your Semiologic API key.', 'version_checker'));
 		
 		$cookies = get_transient('sem_cookies');
 		
@@ -268,8 +268,10 @@ class version_checker {
 		
 		$raw_response = wp_remote_post($url, $options);
 		
-		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] ) {
-			return array();
+		if ( is_wp_error($raw_response) ) {
+			wp_die($raw_response);
+		} elseif ( 200 != $raw_response['response']['code'] ) {
+			wp_die(__('An error occurred while trying to authenticate you on Semiologic.com in order to access a members-only package. More often than not, this will be due to a network problem (e.g., semiologic.com is very busy) or an incorrect API key.', 'version_checker'));
 		} else {
 			$cookies = $raw_response['cookies'];
 			set_transient('sem_cookies', $cookies, 1800); // half hour
@@ -334,6 +336,7 @@ class version_checker {
 		$body = array(
 			'php_version' => phpversion(),
 			'mysql_version' => $wpdb->db_version(),
+			'locale' => apply_filters( 'core_version_check_locale', get_locale() ),
 			);
 		
 		$options = array(
@@ -418,6 +421,7 @@ class version_checker {
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
+			'locale' => apply_filters( 'core_version_check_locale', get_locale() ),
 			);
 	
 		$options = array(
@@ -529,6 +533,7 @@ class version_checker {
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
+			'locale' => apply_filters( 'core_version_check_locale', get_locale() ),
 			);
 		
 		$options = array(
@@ -646,6 +651,7 @@ class version_checker {
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
+			'locale' => apply_filters( 'core_version_check_locale', get_locale() ),
 			);
 		
 		$options = array(
