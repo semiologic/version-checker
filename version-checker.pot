@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-06-23 17:20+0200\n"
+"POT-Creation-Date: 2009-07-07 23:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "Settings saved."
 msgstr ""
 
-#: sem-api-key.php:66 version-checker.php:729 version-checker.php:730
+#: sem-api-key.php:66 version-checker.php:735 version-checker.php:736
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -200,6 +200,20 @@ msgstr ""
 msgid "<a href=\"http://forum.semiologic.com\">Community</a>"
 msgstr ""
 
-#: version-checker.php:747
+#: version-checker.php:247
+msgid ""
+"The Url you've tried to access is restricted. Please enter your Semiologic "
+"API key."
+msgstr ""
+
+#: version-checker.php:274
+msgid ""
+"An error occurred while trying to authenticate you on Semiologic.com in "
+"order to access a members-only package. More often than not, this will be "
+"due to a network problem (e.g., semiologic.com is very busy) or an incorrect "
+"API key."
+msgstr ""
+
+#: version-checker.php:753
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""
