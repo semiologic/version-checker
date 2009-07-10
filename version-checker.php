@@ -121,7 +121,7 @@ class version_checker {
 		if ( ! isset( $cur->response ) || $cur->response != 'upgrade' || !current_user_can('manage_options') )
 			return false;
 		
-		if ( isset($cur->response) && isset($cur->package) ) {
+		if ( isset($cur->response) && isset($cur->package) && version_checker::check('sem-pro') ) {
 			if ( get_option('sem_pro_version') ) {
 				$msg = sprintf(__('Semiologic Pro %1$s is available! <a href="%2$s">Please update now</a>.', 'version-checker'),
 					$cur->current,
