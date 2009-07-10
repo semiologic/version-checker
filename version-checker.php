@@ -111,17 +111,17 @@ class version_checker {
 		
 		if ( 'update-core.php' == $pagenow || !current_user_can('manage_options')
 			|| 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
-			return;
+			return false;
 		
 		if ( 'settings_page_sem-api-key' == $page_hook && $_POST )
 			wp_version_check();
 		
 		$cur = get_preferred_from_update_core();
 		
-		if ( ! isset( $cur->response ) || $cur->response != 'upgrade' || !current_user_can('manage_options') )
+		if ( !isset($cur->response) || !isset($cur->package) || $cur->response != 'upgrade' || !current_user_can('manage_options') )
 			return false;
 		
-		if ( isset($cur->response) && isset($cur->package) && version_checker::check('sem-pro') ) {
+		if ( version_checker::check('sem-pro') ) {
 			if ( get_option('sem_pro_version') ) {
 				$msg = sprintf(__('Semiologic Pro %1$s is available! <a href="%2$s">Please update now</a>.', 'version-checker'),
 					$cur->current,
