@@ -91,6 +91,9 @@ class sem_api_key {
 				. sprintf(__('Frequently, HTTP errors will be related to your server configuration and should be reported to your host. In the event that the issue is related to semiologic.com (e.g. failed to contact host), please report it in the <a href="%s">Semiologic forum</a>.', 'version-checker'), 'http://forum.semiologic.com')
 				. '</p>' . "\n";
 			
+			echo '<p>'
+				. __('Note for worried users: the above errors do prevent the software from working; it\'s just not receiving update notifications.', 'version-checker')
+			
 			echo '</div>' . "\n";
 		}
 		
