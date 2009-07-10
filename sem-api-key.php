@@ -93,6 +93,7 @@ class sem_api_key {
 			
 			echo '<p>'
 				. __('Note for worried users: the above errors do prevent the software from working; it\'s just not receiving update notifications.', 'version-checker')
+				. '</p>' . "\n";
 			
 			echo '</div>' . "\n";
 		}
