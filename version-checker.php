@@ -347,6 +347,11 @@ class version_checker {
 		
 		$raw_response = wp_remote_post($url, $options);
 		
+		if ( is_wp_error($raw_response) )
+			set_transient('sem_api_error', $raw_response->get_error_messages());
+		else
+			delete_transient('sem_api_error');
+		
 		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
 			$response = false;
 		else
@@ -434,6 +439,11 @@ class version_checker {
 		);
 	
 		$raw_response = wp_remote_post($url, $options);
+		
+		if ( is_wp_error($raw_response) )
+			set_transient('sem_api_error', $raw_response->get_error_messages());
+		else
+			delete_transient('sem_api_error');
 		
 		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
 			$response = false;
@@ -548,6 +558,11 @@ class version_checker {
 		);
 		
 		$raw_response = wp_remote_post($url, $options);
+		
+		if ( is_wp_error($raw_response) )
+			set_transient('sem_api_error', $raw_response->get_error_messages());
+		else
+			delete_transient('sem_api_error');
 		
 		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
 			$response = false;
@@ -668,6 +683,11 @@ class version_checker {
 		);
 		
 		$raw_response = wp_remote_post($url, $options);
+		
+		if ( is_wp_error($raw_response) )
+			set_transient('sem_api_error', $raw_response->get_error_messages());
+		else
+			delete_transient('sem_api_error');
 		
 		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
 			$response = false;

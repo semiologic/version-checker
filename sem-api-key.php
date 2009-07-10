@@ -65,11 +65,37 @@ class sem_api_key {
 		
 		echo '<h2>' . __('Semiologic API Key', 'version-checker') . '</h2>' . "\n";
 		
-		echo '<table class="form-table">' . "\n";
-		
 		$sem_api_key = get_option('sem_api_key');
 		$sem_packages = get_option('sem_packages');
 		$memberships = version_checker::get_memberships();
+		$sem_api_error = get_transient('sem_api_error');
+		
+		if ( $sem_api_error ) {
+			echo '<div class="error">' . "\n";
+			
+			echo '<p>'
+				. __('The following HTTP errors occurred while trying to access api.semiologic.com:', 'version-checker')
+				. '</p>' . "\n";
+			
+			echo '<ul class="ul-disc">' . "\n";
+			
+			foreach ( $sem_api_error as $error ) {
+				echo '<li>'
+					. $error
+					. '</li>' . "\n";
+			}
+			
+			echo '</ul>' . "\n";
+			
+			echo '<p>'
+				. sprintf(__('Frequently, HTTP errors will be related to your server configuration and should be reported to your host. In the event that the issue is related to semiologic.com (e.g. failed to contact host), please report it in the <a href="%s">Semiologic forum</a>.', 'version-checker'), 'http://forum.semiologic.com')
+				. '</p>' . "\n";
+			
+			echo '</div>' . "\n";
+		}
+		
+		
+		echo '<table class="form-table">' . "\n";
 		
 		echo '<tr>' . "\n"
 			. '<th scope="row">'
@@ -168,7 +194,7 @@ class sem_api_key {
 			. __('Please do not share your API key, or use it for the benefit of others. It is a password in every respect, and you\'d be breaching our terms of use. If you or your organization aren\'t a site\'s primary user, that site should not be using a separate API key.', 'version-checker')
 			. '</p>' . "\n"
 			. '<p>'
-			. sprintf(__('Please <a href="%s">email sales</a> or skype Denis (ddebernardy) for any further information.', 'version-checker'), 'mailto:sales@semiologic.com')
+			. sprintf(__('Please <a href="%s">email sales</a> or catch Denis on Skype or YIM (ID is ddebernardy on both) for any further information.', 'version-checker'), 'mailto:sales@semiologic.com')
 			. '</p>' . "\n"
 			. '</td>' . "\n"
 			. '</tr>' . "\n";
