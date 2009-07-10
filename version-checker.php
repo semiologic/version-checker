@@ -418,6 +418,9 @@ class version_checker {
 		
 		$check = array('sem-pro' => $sem_pro_version);
 		
+		$obj->checked = $check;
+		set_transient('sem_update_core', $obj);
+		
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
@@ -438,7 +441,6 @@ class version_checker {
 			$response = @unserialize($raw_response['body']);
 	
 		if ( $response !== false ) { // keep old response in case of error
-			$obj->checked = $check;
 			$obj->response = $response;
 			set_transient('sem_update_core', $obj);
 		}
@@ -530,6 +532,9 @@ class version_checker {
 		foreach ( $to_check as $themes )
 			$check[$themes['Stylesheet']] = $themes['Version'];
 		
+		$obj->checked = $check;
+		set_transient('sem_update_themes', $obj);
+		
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
@@ -555,7 +560,6 @@ class version_checker {
 					unset($response[$key]->package);
 				$response[$key] = (array) $package;
 			}
-			$obj->checked = $check;
 			$obj->response = $response;
 			set_transient('sem_update_themes', $obj);
 		}
@@ -648,6 +652,9 @@ class version_checker {
 		foreach ( $to_check as $file => $plugin )
 			$check[$file] = $plugin['Version'];
 		
+		$obj->checked = $check;
+		set_transient('sem_update_plugins', $obj);
+		
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
@@ -668,7 +675,6 @@ class version_checker {
 			$response = @unserialize($raw_response['body']);
 		
 		if ( $response !== false ) { // keep old response in case of error
-			$obj->checked = $check;
 			$obj->response = $response;
 			set_transient('sem_update_plugins', $obj);
 		}
