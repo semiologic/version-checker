@@ -20,7 +20,7 @@ http://www.mesoconcepts.com/license/
 **/
 
 
-load_plugin_textdomain('version-checker', null, dirname(__FILE__) . '/lang');
+load_plugin_textdomain('version-checker', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
 if ( !defined('sem_version_checker_debug') )
 	define('sem_version_checker_debug', false);
