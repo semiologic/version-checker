@@ -514,7 +514,7 @@ class version_checker {
 			$timeout = 43200;
 		}
 		
-		if ( is_array($checked) && $checked != $obj->checked )
+		if ( is_array($checked) && $checked && $checked != $obj->checked )
 			$timeout = 0;
 		
 		if ( $obj->last_checked >= time() - $timeout )
@@ -639,7 +639,7 @@ class version_checker {
 			$timeout = 43200;
 		}
 		
-		if ( is_array($checked) && $checked != $obj->checked )
+		if ( is_array($checked) && $checked && $checked != $obj->checked )
 			$timeout = 0;
 		
 		if ( $obj->last_checked >= time() - $timeout )
