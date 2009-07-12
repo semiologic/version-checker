@@ -229,6 +229,7 @@ class version_checker {
 		$cookies = version_checker::get_auth();
 		
 		$args['cookies'] = array_merge((array) $args['cookies'], $cookies);
+		$args['timeout'] = 180;
 		
 		return $args;
 	} # http_request_args()
