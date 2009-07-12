@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-07-07 23:06+0200\n"
+"POT-Creation-Date: 2009-07-12 14:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,60 +56,80 @@ msgstr ""
 msgid "Settings saved."
 msgstr ""
 
-#: sem-api-key.php:66 version-checker.php:735 version-checker.php:736
+#: sem-api-key.php:66 version-checker.php:762 version-checker.php:763
 msgid "Semiologic API Key"
 msgstr ""
 
-#: sem-api-key.php:76
-msgid "API Key"
-msgstr ""
-
-#: sem-api-key.php:87
-msgid "Packages"
+#: sem-api-key.php:77
+msgid ""
+"The following HTTP errors occurred while trying to access api.semiologic.com:"
 msgstr ""
 
 #: sem-api-key.php:91
+#, php-format
+msgid ""
+"Frequently, HTTP errors will be related to your server configuration and "
+"should be reported to your host. In the event that the issue is related to "
+"semiologic.com (e.g. failed to contact host), please report it in the <a "
+"href=\"%s\">Semiologic forum</a>."
+msgstr ""
+
+#: sem-api-key.php:95
+msgid ""
+"Note for worried users: the above errors do prevent the software from "
+"working; it's just not receiving update notifications."
+msgstr ""
+
+#: sem-api-key.php:106
+msgid "API Key"
+msgstr ""
+
+#: sem-api-key.php:117
+msgid "Packages"
+msgstr ""
+
+#: sem-api-key.php:121
 msgid "Keep WordPress, themes and plugins updated using:"
 msgstr ""
 
-#: sem-api-key.php:100
+#: sem-api-key.php:130
 msgid "Stable packages from wordpress.org and semiologic.com (recommended)"
 msgstr ""
 
-#: sem-api-key.php:109
+#: sem-api-key.php:139
 msgid ""
 "Stable packages from wordpress.org, and bleeding edge packages from "
 "semiologic.com (for test sites)"
 msgstr ""
 
-#: sem-api-key.php:119
+#: sem-api-key.php:149
 msgid "Memberships"
 msgstr ""
 
-#: sem-api-key.php:132
+#: sem-api-key.php:162
 msgid "Never expires"
 msgstr ""
 
-#: sem-api-key.php:134
+#: sem-api-key.php:164
 #, php-format
 msgid "Expired %1$s - <a href=\"%2$s\">Renew</a>"
 msgstr ""
 
-#: sem-api-key.php:139
+#: sem-api-key.php:169
 #, php-format
 msgid "Expires %1$s - <a href=\"%2$s\">Renew</a>"
 msgstr ""
 
-#: sem-api-key.php:144
+#: sem-api-key.php:174
 #, php-format
 msgid "Expires %s"
 msgstr ""
 
-#: sem-api-key.php:158
+#: sem-api-key.php:188
 msgid "FAQ"
 msgstr ""
 
-#: sem-api-key.php:162
+#: sem-api-key.php:192
 #, php-format
 msgid ""
 "Your Semiologic API key entitles you (as an individual Semiologic customer) "
@@ -118,7 +138,7 @@ msgid ""
 "end</a>."
 msgstr ""
 
-#: sem-api-key.php:165
+#: sem-api-key.php:195
 #, php-format
 msgid ""
 "The software itself will of course continue to work normally when your "
@@ -127,7 +147,7 @@ msgid ""
 "date at all times."
 msgstr ""
 
-#: sem-api-key.php:168
+#: sem-api-key.php:198
 msgid ""
 "Please do not share your API key, or use it for the benefit of others. It is "
 "a password in every respect, and you'd be breaching our terms of use. If you "
@@ -135,15 +155,25 @@ msgid ""
 "using a separate API key."
 msgstr ""
 
-#: sem-api-key.php:171
+#: sem-api-key.php:201
 #, php-format
 msgid ""
-"Please <a href=\"%s\">email sales</a> or skype Denis (ddebernardy) for any "
-"further information."
+"Please <a href=\"%s\">email sales</a>, or catch Denis on Skype or YIM (ID is "
+"ddebernardy on both), for any further information."
 msgstr ""
 
-#: sem-api-key.php:180
+#: sem-api-key.php:210
 msgid "Save Changes"
+msgstr ""
+
+#: version-checker-info.php:2
+msgid "Version Checker"
+msgstr ""
+
+#: version-checker-info.php:3
+msgid ""
+"Allows to update plugins, themes, and Semiologic Pro using packages from "
+"semiologic.com"
 msgstr ""
 
 #: version-checker.php:126
@@ -200,13 +230,13 @@ msgstr ""
 msgid "<a href=\"http://forum.semiologic.com\">Community</a>"
 msgstr ""
 
-#: version-checker.php:247
+#: version-checker.php:248
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:274
+#: version-checker.php:275
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -214,6 +244,6 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:753
+#: version-checker.php:780
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""

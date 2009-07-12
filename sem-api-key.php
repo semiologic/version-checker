@@ -198,7 +198,7 @@ class sem_api_key {
 			. __('Please do not share your API key, or use it for the benefit of others. It is a password in every respect, and you\'d be breaching our terms of use. If you or your organization aren\'t a site\'s primary user, that site should not be using a separate API key.', 'version-checker')
 			. '</p>' . "\n"
 			. '<p>'
-			. sprintf(__('Please <a href="%s">email sales</a> or catch Denis on Skype or YIM (ID is ddebernardy on both) for any further information.', 'version-checker'), 'mailto:sales@semiologic.com')
+			. sprintf(__('Please <a href="%s">email sales</a>, or catch Denis on Skype or YIM (ID is ddebernardy on both), for any further information.', 'version-checker'), 'mailto:sales@semiologic.com')
 			. '</p>' . "\n"
 			. '</td>' . "\n"
 			. '</tr>' . "\n";

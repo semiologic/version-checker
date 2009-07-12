@@ -2,8 +2,8 @@
 /*
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
-Description: Allows to update plugins and themes from semiologic.com through the WordPress API.
-Version: 2.0 beta
+Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
+Version: 2.0 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -174,7 +174,7 @@ class version_checker {
 		
 		switch ( $cur->response ) {
 		case 'development':
-			return sprintf(__( 'You are using a development version of Semiologic Pro (%1$s). Cool! Please <a href="%2$s">stay updated</a>.', 'version-checker'), $sem_pro_version, 'update-core.php');
+			return sprintf(__('You are using a development version of Semiologic Pro (%1$s). Cool! Please <a href="%2$s">stay updated</a>.', 'version-checker'), $sem_pro_version, 'update-core.php');
 		
 		case 'upgrade':
 			if ( current_user_can('manage_options') ) {
@@ -183,7 +183,7 @@ class version_checker {
 
 		case 'latest':
 		default:
-			return sprintf(__( 'Semiologic Pro Version %s', 'version-checker'), $sem_pro_version);
+			return sprintf(__('Semiologic Pro Version %s', 'version-checker'), $sem_pro_version);
 		}
 	} # core_update_footer()
 	
@@ -337,7 +337,7 @@ class version_checker {
 		$body = array(
 			'php_version' => phpversion(),
 			'mysql_version' => $wpdb->db_version(),
-			'locale' => apply_filters( 'core_version_check_locale', get_locale() ),
+			'locale' => apply_filters('core_version_check_locale', get_locale()),
 			);
 		
 		$options = array(
@@ -364,7 +364,7 @@ class version_checker {
 				delete_transient('sem_update_themes');
 				delete_transient('sem_update_plugins');
 			}
-				
+			
 			$obj->response = $response;
 			set_transient('sem_memberships', $obj);
 		}
@@ -430,7 +430,7 @@ class version_checker {
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
-			'locale' => apply_filters( 'core_version_check_locale', get_locale() ),
+			'locale' => apply_filters('core_version_check_locale', get_locale()),
 			);
 	
 		$options = array(
@@ -549,7 +549,7 @@ class version_checker {
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
-			'locale' => apply_filters( 'core_version_check_locale', get_locale() ),
+			'locale' => apply_filters('core_version_check_locale', get_locale()),
 			);
 		
 		$options = array(
@@ -674,7 +674,7 @@ class version_checker {
 		$body = array(
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
-			'locale' => apply_filters( 'core_version_check_locale', get_locale() ),
+			'locale' => apply_filters('core_version_check_locale', get_locale()),
 			);
 		
 		$options = array(
