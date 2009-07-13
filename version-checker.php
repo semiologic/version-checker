@@ -76,6 +76,11 @@ if ( is_admin() && function_exists('get_transient') ) {
 	
 	add_filter('http_request_args', array('version_checker', 'http_request_args'), 10, 2);
 	add_action('admin_init', array('version_checker', 'init'));
+	
+	add_action('admin_head', array('version_checker', 'twitter_css'));
+	add_action('edit_user_profile', array('version_checker', 'edit_twitter_prefs'));
+	add_action('show_user_profile', array('version_checker', 'edit_twitter_prefs'));
+	add_action('profile_update', array('version_checker', 'save_twitter_prefs'));
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
 }
@@ -111,7 +116,7 @@ class version_checker {
 		
 		if ( 'update-core.php' == $pagenow || !current_user_can('manage_options')
 			|| 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
-			return false;
+			return version_checker::twitter_feed();
 		
 		if ( 'settings_page_sem-api-key' == $page_hook && $_POST )
 			wp_version_check();
@@ -119,7 +124,7 @@ class version_checker {
 		$cur = get_preferred_from_update_core();
 		
 		if ( !isset($cur->response) || !isset($cur->package) || $cur->response != 'upgrade' || !current_user_can('manage_options') )
-			return false;
+			return version_checker::twitter_feed();
 		
 		if ( version_checker::check('sem-pro') ) {
 			if ( get_option('sem_pro_version') ) {
@@ -141,6 +146,113 @@ class version_checker {
 			. $msg
 			. '</div>' . "\n";
 	} # update_nag()
+	
+	
+	/**
+	 * twitter_css()
+	 *
+	 * @return void
+	 **/
+
+	function twitter_css() {
+		$pref = get_user_option('sem_news');
+		
+		if ( $pref !== false && $pref == 'false' )
+			return;
+		
+		$border = ( 'rtl' == get_bloginfo( 'text_direction' ) ) ? 'left' : 'right';
+		
+		echo <<<EOS
+<style type="text/css">
+#sem_twitter {
+	position: absolute;
+	top: 4.5em;
+	margin: 0;
+	padding: 0;
+	$border: 215px;
+	font-size: 11px;
+}
+
+#hello {
+	display: none;
+}
+</style>
+EOS;
+		
+	} # twitter_css()
+	
+	
+	/**
+	 * twitter_feed()
+	 *
+	 * @return bool false
+	 **/
+
+	function twitter_feed() {
+		$pref = get_user_option('sem_news');
+		
+		if ( $pref !== false && $pref == 'false' )
+			return;
+		
+		$feed = fetch_feed('http://twitter.com/statuses/user_timeline/40258666.rss');
+		
+		if ( is_wp_error($feed) || !$feed->get_item_quantity() )
+			return;
+		
+		foreach ( $feed->get_items(0,1) as $item ) {
+			echo '<div id="sem_twitter">' . "\n"
+				. sprintf(__('<a href="%1$s" title="Semiologic Development News" onclick="window.open(this.href); return false;">Dev News</a>: %2$s', 'version-checker'),  esc_url(strip_tags($feed->get_permalink())), @html_entity_decode(str_replace('ddebernardy: ', '', $item->get_description()), ENT_QUOTES, get_option('blog_charset')))
+				. '</div>' . "\n";
+		}
+		
+		return false;
+	} # twitter_feed()
+	
+	
+	/**
+	 * edit_twitter_prefs()
+	 *
+	 * @return void
+	 **/
+
+	function edit_twitter_prefs() {
+		echo '<h3>'
+			. __('Semiologic Development News', 'version-checker')
+			. '</h3>' . "\n";
+		
+		$pref = get_user_option('sem_news');
+		
+		echo '<table class="form-table">' . "\n"
+			. '<tr>'
+			. '<th>'
+			. __('Semiologic Development News', 'version-checker')
+			. '</th>' . "\n"
+			. '<td>'
+			. '<label>'
+			. '<input type="checkbox" name="sem_news"'
+				. checked($pref === false || $pref == 'true', true, false)
+				. ' />'
+			. '&nbsp;'
+			. __('Keep me updated with Semiologic Development News when browsing the admin area.', 'version-checker')
+			. '</label>'
+			. '</td>'
+			. '</tr>' . "\n"
+			. '</table>' . "\n";
+	} # edit_twitter_prefs()
+	
+	
+	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 **/
+
+	function save_twitter_prefs($user_ID) {
+		if ( !$_POST )
+			return;
+		
+		update_user_option($user_ID, 'sem_news', isset($_POST['sem_news']) ? 'true' : 'false', true);
+	} # save_twitter_prefs()
 	
 	
 	/**
