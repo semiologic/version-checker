@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-07-12 14:24+0200\n"
+"POT-Creation-Date: 2009-07-13 22:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "Settings saved."
 msgstr ""
 
-#: sem-api-key.php:66 version-checker.php:762 version-checker.php:763
+#: sem-api-key.php:66 version-checker.php:874 version-checker.php:875
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -176,67 +176,84 @@ msgid ""
 "semiologic.com"
 msgstr ""
 
-#: version-checker.php:126
+#: version-checker.php:131
 #, php-format
 msgid ""
 "Semiologic Pro %1$s is available! <a href=\"%2$s\">Please update now</a>."
 msgstr ""
 
-#: version-checker.php:130
+#: version-checker.php:135
 #, php-format
 msgid ""
 "Browse <a href=\"%1$s\">Tools / Upgrade</a> to install Semiologic Pro %2$s."
 msgstr ""
 
-#: version-checker.php:135
+#: version-checker.php:140
 #, php-format
 msgid ""
 "WordPress %1$s is available! Be wary of not <a href=\"%2$s\">upgrading</a> "
 "before checking your plugin and theme compatibility."
 msgstr ""
 
-#: version-checker.php:163
+#: version-checker.php:204
+#, php-format
+msgid ""
+"<a href=\"%1$s\" title=\"Semiologic Development News\" onclick=\"window.open"
+"(this.href); return false;\">Dev News</a>: %2$s"
+msgstr ""
+
+#: version-checker.php:220 version-checker.php:228
+msgid "Semiologic Development News"
+msgstr ""
+
+#: version-checker.php:236
+msgid ""
+"Keep me updated with Semiologic Development News when browsing the admin "
+"area."
+msgstr ""
+
+#: version-checker.php:275
 #, php-format
 msgid "<a href=\"%1$s\">Semiologic Pro</a> Version %2$s"
 msgstr ""
 
-#: version-checker.php:177
+#: version-checker.php:289
 #, php-format
 msgid ""
 "You are using a development version of Semiologic Pro (%1$s). Cool! Please "
 "<a href=\"%2$s\">stay updated</a>."
 msgstr ""
 
-#: version-checker.php:181
+#: version-checker.php:293
 #, php-format
 msgid "<a href=\"%1$s\">Get Semiologic Pro Version %2$s</a>"
 msgstr ""
 
-#: version-checker.php:186
+#: version-checker.php:298
 #, php-format
 msgid "Semiologic Pro Version %s"
 msgstr ""
 
-#: version-checker.php:206
+#: version-checker.php:318
 #, php-format
 msgid "Thank you for creating with <a href=\"%s\">Semiologic Pro</a>."
 msgstr ""
 
-#: version-checker.php:208
+#: version-checker.php:320
 msgid "<a href=\"http://www.semiologic.com/resources/\">Resources</a>"
 msgstr ""
 
-#: version-checker.php:210
+#: version-checker.php:322
 msgid "<a href=\"http://forum.semiologic.com\">Community</a>"
 msgstr ""
 
-#: version-checker.php:248
+#: version-checker.php:360
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:275
+#: version-checker.php:387
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -244,6 +261,6 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:780
+#: version-checker.php:892
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""
