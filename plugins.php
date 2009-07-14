@@ -30,7 +30,7 @@ class sem_update_plugins {
 				$res = new stdClass;
 				$res->version = $resp->new_version;
 				$res->author = !empty($plugin['AuthorURI'])
-					? ( '<a href="' . esc_url($plugin['AuthorURI']) .'">'
+					? ( '<a href="' . clean_url($plugin['AuthorURI']) .'">'
 						. strip_tags($plugin['Author'])
 						. '</a>' )
 					: strip_tags($plugin['Author']);

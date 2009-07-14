@@ -201,7 +201,7 @@ EOS;
 		
 		foreach ( $feed->get_items(0,1) as $item ) {
 			echo '<div id="sem_twitter">' . "\n"
-				. sprintf(__('<a href="%1$s" title="Semiologic Development News" onclick="window.open(this.href); return false;">Dev News</a>: %2$s', 'version-checker'),  esc_url(strip_tags($feed->get_permalink())), @html_entity_decode(str_replace('ddebernardy: ', '', $item->get_description()), ENT_QUOTES, get_option('blog_charset')))
+				. sprintf(__('<a href="%1$s" title="Semiologic Development News" onclick="window.open(this.href); return false;">Dev News</a>: %2$s', 'version-checker'),  clean_url(strip_tags($feed->get_permalink())), @html_entity_decode(str_replace('ddebernardy: ', '', $item->get_description()), ENT_QUOTES, get_option('blog_charset')))
 				. '</div>' . "\n";
 		}
 		
