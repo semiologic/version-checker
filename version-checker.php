@@ -194,7 +194,9 @@ EOS;
 		if ( $pref !== false && $pref == 'false' )
 			return;
 		
+		add_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'twitter_timeout'));
 		$feed = fetch_feed('http://twitter.com/statuses/user_timeline/40258666.rss');
+		remove_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'twitter_timeout'));
 		
 		if ( is_wp_error($feed) || !$feed->get_item_quantity() )
 			return;
@@ -207,6 +209,17 @@ EOS;
 		
 		return false;
 	} # twitter_feed()
+	
+	
+	/**
+	 * twitter_timeout()
+	 *
+	 * @return void
+	 **/
+
+	function twitter_timeout($timeout) {
+		return 7200;
+	} # twitter_timeout()
 	
 	
 	/**
