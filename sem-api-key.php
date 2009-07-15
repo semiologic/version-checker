@@ -33,6 +33,7 @@ class sem_api_key {
 		update_option('sem_api_key', $sem_api_key);
 		update_option('sem_packages', $sem_packages);
 		
+		delete_transient('sem_api_error');
 		delete_transient('sem_memberships');
 		foreach ( array('core', 'themes', 'plugins') as $transient ) {
 			delete_transient('update_' . $transient);
@@ -74,7 +75,7 @@ class sem_api_key {
 			echo '<div class="error">' . "\n";
 			
 			echo '<p>'
-				. __('The following HTTP errors occurred while trying to access api.semiologic.com:', 'version-checker')
+				. __('The following errors occurred while trying to contact api.semiologic.com:', 'version-checker')
 				. '</p>' . "\n";
 			
 			echo '<ul class="ul-disc">' . "\n";
@@ -88,11 +89,47 @@ class sem_api_key {
 			echo '</ul>' . "\n";
 			
 			echo '<p>'
-				. sprintf(__('Frequently, HTTP errors will be related to your server configuration and should be reported to your host. In the event that the issue is related to semiologic.com (e.g. failed to contact host), please report it in the <a href="%s">Semiologic forum</a>.', 'version-checker'), 'http://forum.semiologic.com')
+				. __('To worried users: the above errors do NOT prevent your site from working in any way; they merely mean it failed to receive update notifications.', 'version-checker')
 				. '</p>' . "\n";
 			
 			echo '<p>'
-				. __('Note for worried users: the above errors do prevent the software from working; it\'s just not receiving update notifications.', 'version-checker')
+				. __('Frequently, HTTP errors will be related to your server\'s configuration, and should be reported to your host. Before you do, however:', 'version-checker')
+				. '</p>' . "\n";
+			
+			echo '<ol>' . "\n";
+			
+			echo '<li>'
+				. sprintf(__('Install the <a href="%s">Core Control</a> plugin.', 'version-checker'), 'http://dd32.id.au/wordpress-plugins/?plugin=core-control')
+				. '</li>' . "\n";
+			
+			echo '<li>'
+				. __('Under Tools / Core Control, enable the HTTP Access Module.', 'version-checker')
+				. '</li>' . "\n";
+			
+			echo '<li>'
+				. __('Click &quot;External HTTP Access&quot; on the screen (the link is nearby the screen\'s title).', 'version-checker')
+				. '</li>' . "\n";
+			
+			echo '<li>'
+				. __('Disable the current HTTP transport. (It\'s probably not playing well with the secure http protocol, which is used to contact api.semiologic.com.)', 'version-checker')
+				. '</li>' . "\n";
+			
+			echo '<li>'
+				. __('Revisit this screen, and save changes to force a refresh.', 'version-checker')
+				. '</li>' . "\n";
+			
+			echo '<li>'
+				. __('Repeat the above steps if it\'s still failing, until you run out of available transports to try. (Oftentimes, at least one of them will succeed.)', 'version-checker')
+				. '</li>' . "\n";
+			
+			echo '<li>'
+				. __('Don\'t forget to re-enable the HTTP transports if they all fail.', 'version-checker')
+				. '</li>' . "\n";
+			
+			echo '</ol>' . "\n";
+			
+			echo '<p>'
+				. sprintf(__('In the event that the issue is clearly related to semiologic.com, please report it in the <a href="%s">Semiologic forum</a>.', 'version-checker'), 'http://forum.semiologic.com')
 				. '</p>' . "\n";
 			
 			echo '</div>' . "\n";
@@ -157,7 +194,7 @@ class sem_api_key {
 				. '</th>' . "\n"
 				. '<td>'
 				. '<table style="width: 100%; margin: 0px; padding: 0px;">' . "\n";
-
+			
 			foreach ( $memberships as $slug => $membership ) {
 				echo '<tr>'
 					. '<td>'
@@ -182,9 +219,8 @@ class sem_api_key {
 
 				echo '</td>' . "\n"
 					. '</tr>' . "\n";
-
 			}
-
+			
 			echo '</table>'
 				. '</td>' . "\n"
 				. '</tr>' . "\n";

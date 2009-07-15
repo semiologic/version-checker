@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-07-15 12:37+0200\n"
+"POT-Creation-Date: 2009-07-15 18:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,35 +16,150 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: core.php:52
+#: core.php:58
+msgid ""
+"This automated upgrade has been cancelled because it can result in your site "
+"getting deleted."
+msgstr ""
+
+#: core.php:62
+msgid ""
+"Your WordPress 2.8 installation has a critical bug (which is fixed in 2.8.1) "
+"whereby, if the automated upgrader fails while the files are being copied, "
+"the upgrader will <strong>delete</strong> all of your site's files "
+"(including your attachments, and other sites you may have in the same "
+"directory)."
+msgstr ""
+
+#: core.php:66
+#, php-format
+msgid ""
+"Download and edit your site's <code>%s</code> file using notepad; find this "
+"line in the Core_Upgrader class (around lines 650-710):"
+msgstr ""
+
+#: core.php:72
+msgid "Change it to:"
+msgstr ""
+
+#: core.php:78
+#, php-format
+msgid ""
+"Then, re-upload the file to your site and <a href=\"%s\">start over</a>. You "
+"will no longer see this warning if it's safe to proceed."
+msgstr ""
+
+#: core.php:94
+msgid "Some preemptive troubleshooting..."
+msgstr ""
+
+#: core.php:98
+msgid ""
+"Do not interrupt a core upgrade once it's started. It can take several "
+"minutes to complete - albeit never more than 10 minutes."
+msgstr ""
+
+#: core.php:102
+msgid ""
+"Frequently, failed upgrades will be related to your server's configuration, "
+"and should be reported to your host. Before you do, however:"
+msgstr ""
+
+#: core.php:108 sem-api-key.php:102
+#, php-format
+msgid "Install the <a href=\"%s\">Core Control</a> plugin."
+msgstr ""
+
+#: core.php:112
+msgid ""
+"Under Tools / Core Control, enable the HTTP Access and the Filesystem "
+"Modules."
+msgstr ""
+
+#: core.php:118
+msgid "If the download or the unzip is failing:"
+msgstr ""
+
+#: core.php:124 sem-api-key.php:110
+msgid ""
+"Click &quot;External HTTP Access&quot; on the screen (the link is nearby the "
+"screen's title)."
+msgstr ""
+
+#: core.php:128
+msgid "Disable the current HTTP transport."
+msgstr ""
+
+#: core.php:132
+msgid "Revisit this screen, and save try again."
+msgstr ""
+
+#: core.php:136 sem-api-key.php:122
+msgid ""
+"Repeat the above steps if it's still failing, until you run out of available "
+"transports to try. (Oftentimes, at least one of them will succeed.)"
+msgstr ""
+
+#: core.php:140 sem-api-key.php:126
+msgid "Don't forget to re-enable the HTTP transports if they all fail."
+msgstr ""
+
+#: core.php:146
+msgid ""
+"If the upgrade starts properly, but fails while the files are still being "
+"copied:"
+msgstr ""
+
+#: core.php:152
+msgid ""
+"Click &quot;Filesystem Access&quot; and verify that the PHP FTP Extension is "
+"not being used."
+msgstr ""
+
+#: core.php:156
+msgid ""
+"If it is, disable it, so that the PHP FTP Sockets method gets used instead."
+msgstr ""
+
+#: core.php:162
+msgid ""
+"Expanding on the previous point, many hosts configure servers in such a way "
+"that the FTP connection dies before WP upgrades completely. There is code in "
+"the Version Checker plugin that seeks to fix this, but it doesn't work on "
+"all servers. If you frequently experience FTP slowdowns or timeouts on your "
+"server, you may even want to disable the PHP FTP Extension without even "
+"trying it."
+msgstr ""
+
+#: core.php:212
 msgid "Upgrade WordPress"
 msgstr ""
 
-#: core.php:52
+#: core.php:212
 msgid "Upgrade Semiologic Pro"
 msgstr ""
 
-#: core.php:53
+#: core.php:213
 msgid "You are using a development version of WordPress."
 msgstr ""
 
-#: core.php:53
+#: core.php:213
 msgid "You are using a development version of Semiologic Pro."
 msgstr ""
 
-#: core.php:54
+#: core.php:214
 msgid "There is a new version of WordPress available for upgrade"
 msgstr ""
 
-#: core.php:54
+#: core.php:214
 msgid "There is a new version of Semiologic Pro available for upgrade"
 msgstr ""
 
-#: core.php:55
+#: core.php:215
 msgid "You have the latest version of WordPress."
 msgstr ""
 
-#: core.php:55
+#: core.php:215
 msgid "You have the latest version of Semiologic Pro."
 msgstr ""
 
@@ -52,81 +167,99 @@ msgstr ""
 msgid "Compatible with the latest version of WordPress."
 msgstr ""
 
-#: sem-api-key.php:45
+#: sem-api-key.php:46
 msgid "Settings saved."
 msgstr ""
 
-#: sem-api-key.php:66 sem-api-key.php:108 sem-api-key.php:110
+#: sem-api-key.php:67 sem-api-key.php:145 sem-api-key.php:147
 #: version-checker.php:919 version-checker.php:920
 msgid "Semiologic API Key"
 msgstr ""
 
-#: sem-api-key.php:77
+#: sem-api-key.php:78
 msgid ""
-"The following HTTP errors occurred while trying to access api.semiologic.com:"
+"The following errors occurred while trying to contact api.semiologic.com:"
 msgstr ""
 
-#: sem-api-key.php:91
+#: sem-api-key.php:92
+msgid ""
+"To worried users: the above errors do NOT prevent your site from working in "
+"any way; they merely mean it failed to receive update notifications."
+msgstr ""
+
+#: sem-api-key.php:96
+msgid ""
+"Frequently, HTTP errors will be related to your server's configuration, and "
+"should be reported to your host. Before you do, however:"
+msgstr ""
+
+#: sem-api-key.php:106
+msgid "Under Tools / Core Control, enable the HTTP Access Module."
+msgstr ""
+
+#: sem-api-key.php:114
+msgid ""
+"Disable the current HTTP transport. (It's probably not playing well with the "
+"secure http protocol, which is used to contact api.semiologic.com.)"
+msgstr ""
+
+#: sem-api-key.php:118
+msgid "Revisit this screen, and save changes to force a refresh."
+msgstr ""
+
+#: sem-api-key.php:132
 #, php-format
 msgid ""
-"Frequently, HTTP errors will be related to your server configuration and "
-"should be reported to your host. In the event that the issue is related to "
-"semiologic.com (e.g. failed to contact host), please report it in the <a "
-"href=\"%s\">Semiologic forum</a>."
+"In the event that the issue is clearly related to semiologic.com, please "
+"report it in the <a href=\"%s\">Semiologic forum</a>."
 msgstr ""
 
-#: sem-api-key.php:95
-msgid ""
-"Note for worried users: the above errors do prevent the software from "
-"working; it's just not receiving update notifications."
-msgstr ""
-
-#: sem-api-key.php:122
+#: sem-api-key.php:159
 msgid "Packages"
 msgstr ""
 
-#: sem-api-key.php:126
+#: sem-api-key.php:163
 msgid "Keep WordPress, themes and plugins updated using:"
 msgstr ""
 
-#: sem-api-key.php:135
+#: sem-api-key.php:172
 msgid "Stable packages from wordpress.org and semiologic.com (recommended)"
 msgstr ""
 
-#: sem-api-key.php:144
+#: sem-api-key.php:181
 msgid ""
 "Stable packages from wordpress.org, and bleeding edge packages from "
 "semiologic.com"
 msgstr ""
 
-#: sem-api-key.php:155
+#: sem-api-key.php:192
 msgid "Memberships"
 msgstr ""
 
-#: sem-api-key.php:168
+#: sem-api-key.php:205
 msgid "Never expires"
 msgstr ""
 
-#: sem-api-key.php:170
+#: sem-api-key.php:207
 #, php-format
 msgid "Expired %1$s - <a href=\"%2$s\">Renew</a>"
 msgstr ""
 
-#: sem-api-key.php:175
+#: sem-api-key.php:212
 #, php-format
 msgid "Expires %1$s - <a href=\"%2$s\">Renew</a>"
 msgstr ""
 
-#: sem-api-key.php:180
+#: sem-api-key.php:217
 #, php-format
 msgid "Expires %s"
 msgstr ""
 
-#: sem-api-key.php:195
+#: sem-api-key.php:231
 msgid "FAQ"
 msgstr ""
 
-#: sem-api-key.php:199
+#: sem-api-key.php:235
 #, php-format
 msgid ""
 "Your Semiologic API key entitles you (as an individual Semiologic customer) "
@@ -135,7 +268,7 @@ msgid ""
 "end</a>."
 msgstr ""
 
-#: sem-api-key.php:202
+#: sem-api-key.php:238
 #, php-format
 msgid ""
 "The software itself will of course continue to work normally when your "
@@ -144,7 +277,7 @@ msgid ""
 "date at all times."
 msgstr ""
 
-#: sem-api-key.php:205
+#: sem-api-key.php:241
 msgid ""
 "Please do not share your API key, or use it for the benefit of others. It is "
 "a password in every respect, and you'd be breaching our terms of use. If you "
@@ -152,14 +285,14 @@ msgid ""
 "using a separate API key."
 msgstr ""
 
-#: sem-api-key.php:208
+#: sem-api-key.php:244
 #, php-format
 msgid ""
 "Please <a href=\"%s\">email sales</a>, or catch Denis on Skype or YIM (ID is "
 "ddebernardy on both), for any further information."
 msgstr ""
 
-#: sem-api-key.php:217
+#: sem-api-key.php:253
 msgid "Save Changes"
 msgstr ""
 
