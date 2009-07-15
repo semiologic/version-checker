@@ -160,7 +160,7 @@ class version_checker {
 		if ( $pref !== false && $pref == 'false' )
 			return;
 		
-		$border = ( 'rtl' == get_bloginfo( 'text_direction' ) ) ? 'left' : 'right';
+		$position = ( 'rtl' == get_bloginfo( 'text_direction' ) ) ? 'left' : 'right';
 		
 		echo <<<EOS
 <style type="text/css">
@@ -169,7 +169,8 @@ class version_checker {
 	top: 4.5em;
 	margin: 0;
 	padding: 0;
-	$border: 215px;
+	$position: 215px;
+	width: 360px;
 	font-size: 11px;
 }
 
@@ -201,9 +202,13 @@ EOS;
 		if ( is_wp_error($feed) || !$feed->get_item_quantity() )
 			return;
 		
+		$dev_url = strip_tags($feed->get_permalink());
 		foreach ( $feed->get_items(0,1) as $item ) {
+			$content = @html_entity_decode(str_replace('ddebernardy: ', '', $item->get_description()), ENT_QUOTES, get_option('blog_charset'));
+			$content = make_clickable(strip_tags($content));
+			
 			echo '<div id="sem_twitter">' . "\n"
-				. sprintf(__('<a href="%1$s" title="Semiologic Development News" onclick="window.open(this.href); return false;">Dev News</a>: %2$s', 'version-checker'),  clean_url(strip_tags($feed->get_permalink())), @html_entity_decode(str_replace('ddebernardy: ', '', $item->get_description()), ENT_QUOTES, get_option('blog_charset')))
+				. sprintf(__('<a href="%1$s" title="Semiologic Development News" onclick="window.open(this.href); return false;">Dev News</a>: %2$s', 'version-checker'),  clean_url($dev_url), $content)
 				. '</div>' . "\n";
 		}
 		
@@ -218,7 +223,7 @@ EOS;
 	 **/
 
 	function twitter_timeout($timeout) {
-		return 7200;
+		return 3600;
 	} # twitter_timeout()
 	
 	
