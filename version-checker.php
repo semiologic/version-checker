@@ -123,8 +123,17 @@ class version_checker {
 		
 		$cur = get_preferred_from_update_core();
 		
-		if ( !isset($cur->response) || !isset($cur->package) || $cur->response != 'upgrade' || !current_user_can('manage_options') )
-			return version_checker::twitter_feed();
+		if ( !isset($cur->response) || !isset($cur->package) || $cur->response != 'upgrade' || !current_user_can('manage_options') ) {
+			if ( current_user_can('manage_options') ) {
+				if ( get_option('sem_api_key') )
+					version_checker::twitter_feed();
+				else
+					version_checker::api_key_nag();
+				return;
+			} else {
+				return;
+			}
+		}
 		
 		if ( version_checker::check('sem-pro') ) {
 			if ( get_option('sem_pro_version') ) {
@@ -146,6 +155,24 @@ class version_checker {
 			. $msg
 			. '</div>' . "\n";
 	} # update_nag()
+	
+	
+	/**
+	 * api_key_nag()
+	 *
+	 * @return void
+	 **/
+
+	function api_key_nag() {
+		if ( current_filter() == 'settings_page_sem-api-key' )
+			return;
+		
+		echo '<div class="error">' . "\n"
+			. '<p>'
+			. sprintf(__('Version Checker is almost ready. Please enter your <a href="%s">Semiologic API key</a> to receive update notifications.', 'version-checker'), 'options-general.php?page=sem-api-key')
+			. '</p>' . "\n"
+			. '</div>';
+	} # api_key_nag()
 	
 	
 	/**
