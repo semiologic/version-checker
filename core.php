@@ -82,7 +82,7 @@ class sem_update_core {
 				
 				ob_start(array('sem_update_core', 'wp_2_8_ob_callback'));
 				add_action('in_footer', array('sem_update_core', 'ob_flush'), -1000);
-			} elseif ( version_checker::check('sem-pro') || true ) {
+			} elseif ( version_checker::check('sem-pro') ) {
 				# give some extra resources to WP
 				if ( function_exists('memory_get_usage') && ( (int) @ini_get('memory_limit') < 128 ) )
 					@ini_set('memory_limit', '128M');
