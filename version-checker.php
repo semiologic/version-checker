@@ -235,7 +235,7 @@ EOS;
 			$content = make_clickable(strip_tags($content));
 			
 			echo '<div id="sem_twitter">' . "\n"
-				. sprintf(__('<a href="%1$s" title="Semiologic Development News" onclick="window.open(this.href); return false;">Dev News</a>: %2$s', 'version-checker'),  clean_url($dev_url), $content)
+				. sprintf(__('<a href="%1$s" title="Semiologic Development News">Dev News</a>: %2$s', 'version-checker'),  clean_url($dev_url), $content)
 				. '</div>' . "\n";
 		}
 		

@@ -103,7 +103,12 @@ class sem_api_key {
 		
 		echo '<tr>' . "\n"
 			. '<th scope="row">'
-			. __('API Key', 'version-checker')
+			. ( !$sem_api_key
+				? ( '<a href="http://oldbackend.semiologic.com/memberships.php">'
+					. __('Semiologic API Key', 'version-checker')
+					. '</a>' )
+				: __('Semiologic API Key', 'version-checker')
+				)
 			. '</th>' . "\n"
 			. '<td>'
 			. '<input type="text" name="sem_api_key" class="widefat code"'
@@ -136,52 +141,54 @@ class sem_api_key {
 				. checked($sem_packages, 'bleeding', false)
 				. ' />'
 			. '&nbsp;'
-			. __('Stable packages from wordpress.org, and bleeding edge packages from semiologic.com (for test sites)', 'version-checker')
+			. __('Stable packages from wordpress.org, and bleeding edge packages from semiologic.com', 'version-checker')
 			. '</label>'
 			. '</li>' . "\n"
 			. '</ul>' . "\n"
 			. '</td>' . "\n"
 			. '</tr>' . "\n";
 		
-		echo '<tr>' . "\n"
-			. '<th scope="row">'
-			. '<a href="http://oldbackend.semiologic.com/memberships.php' . ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ) . '">'
-			. __('Memberships', 'version-checker')
-			. '</a>'
-			. '</th>' . "\n"
-			. '<td>'
-			. '<table style="width: 100%; margin: 0px; padding: 0px;">' . "\n";
-		
-		foreach ( $memberships as $slug => $membership ) {
-			echo '<tr>'
+		if ( $sem_api_key ) {
+			echo '<tr>' . "\n"
+				. '<th scope="row">'
+				. '<a href="http://oldbackend.semiologic.com/memberships.php?user_key=' . urlencode($sem_api_key) . '">'
+				. __('Memberships', 'version-checker')
+				. '</a>'
+				. '</th>' . "\n"
 				. '<td>'
-				. strip_tags($membership['name'])
-				. '</td>' . "\n"
-				. '<td style="width: 200px;">';
-			if ( !$membership['expires'] ) {
-				echo __('Never expires', 'version-checker');
-			} elseif ( !version_checker::check($slug) ) {
-				echo sprintf(__('Expired %1$s - <a href="%2$s">Renew</a>', 'version-checker'),
-					date_i18n('F j, Y', strtotime($membership['expires'])),
-					'http://oldbackend.semiologic.com/memberships.php'
-						. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
-			} elseif ( strtotime($membership['expires']) <= time() + 2678400 ) { // 1 month
-				echo sprintf(__('Expires %1$s - <a href="%2$s">Renew</a>'),
-					date_i18n('F j, Y', strtotime($membership['expires'])),
-					'http://oldbackend.semiologic.com/memberships.php'
-						. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
-			} else {
-				echo sprintf(__('Expires %s', 'version-checker'), date_i18n('F j, Y', strtotime($membership['expires'])));
+				. '<table style="width: 100%; margin: 0px; padding: 0px;">' . "\n";
+
+			foreach ( $memberships as $slug => $membership ) {
+				echo '<tr>'
+					. '<td>'
+					. strip_tags($membership['name'])
+					. '</td>' . "\n"
+					. '<td style="width: 200px;">';
+				if ( !$membership['expires'] ) {
+					echo __('Never expires', 'version-checker');
+				} elseif ( !version_checker::check($slug) ) {
+					echo sprintf(__('Expired %1$s - <a href="%2$s">Renew</a>', 'version-checker'),
+						date_i18n('F j, Y', strtotime($membership['expires'])),
+						'http://oldbackend.semiologic.com/memberships.php'
+							. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
+				} elseif ( strtotime($membership['expires']) <= time() + 2678400 ) { // 1 month
+					echo sprintf(__('Expires %1$s - <a href="%2$s">Renew</a>'),
+						date_i18n('F j, Y', strtotime($membership['expires'])),
+						'http://oldbackend.semiologic.com/memberships.php'
+							. ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ));
+				} else {
+					echo sprintf(__('Expires %s', 'version-checker'), date_i18n('F j, Y', strtotime($membership['expires'])));
+				}
+
+				echo '</td>' . "\n"
+					. '</tr>' . "\n";
+
 			}
-			
-			echo '</td>' . "\n"
+
+			echo '</table>'
+				. '</td>' . "\n"
 				. '</tr>' . "\n";
-			
 		}
-		
-		echo '</table>'
-			. '</td>' . "\n"
-			. '</tr>' . "\n";
 		
 		echo '<tr>' . "\n"
 			. '<th scope="row">'

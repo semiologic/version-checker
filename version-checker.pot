@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-07-15 12:30+0200\n"
+"POT-Creation-Date: 2009-07-15 12:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +56,8 @@ msgstr ""
 msgid "Settings saved."
 msgstr ""
 
-#: sem-api-key.php:66 version-checker.php:919 version-checker.php:920
+#: sem-api-key.php:66 sem-api-key.php:108 sem-api-key.php:110
+#: version-checker.php:919 version-checker.php:920
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -80,56 +81,52 @@ msgid ""
 "working; it's just not receiving update notifications."
 msgstr ""
 
-#: sem-api-key.php:106
-msgid "API Key"
-msgstr ""
-
-#: sem-api-key.php:117
+#: sem-api-key.php:122
 msgid "Packages"
 msgstr ""
 
-#: sem-api-key.php:121
+#: sem-api-key.php:126
 msgid "Keep WordPress, themes and plugins updated using:"
 msgstr ""
 
-#: sem-api-key.php:130
+#: sem-api-key.php:135
 msgid "Stable packages from wordpress.org and semiologic.com (recommended)"
 msgstr ""
 
-#: sem-api-key.php:139
+#: sem-api-key.php:144
 msgid ""
 "Stable packages from wordpress.org, and bleeding edge packages from "
-"semiologic.com (for test sites)"
+"semiologic.com"
 msgstr ""
 
-#: sem-api-key.php:149
+#: sem-api-key.php:155
 msgid "Memberships"
 msgstr ""
 
-#: sem-api-key.php:162
+#: sem-api-key.php:168
 msgid "Never expires"
 msgstr ""
 
-#: sem-api-key.php:164
+#: sem-api-key.php:170
 #, php-format
 msgid "Expired %1$s - <a href=\"%2$s\">Renew</a>"
 msgstr ""
 
-#: sem-api-key.php:169
+#: sem-api-key.php:175
 #, php-format
 msgid "Expires %1$s - <a href=\"%2$s\">Renew</a>"
 msgstr ""
 
-#: sem-api-key.php:174
+#: sem-api-key.php:180
 #, php-format
 msgid "Expires %s"
 msgstr ""
 
-#: sem-api-key.php:188
+#: sem-api-key.php:195
 msgid "FAQ"
 msgstr ""
 
-#: sem-api-key.php:192
+#: sem-api-key.php:199
 #, php-format
 msgid ""
 "Your Semiologic API key entitles you (as an individual Semiologic customer) "
@@ -138,7 +135,7 @@ msgid ""
 "end</a>."
 msgstr ""
 
-#: sem-api-key.php:195
+#: sem-api-key.php:202
 #, php-format
 msgid ""
 "The software itself will of course continue to work normally when your "
@@ -147,7 +144,7 @@ msgid ""
 "date at all times."
 msgstr ""
 
-#: sem-api-key.php:198
+#: sem-api-key.php:205
 msgid ""
 "Please do not share your API key, or use it for the benefit of others. It is "
 "a password in every respect, and you'd be breaching our terms of use. If you "
@@ -155,14 +152,14 @@ msgid ""
 "using a separate API key."
 msgstr ""
 
-#: sem-api-key.php:201
+#: sem-api-key.php:208
 #, php-format
 msgid ""
 "Please <a href=\"%s\">email sales</a>, or catch Denis on Skype or YIM (ID is "
 "ddebernardy on both), for any further information."
 msgstr ""
 
-#: sem-api-key.php:210
+#: sem-api-key.php:217
 msgid "Save Changes"
 msgstr ""
 
@@ -205,8 +202,7 @@ msgstr ""
 #: version-checker.php:238
 #, php-format
 msgid ""
-"<a href=\"%1$s\" title=\"Semiologic Development News\" onclick=\"window.open"
-"(this.href); return false;\">Dev News</a>: %2$s"
+"<a href=\"%1$s\" title=\"Semiologic Development News\">Dev News</a>: %2$s"
 msgstr ""
 
 #: version-checker.php:265 version-checker.php:273
