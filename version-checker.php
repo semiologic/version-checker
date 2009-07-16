@@ -125,9 +125,8 @@ class version_checker {
 		
 		if ( !isset($cur->response) || !isset($cur->package) || $cur->response != 'upgrade' || !current_user_can('manage_options') ) {
 			if ( current_user_can('manage_options') ) {
-				if ( get_option('sem_api_key') )
-					version_checker::twitter_feed();
-				else
+				version_checker::twitter_feed();
+				if ( !get_option('sem_api_key') )
 					version_checker::api_key_nag();
 				return;
 			} else {
