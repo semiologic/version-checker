@@ -268,7 +268,7 @@ EOS;
 		
 		echo '<table class="form-table">' . "\n"
 			. '<tr>'
-			. '<th>'
+			. '<th scope="row">'
 			. __('Semiologic Development News', 'version-checker')
 			. '</th>' . "\n"
 			. '<td>'
