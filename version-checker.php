@@ -44,6 +44,8 @@ if ( $sem_pro_version && get_option('sem_pro_version') !== $sem_pro_version ) {
 	delete_transient('sem_update_core');
 }
 
+wp_cache_add_non_persistent_groups(array('sem_api'));
+
 if ( is_admin() && function_exists('get_transient') ) {
 	add_action('admin_menu', array('version_checker', 'admin_menu'));
 	
@@ -421,9 +423,14 @@ EOS;
 		$options = array(
 			'timeout' => 3,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
-		);
+			);
 		
-		$raw_response = wp_remote_post($url, $options);
+		$cache_id = serialize(array($url, $options));
+		$raw_response = wp_cache_get($cache_id, 'sem_api');
+		if ( $raw_response === false ) {
+			$raw_response = wp_remote_post($url, $options);
+			wp_cache_set($cache_id, $raw_response, 'sem_api');
+		}
 		
 		if ( is_wp_error($raw_response) ) {
 			wp_die($raw_response);
@@ -500,9 +507,14 @@ EOS;
 			'timeout' => 3,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
-		);
+			);
 		
-		$raw_response = wp_remote_post($url, $options);
+		$cache_id = serialize(array($url, $options));
+		$raw_response = wp_cache_get($cache_id, 'sem_api');
+		if ( $raw_response === false ) {
+			$raw_response = wp_remote_post($url, $options);
+			wp_cache_set($cache_id, $raw_response, 'sem_api');
+		}
 		
 		if ( is_wp_error($raw_response) )
 			set_transient('sem_api_error', $raw_response->get_error_messages());
@@ -593,9 +605,14 @@ EOS;
 			'timeout' => 3,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
-		);
+			);
 		
-		$raw_response = wp_remote_post($url, $options);
+		$cache_id = serialize(array($url, $options));
+		$raw_response = wp_cache_get($cache_id, 'sem_api');
+		if ( $raw_response === false ) {
+			$raw_response = wp_remote_post($url, $options);
+			wp_cache_set($cache_id, $raw_response, 'sem_api');
+		}
 		
 		if ( is_wp_error($raw_response) )
 			set_transient('sem_api_error', $raw_response->get_error_messages());
@@ -671,7 +688,7 @@ EOS;
 			$timeout = 43200;
 		}
 		
-		if ( is_array($checked) && $checked && $checked != $obj->checked )
+		if ( is_array($checked) && $checked && array_diff($obj->checked, $checked) )
 			$timeout = 0;
 		
 		if ( $obj->last_checked >= time() - $timeout )
@@ -712,9 +729,14 @@ EOS;
 			'timeout' => 3,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
-		);
+			);
 		
-		$raw_response = wp_remote_post($url, $options);
+		$cache_id = serialize(array($url, $options));
+		$raw_response = wp_cache_get($cache_id, 'sem_api');
+		if ( $raw_response === false ) {
+			$raw_response = wp_remote_post($url, $options);
+			wp_cache_set($cache_id, $raw_response, 'sem_api');
+		}
 		
 		if ( is_wp_error($raw_response) )
 			set_transient('sem_api_error', $raw_response->get_error_messages());
@@ -796,7 +818,7 @@ EOS;
 			$timeout = 43200;
 		}
 		
-		if ( is_array($checked) && $checked && $checked != $obj->checked )
+		if ( is_array($checked) && $checked && array_diff($obj->checked, $checked) )
 			$timeout = 0;
 		
 		if ( $obj->last_checked >= time() - $timeout )
@@ -837,9 +859,15 @@ EOS;
 			'timeout' => 3,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
-		);
+			);
 		
-		$raw_response = wp_remote_post($url, $options);
+		$cache_id = serialize(array($url, $options));
+		$raw_response = wp_cache_get($cache_id, 'sem_api');
+		
+		if ( $raw_response === false ) {
+			$raw_response = wp_remote_post($url, $options);
+			wp_cache_set($cache_id, $raw_response, 'sem_api');
+		}
 		
 		if ( is_wp_error($raw_response) )
 			set_transient('sem_api_error', $raw_response->get_error_messages());
