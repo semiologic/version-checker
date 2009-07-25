@@ -690,7 +690,7 @@ EOS;
 			$timeout = 43200;
 		}
 		
-		if ( is_array($checked) && $checked && $obj->checked != $checked ) {
+		if ( is_array($checked) && $checked && $obj->checked && $obj->checked != $checked ) {
 			delete_transient('sem_update_themes');
 			delete_transient('update_themes');
 			return false;
@@ -828,7 +828,7 @@ EOS;
 			$timeout = 43200;
 		}
 		
-		if ( is_array($checked) && $checked && $obj->checked != $checked ) {
+		if ( is_array($checked) && $checked && $obj->checked && $obj->checked != $checked ) {
 			delete_transient('sem_update_plugins');
 			delete_transient('update_plugins');
 			return false;
