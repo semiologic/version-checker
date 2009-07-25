@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.0 RC2
+Version: 2.0 RC3
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -378,6 +378,8 @@ EOS;
 	 **/
 
 	function http_request_args($args, $url) {
+		#dump($url);
+		
 		if ( !preg_match("/https?:\/\/([^\/]+).semiologic.com\/media\/([^\/]+)/i", $url, $match) )
 			return $args;
 		
@@ -688,8 +690,11 @@ EOS;
 			$timeout = 43200;
 		}
 		
-		if ( is_array($checked) && $checked && array_diff($obj->checked, $checked) )
-			$timeout = 0;
+		if ( is_array($checked) && $checked && $obj->checked != $checked ) {
+			delete_transient('sem_update_themes');
+			delete_transient('update_themes');
+			return false;
+		}
 		
 		if ( $obj->last_checked >= time() - $timeout )
 			return $obj->response;
@@ -784,7 +789,12 @@ EOS;
 				unset($ops->response[$plugin]);
 		}
 		
-		$ops->response = array_merge($ops->response, version_checker::get_themes($ops->checked));
+		$extra = version_checker::get_themes($ops->checked);
+		
+		if ( $extra === false )
+			return false;
+		
+		$ops->response = array_merge($ops->response, $extra);
 		
 		return $ops;
 	} # update_themes()
@@ -818,8 +828,11 @@ EOS;
 			$timeout = 43200;
 		}
 		
-		if ( is_array($checked) && $checked && array_diff($obj->checked, $checked) )
-			$timeout = 0;
+		if ( is_array($checked) && $checked && $obj->checked != $checked ) {
+			delete_transient('sem_update_plugins');
+			delete_transient('update_plugins');
+			return false;
+		}
 		
 		if ( $obj->last_checked >= time() - $timeout )
 			return $obj->response;
@@ -910,7 +923,12 @@ EOS;
 				unset($ops->response[$plugin]);
 		}
 		
-		$ops->response = array_merge($ops->response, version_checker::get_plugins($ops->checked));
+		$extra = version_checker::get_plugins($ops->checked);
+		
+		if ( $extra === false )
+			return false;
+		
+		$ops->response = array_merge($ops->response, $extra);
 		
 		return $ops;
 	} # update_plugins()
