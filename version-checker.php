@@ -234,7 +234,7 @@ EOS;
 		foreach ( $feed->get_items(0,1) as $item ) {
 			$content = @html_entity_decode(str_replace('ddebernardy: ', '', $item->get_description()), ENT_QUOTES, get_option('blog_charset'));
 			$content = make_clickable(strip_tags($content));
-			$content = preg_replace("|(<a.+?>.+?://.+?[/\?]).{8,}(</a>)|i", "$1&#8230;$2", $content);
+			$content = preg_replace("|(<a.+>.+://.+[/\?]).{8,}(</a>)|iU", "$1&#8230;$2", $content);
 			
 			echo '<div id="sem_twitter">' . "\n"
 				. sprintf(__('<a href="%1$s" title="Semiologic Development News">Dev News</a>: %2$s', 'version-checker'),  clean_url($dev_url), $content)
