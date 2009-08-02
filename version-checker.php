@@ -699,11 +699,8 @@ EOS;
 			$response = @unserialize($raw_response['body']);
 		
 		if ( $response !== false ) { // keep old response in case of error
-			foreach ( $response as $key => $package ) {
-				if ( !empty($package->package) )
-					unset($response[$key]->package);
+			foreach ( $response as $key => $package )
 				$response[$key] = (array) $package;
-			}
 			$obj->response = $response;
 			set_transient('sem_update_themes', $obj);
 		}
