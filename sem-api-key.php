@@ -5,8 +5,6 @@
  * @package Version Checker
  **/
 
-add_action('settings_page_sem-api-key', array('sem_api_key', 'save_options'), 0);
-
 class sem_api_key {
 	/**
 	 * save_options()
@@ -258,4 +256,6 @@ class sem_api_key {
 			. '</div>' . "\n";
 	} # edit_options()
 } # sem_api_key
+
+add_action('settings_page_sem-api-key', array('sem_api_key', 'save_options'), 0);
 ?>

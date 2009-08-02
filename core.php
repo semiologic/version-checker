@@ -5,9 +5,6 @@
  * @package Version Checker
  **/
 
-add_action('admin_notices', array('sem_update_core', 'ob_start'), 1000);
-add_filter('update_feedback', array('sem_update_core', 'update_feedback'), 0);
-
 class sem_update_core {
 	/**
 	 * update_feedback()
@@ -217,4 +214,7 @@ class sem_update_core {
 		return str_replace(array_keys($find_replace), array_values($find_replace), $buffer);
 	} # ob_callback()
 } # sem_update_core
+
+add_action('admin_notices', array('sem_update_core', 'ob_start'), 1000);
+add_filter('update_feedback', array('sem_update_core', 'update_feedback'), 0);
 ?>

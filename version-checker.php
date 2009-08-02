@@ -32,65 +32,6 @@ if ( !defined('sem_version_checker_debug') )
  * @package Version Checker
  **/
 
-add_option('sem_api_key', '');
-add_option('sem_pro_version', '');
-add_option('sem_packages', 'stable');
-
-if ( !isset($sem_pro_version) )
-	$sem_pro_version = '';
-
-if ( $sem_pro_version && get_option('sem_pro_version') !== $sem_pro_version ) {
-	update_option('sem_pro_version', $sem_pro_version);
-	delete_transient('sem_update_core');
-}
-
-wp_cache_add_non_persistent_groups(array('sem_api'));
-
-if ( is_admin() && function_exists('get_transient') ) {
-	add_action('admin_menu', array('version_checker', 'admin_menu'));
-	
-	foreach ( array(
-		'load-settings_page_sem-api-key',
-		'load-update-core.php',
-		'load-themes.php',
-		'load-plugins.php',
-		'wp_version_check',
-		) as $hook )
-		add_action($hook, array('version_checker', 'get_memberships'), 11);
-	
-	foreach ( array(
-		'load-update-core.php',
-		'wp_version_check',
-		) as $hook )
-		add_action($hook, array('version_checker', 'get_core'), 12);
-	
-	foreach ( array(
-		'load-themes.php',
-		'wp_update_themes',
-		) as $hook )
-		add_action($hook, array('version_checker', 'get_themes'), 12);
-	
-	foreach ( array(
-		'load-plugins.php',
-		'wp_update_plugins',
-		) as $hook )
-		add_action($hook, array('version_checker', 'get_plugins'), 12);
-	
-	add_filter('http_request_args', array('version_checker', 'http_request_args'), 10, 2);
-	add_action('admin_init', array('version_checker', 'init'));
-	
-	add_action('admin_head', array('version_checker', 'twitter_css'));
-	add_action('edit_user_profile', array('version_checker', 'edit_twitter_prefs'));
-	add_action('show_user_profile', array('version_checker', 'edit_twitter_prefs'));
-	add_action('profile_update', array('version_checker', 'save_twitter_prefs'));
-} elseif ( is_admin() ) {
-	add_action('admin_notices', array('version_checker', 'add_warning'));
-}
-
-add_filter('transient_update_core', array('version_checker', 'update_core'));
-add_filter('transient_update_themes', array('version_checker', 'update_themes'));
-add_filter('transient_update_plugins', array('version_checker', 'update_plugins'));
-
 class version_checker {
 	/**
 	 * init()
@@ -202,7 +143,7 @@ class version_checker {
 	font-size: 11px;
 }
 
-#hello {
+#dolly {
 	display: none;
 }
 </style>
@@ -218,9 +159,10 @@ EOS;
 	 **/
 
 	function twitter_feed() {
+		global $upgrading;
 		$pref = get_user_option('sem_news');
 		
-		if ( $pref !== false && $pref == 'false' )
+		if ( !empty($upgrading) || $pref !== false && $pref == 'false' )
 			return;
 		
 		add_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'twitter_timeout'));
@@ -1008,4 +950,63 @@ function sem_update_plugins() {
 }
 
 add_action('load-plugin-install.php', 'sem_update_plugins');
+
+add_option('sem_api_key', '');
+add_option('sem_pro_version', '');
+add_option('sem_packages', 'stable');
+
+if ( !isset($sem_pro_version) )
+	$sem_pro_version = '';
+
+if ( $sem_pro_version && get_option('sem_pro_version') !== $sem_pro_version ) {
+	update_option('sem_pro_version', $sem_pro_version);
+	delete_transient('sem_update_core');
+}
+
+wp_cache_add_non_persistent_groups(array('sem_api'));
+
+if ( is_admin() && function_exists('get_transient') ) {
+	add_action('admin_menu', array('version_checker', 'admin_menu'));
+	
+	foreach ( array(
+		'load-settings_page_sem-api-key',
+		'load-update-core.php',
+		'load-themes.php',
+		'load-plugins.php',
+		'wp_version_check',
+		) as $hook )
+		add_action($hook, array('version_checker', 'get_memberships'), 11);
+	
+	foreach ( array(
+		'load-update-core.php',
+		'wp_version_check',
+		) as $hook )
+		add_action($hook, array('version_checker', 'get_core'), 12);
+	
+	foreach ( array(
+		'load-themes.php',
+		'wp_update_themes',
+		) as $hook )
+		add_action($hook, array('version_checker', 'get_themes'), 12);
+	
+	foreach ( array(
+		'load-plugins.php',
+		'wp_update_plugins',
+		) as $hook )
+		add_action($hook, array('version_checker', 'get_plugins'), 12);
+	
+	add_filter('http_request_args', array('version_checker', 'http_request_args'), 10, 2);
+	add_action('admin_init', array('version_checker', 'init'));
+	
+	add_action('admin_head', array('version_checker', 'twitter_css'));
+	add_action('edit_user_profile', array('version_checker', 'edit_twitter_prefs'));
+	add_action('show_user_profile', array('version_checker', 'edit_twitter_prefs'));
+	add_action('profile_update', array('version_checker', 'save_twitter_prefs'));
+} elseif ( is_admin() ) {
+	add_action('admin_notices', array('version_checker', 'add_warning'));
+}
+
+add_filter('transient_update_core', array('version_checker', 'update_core'));
+add_filter('transient_update_themes', array('version_checker', 'update_themes'));
+add_filter('transient_update_plugins', array('version_checker', 'update_plugins'));
 ?>

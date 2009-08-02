@@ -5,8 +5,6 @@
  * @package Version Checker
  **/
 
-add_filter('plugins_api', array('sem_update_plugins', 'plugins_api'), 10, 3);
-
 class sem_update_plugins {
 	/**
 	 * plugins_api()
@@ -48,4 +46,6 @@ class sem_update_plugins {
 		return $res;
 	} # plugins_api()
 } # sem_update_plugins
+
+add_filter('plugins_api', array('sem_update_plugins', 'plugins_api'), 10, 3);
 ?>
