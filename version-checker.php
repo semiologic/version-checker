@@ -57,9 +57,10 @@ class version_checker {
 	function update_nag() {
 		global $pagenow, $page_hook;
 		
-		if ( 'update-core.php' == $pagenow || !current_user_can('manage_options')
-			|| 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
+		if ( 'update-core.php' == $pagenow || !current_user_can('manage_options') )
 			return version_checker::twitter_feed();
+		elseif ( 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
+			return;
 		
 		if ( 'settings_page_sem-api-key' == $page_hook && $_POST )
 			wp_version_check();
