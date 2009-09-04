@@ -263,7 +263,7 @@ EOS;
 		$sem_pro_version = get_option('sem_pro_version');
 		
 		if ( !current_user_can('manage_options') )
-			return sprintf(__('<a href="%1$s">Semiologic Pro</a> Version %2$s', 'http://www.getsemiologic.com', 'version-checker'), $sem_pro_version);
+			return sprintf(__('<a href="%1$s">Semiologic Pro</a> Version %2$s', 'version-checker'), 'http://www.getsemiologic.com', $sem_pro_version);
 
 		$cur = get_preferred_from_update_core();
 		if ( ! isset( $cur->current ) )
