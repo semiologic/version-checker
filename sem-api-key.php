@@ -230,13 +230,13 @@ class sem_api_key {
 			. '</th>' . "\n"
 			. '<td>'
 			. '<p>'
-			. sprintf(__('Your Semiologic API key entitles you (as an individual Semiologic customer) to software updates from semiologic.com for as long as you\'ve a running membership.  You\'ll find your API Key in the <a href="%s">Semiologic back-end</a>.', 'version-checker'), 'http://oldbackend.semiologic.com' . ( $sem_api_key ? ( '?user_key=' . urlencode($sem_api_key) ) : '' ) )
+			. sprintf(__('Your Semiologic API key entitles you (as an individual Semiologic customer) to software updates from semiologic.com for as long as you\'ve a running membership.  You\'ll find your API Key in the <a href="%s">Semiologic back-end</a>.', 'version-checker'), 'http://oldbackend.semiologic.com')
 			. '</p>' . "\n"
 			. '<p>'
 			. sprintf(__('The software itself will of course continue to work normally when your membership expires. Upgrades from semiologic.com will merely cease to work. It is <a href="%s">highly recommended</a> that you keep your site up to date at all times.', 'version-checker'), 'http://www.semiologic.com/resources/wp-basics/why-upgrade/')
 			. '</p>' . "\n"
 			. '<p>'
-			. __('Please do not share your API key, or use it for the benefit of others. It is a password in every respect, and you\'d be breaching our terms of use. If you or your organization aren\'t a site\'s primary user, that site should not be using a separate API key.', 'version-checker')
+			. sprintf(__('Please do not share your API key, or use it for the benefit of others. It is a password in every respect, and you\'d be breaching our <a href="%s">terms of use</a>. If you or your organization aren\'t a site\'s primary user, that site should be using a separate API key.', 'version-checker'), 'http://members.semiologic.com/terms/')
 			. '</p>' . "\n"
 			. '<p>'
 			. sprintf(__('Please <a href="%s">email sales</a>, or catch Denis on Skype or YIM (ID is ddebernardy on both), for any further information.', 'version-checker'), 'mailto:sales@semiologic.com')
