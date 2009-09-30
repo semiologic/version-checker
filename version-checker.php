@@ -553,7 +553,6 @@ EOS;
 			'check' => $check,
 			'packages' => get_option('sem_packages'),
 			'locale' => apply_filters('core_version_check_locale', get_locale()),
-			'theme' => get_option('stylesheet'),
 			);
 	
 		$options = array(
