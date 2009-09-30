@@ -22,8 +22,8 @@ http://www.mesoconcepts.com/license/
 
 load_plugin_textdomain('version-checker', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
-if ( !defined('sem_version_checker_debug') )
-	define('sem_version_checker_debug', false);
+if ( !defined('version_checker_debug') )
+	define('version_checker_debug', false);
 
 
 /**
@@ -125,6 +125,9 @@ class version_checker {
 	 **/
 
 	function sem_news_css() {
+		if ( !current_user_can('publish_posts') && !current_user_can('publish_pages') )
+			return;
+		
 		$pref = get_user_option('sem_news');
 		
 		if ( $pref !== false && $pref == 'false' )
@@ -139,8 +142,8 @@ class version_checker {
 	top: 4.5em;
 	margin: 0;
 	padding: 0;
-	$position: 155px;
-	width: 300px;
+	$position: 175px;
+	width: 320px;
 	font-size: 11px;
 }
 
@@ -159,6 +162,9 @@ EOS;
 	 **/
 
 	function sem_news_feed() {
+		if ( !current_user_can('publish_posts') && !current_user_can('publish_pages') )
+			return;
+		
 		global $upgrading;
 		$pref = get_user_option('sem_news');
 		
@@ -191,7 +197,7 @@ EOS;
 			break;
 		}
 		
-		return false;
+		return;
 	} # sem_news_feed()
 	
 	
@@ -213,6 +219,9 @@ EOS;
 	 **/
 
 	function edit_sem_news_prefs() {
+		if ( !current_user_can('publish_posts') && !current_user_can('publish_pages') )
+			return;
+		
 		echo '<h3>'
 			. __('Semiologic Development News', 'version-checker')
 			. '</h3>' . "\n";
@@ -246,6 +255,9 @@ EOS;
 	 **/
 
 	function save_sem_news_prefs($user_ID) {
+		if ( !current_user_can('publish_posts') && !current_user_can('publish_pages') )
+			return;
+		
 		if ( !$_POST )
 			return;
 		
@@ -366,9 +378,9 @@ EOS;
 		
 		global $wp_version;
 		
-		if ( !sem_version_checker_debug ) {
+		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/auth/0.1/" . $sem_api_key;
-		} elseif ( sem_version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug == 'localhost' ) {
 			$url = "http://localhost/~denis/api/auth/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/auth/trunk/" . $sem_api_key;
@@ -443,9 +455,9 @@ EOS;
 		$obj->last_checked = time();
 		set_transient('sem_memberships', $obj);
 		
-		if ( !sem_version_checker_debug ) {
+		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/memberships/0.2/" . $sem_api_key;
-		} elseif ( sem_version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug == 'localhost' ) {
 			$url = "http://localhost/~denis/api/memberships/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/memberships/trunk/" . $sem_api_key;
@@ -536,9 +548,9 @@ EOS;
 		$obj->last_checked = time();
 		set_transient('sem_update_core', $obj);
 		
-		if ( !sem_version_checker_debug ) {
+		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/version/0.2/core/" . $sem_api_key;
-		} elseif ( sem_version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug == 'localhost' ) {
 			$url = "http://localhost/~denis/api/version/core/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/version/trunk/core/" . $sem_api_key;
@@ -554,7 +566,7 @@ EOS;
 			'packages' => get_option('sem_packages'),
 			'locale' => apply_filters('core_version_check_locale', get_locale()),
 			);
-	
+		
 		$options = array(
 			'timeout' => 3,
 			'body' => $body,
@@ -577,7 +589,7 @@ EOS;
 			$response = false;
 		else
 			$response = @unserialize($raw_response['body']);
-	
+		
 		if ( $response !== false ) { // keep old response in case of error
 			$obj->response = $response;
 			set_transient('sem_update_core', $obj);
@@ -659,9 +671,9 @@ EOS;
 		$obj->last_checked = time();
 		set_transient('sem_update_themes', $obj);
 		
-		if ( !sem_version_checker_debug ) {
+		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/version/0.2/themes/" . $sem_api_key;
-		} elseif ( sem_version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug == 'localhost' ) {
 			$url = "http://localhost/~denis/api/version/themes/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/version/trunk/themes/" . $sem_api_key;
@@ -794,9 +806,9 @@ EOS;
 		$obj->last_checked = time();
 		set_transient('sem_update_plugins', $obj);
 		
-		if ( !sem_version_checker_debug ) {
+		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/version/0.2/plugins/" . $sem_api_key;
-		} elseif ( sem_version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug == 'localhost' ) {
 			$url = "http://localhost/~denis/api/version/plugins/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/version/trunk/plugins/" . $sem_api_key;
