@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-08-03 18:31+0200\n"
+"POT-Creation-Date: 2009-10-01 14:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,7 +172,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: sem-api-key.php:65 sem-api-key.php:143 sem-api-key.php:145
-#: version-checker.php:906 version-checker.php:907
+#: version-checker.php:940 version-checker.php:941
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -273,16 +273,17 @@ msgstr ""
 msgid ""
 "The software itself will of course continue to work normally when your "
 "membership expires. Upgrades from semiologic.com will merely cease to work. "
-"It is <a href=\"%s\">highly recommended</a> that you keep your site up to "
-"date at all times."
+"It is, of course, <a href=\"%s\">highly recommended</a> that you keep your "
+"membership current and your site up to date."
 msgstr ""
 
 #: sem-api-key.php:239
+#, php-format
 msgid ""
 "Please do not share your API key, or use it for the benefit of others. It is "
-"a password in every respect, and you'd be breaching our terms of use. If you "
-"or your organization aren't a site's primary user, that site should not be "
-"using a separate API key."
+"a password in every respect, and you'd be breaching our <a href=\"%s\">terms "
+"of use</a>. If you or your organization aren't a site's primary user, that "
+"site should be using a separate API key."
 msgstr ""
 
 #: sem-api-key.php:242
@@ -328,68 +329,69 @@ msgstr ""
 #: version-checker.php:115
 #, php-format
 msgid ""
-"Version Checker is almost ready. Please enter your <a href=\"%s\">Semiologic "
-"API key</a> to receive update notifications."
+"The Version Checker plugin is almost ready. Please enter your <a href=\"%s"
+"\">Semiologic API key</a> to receive update notifications."
 msgstr ""
 
-#: version-checker.php:183
+#: version-checker.php:188
 #, php-format
 msgid ""
-"<a href=\"%1$s\" title=\"Semiologic Development News\">Dev News</a>: %2$s"
+"<a href=\"%1$s\" title=\"Semiologic Development News\">Dev News</a>: <a href="
+"\"%2$s\" title=\"%3$s\">%4$s</a>"
 msgstr ""
 
-#: version-checker.php:211 version-checker.php:219
+#: version-checker.php:246 version-checker.php:252
 msgid "Semiologic Development News"
 msgstr ""
 
-#: version-checker.php:227
+#: version-checker.php:260
 msgid ""
 "Keep me updated with Semiologic Development News when browsing the admin "
 "area."
 msgstr ""
 
-#: version-checker.php:266
+#: version-checker.php:300
 #, php-format
 msgid "<a href=\"%1$s\">Semiologic Pro</a> Version %2$s"
 msgstr ""
 
-#: version-checker.php:280
+#: version-checker.php:314
 #, php-format
 msgid ""
 "You are using a development version of Semiologic Pro (%1$s). Cool! Please "
 "<a href=\"%2$s\">stay updated</a>."
 msgstr ""
 
-#: version-checker.php:284
+#: version-checker.php:318
 #, php-format
 msgid "<a href=\"%1$s\">Get Semiologic Pro Version %2$s</a>"
 msgstr ""
 
-#: version-checker.php:289
+#: version-checker.php:323
 #, php-format
 msgid "Semiologic Pro Version %s"
 msgstr ""
 
-#: version-checker.php:309
+#: version-checker.php:343
 #, php-format
 msgid "Thank you for creating with <a href=\"%s\">Semiologic Pro</a>."
 msgstr ""
 
-#: version-checker.php:311
+#: version-checker.php:345
 msgid "<a href=\"http://www.semiologic.com/resources/\">Resources</a>"
 msgstr ""
 
-#: version-checker.php:313
+#: version-checker.php:347
 msgid "<a href=\"http://forum.semiologic.com\">Community</a>"
 msgstr ""
 
-#: version-checker.php:353
+#: version-checker.php:387
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:385
+#: version-checker.php:419
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -397,6 +399,6 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:924
+#: version-checker.php:958
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""

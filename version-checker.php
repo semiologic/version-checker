@@ -112,7 +112,7 @@ class version_checker {
 		
 		echo '<div class="error">' . "\n"
 			. '<p>'
-			. sprintf(__('Version Checker is almost ready. Please enter your <a href="%s">Semiologic API key</a> to receive update notifications.', 'version-checker'), 'options-general.php?page=sem-api-key')
+			. sprintf(__('The Version Checker plugin is almost ready. Please enter your <a href="%s">Semiologic API key</a> to receive update notifications.', 'version-checker'), 'options-general.php?page=sem-api-key')
 			. '</p>' . "\n"
 			. '</div>';
 	} # api_key_nag()
