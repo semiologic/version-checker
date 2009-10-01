@@ -125,12 +125,9 @@ class version_checker {
 	 **/
 
 	function sem_news_css() {
-		if ( !current_user_can('publish_posts') && !current_user_can('publish_pages') )
-			return;
+		$pref = version_checker::get_news_pref();
 		
-		$pref = get_user_option('sem_news');
-		
-		if ( $pref !== false && $pref == 'false' )
+		if ( $pref == 'false' )
 			return;
 		
 		$position = ( 'rtl' == get_bloginfo( 'text_direction' ) ) ? 'left' : 'right';
@@ -162,13 +159,9 @@ EOS;
 	 **/
 
 	function sem_news_feed() {
-		if ( !current_user_can('publish_posts') && !current_user_can('publish_pages') )
-			return;
-		
 		global $upgrading;
-		$pref = get_user_option('sem_news');
 		
-		if ( !empty($upgrading) || $pref !== false && $pref == 'false' )
+		if ( !empty($upgrading) || version_checker::get_news_pref() == 'false' )
 			return;
 		
 		add_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'sem_news_timeout'));
@@ -213,20 +206,45 @@ EOS;
 	
 	
 	/**
-	 * edit_sem_news_prefs()
+	 * get_news_pref()
 	 *
+	 * @param int $user_id
+	 * @return string true|false
+	 **/
+
+	function get_news_pref($user_id = null) {
+		if ( !$user_id ) {
+			$user = wp_get_current_user();
+			$user_id = $user->ID;
+		}
+		
+		$pref = get_usermeta($user_id, 'sem_news');
+		
+		if ( $pref === '' ) {
+			$user = new WP_User($user_id);
+			$pref = $user->has_cap('edit_posts') || $user->has_cap('edit_pages')
+				? 'true'
+				: 'false';
+			update_usermeta($user_id, 'sem_news', $pref);
+		}
+		
+		return $pref;
+	} # get_news_pref()
+	
+	
+	/**
+	 * edit_news_pref()
+	 *
+	 * @param object $user
 	 * @return void
 	 **/
 
-	function edit_sem_news_prefs() {
-		if ( !current_user_can('publish_posts') && !current_user_can('publish_pages') )
-			return;
+	function edit_news_pref($user) {
+		$pref = version_checker::get_news_pref($user->ID);
 		
 		echo '<h3>'
 			. __('Semiologic Development News', 'version-checker')
 			. '</h3>' . "\n";
-		
-		$pref = get_user_option('sem_news');
 		
 		echo '<table class="form-table">' . "\n"
 			. '<tr>'
@@ -236,7 +254,7 @@ EOS;
 			. '<td>'
 			. '<label>'
 			. '<input type="checkbox" name="sem_news"'
-				. checked($pref === false || $pref == 'true', true, false)
+				. checked($pref, 'true', false)
 				. ' />'
 			. '&nbsp;'
 			. __('Keep me updated with Semiologic Development News when browsing the admin area.', 'version-checker')
@@ -244,25 +262,22 @@ EOS;
 			. '</td>'
 			. '</tr>' . "\n"
 			. '</table>' . "\n";
-	} # edit_sem_news_prefs()
+	} # edit_news_pref()
 	
 	
 	/**
-	 * save_sem_news_prefs()
+	 * save_news_pref()
 	 *
 	 * @param int $user_ID
 	 * @return void
 	 **/
 
-	function save_sem_news_prefs($user_ID) {
-		if ( !current_user_can('publish_posts') && !current_user_can('publish_pages') )
-			return;
-		
+	function save_news_pref($user_ID) {
 		if ( !$_POST )
 			return;
 		
-		update_user_option($user_ID, 'sem_news', isset($_POST['sem_news']) ? 'true' : 'false', true);
-	} # save_sem_news_prefs()
+		update_usermeta($user_ID, 'sem_news', isset($_POST['sem_news']) ? 'true' : 'false');
+	} # save_news_pref()
 	
 	
 	/**
@@ -1016,9 +1031,9 @@ if ( is_admin() && function_exists('get_transient') ) {
 	add_action('admin_init', array('version_checker', 'init'));
 	
 	add_action('admin_head', array('version_checker', 'sem_news_css'));
-	add_action('edit_user_profile', array('version_checker', 'edit_sem_news_prefs'));
-	add_action('show_user_profile', array('version_checker', 'edit_sem_news_prefs'));
-	add_action('profile_update', array('version_checker', 'save_sem_news_prefs'));
+	add_action('edit_user_profile', array('version_checker', 'edit_news_pref'));
+	add_action('show_user_profile', array('version_checker', 'edit_news_pref'));
+	add_action('profile_update', array('version_checker', 'save_news_pref'));
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
 }
