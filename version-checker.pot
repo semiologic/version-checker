@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-10-01 14:43+0200\n"
+"POT-Creation-Date: 2009-10-03 19:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,9 +65,9 @@ msgid ""
 "and should be reported to your host. Before you do, however:"
 msgstr ""
 
-#: core.php:105 sem-api-key.php:100
+#: core.php:105
 #, php-format
-msgid "Install the <a href=\"%s\">Core Control</a> plugin."
+msgid "Activate the <a href=\"%s\">Core Control</a> plugin."
 msgstr ""
 
 #: core.php:109
@@ -172,7 +172,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: sem-api-key.php:65 sem-api-key.php:143 sem-api-key.php:145
-#: version-checker.php:940 version-checker.php:941
+#: version-checker.php:943 version-checker.php:944
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -191,6 +191,11 @@ msgstr ""
 msgid ""
 "Frequently, HTTP errors will be related to your server's configuration, and "
 "should be reported to your host. Before you do, however:"
+msgstr ""
+
+#: sem-api-key.php:100
+#, php-format
+msgid "Install the <a href=\"%s\">Core Control</a> plugin."
 msgstr ""
 
 #: sem-api-key.php:104
@@ -399,6 +404,6 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:958
+#: version-checker.php:961
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""

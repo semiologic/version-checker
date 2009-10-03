@@ -21,7 +21,7 @@ class sem_update_core {
 			return $in;
 		
 		if ( is_a($wp_filesystem, 'WP_Filesystem_FTPext') && $wp_filesystem->link ) {
-			if ( @ftp_get_option($wp_filesystem->link, FTP_TIMEOUT_SEC) < 300 )
+			if ( @ftp_get_option($wp_filesystem->link, FTP_TIMEOUT_SEC) < 600 )
 				@ftp_set_option($wp_filesystem->link, FTP_TIMEOUT_SEC, 600);
 			$done = true;
 		}
@@ -102,7 +102,7 @@ class sem_update_core {
 				echo '<ol>' . "\n";
 
 				echo '<li>'
-					. sprintf(__('Install the <a href="%s">Core Control</a> plugin.', 'version-checker'), 'http://dd32.id.au/wordpress-plugins/?plugin=core-control')
+					. sprintf(__('Activate the <a href="%s">Core Control</a> plugin.', 'version-checker'), 'http://dd32.id.au/wordpress-plugins/?plugin=core-control')
 					. '</li>' . "\n";
 
 				echo '<li>'
