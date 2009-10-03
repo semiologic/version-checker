@@ -772,6 +772,9 @@ EOS;
 		
 		$ops->response = array_merge($ops->response, $extra);
 		
+		if ( isset($ops->response['semiologic']) )
+			unset($ops->response['semiologic']['package']);
+		
 		return $ops;
 	} # update_themes()
 	
