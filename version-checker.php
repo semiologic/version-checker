@@ -42,6 +42,7 @@ class version_checker {
 	function init() {
 		remove_action('admin_notices', 'update_nag', 3);
 		add_action('admin_notices', array('version_checker', 'update_nag'), 3);
+		add_action('admin_notices', array('version_checker', 'extra_update_nag'), 4);
 		add_action('settings_page_sem-api-key', array('version_checker', 'update_nag'), 9);
 		add_filter('update_footer', array('version_checker', 'core_update_footer'), 20);
 		add_filter('admin_footer_text', array('version_checker', 'admin_footer_text'), 20);
@@ -67,15 +68,11 @@ class version_checker {
 		
 		$cur = get_preferred_from_update_core();
 		
-		if ( !isset($cur->response) || !isset($cur->package) || $cur->response != 'upgrade' || !current_user_can('manage_options') ) {
-			if ( current_user_can('manage_options') ) {
-				version_checker::sem_news_feed();
-				if ( !get_option('sem_api_key') )
-					version_checker::api_key_nag();
-				return;
-			} else {
-				return;
-			}
+		if ( !isset($cur->response) || !isset($cur->package) || $cur->response != 'upgrade' ) {
+			version_checker::sem_news_feed();
+			if ( !get_option('sem_api_key') )
+				version_checker::api_key_nag();
+			return;
 		}
 		
 		if ( version_checker::check('sem-pro') ) {
@@ -98,6 +95,93 @@ class version_checker {
 			. $msg
 			. '</div>' . "\n";
 	} # update_nag()
+	
+	
+	/**
+	 * extra_update_nag()
+	 *
+	 * @return void
+	 **/
+
+	function extra_update_nag() {
+		global $pagenow, $page_hook;
+		if ( $pagenow == 'update.php' || !current_user_can('manage_options') )
+			return;
+		
+		$plugins_todo = false;
+		$active_plugins = get_option('active_plugins');
+		
+		if ( $active_plugins ) {
+			$plugins_response = get_transient('update_plugins');
+			if ( $plugins_response && !empty($plugins_response->response) ) {
+				foreach ( $plugins_response->response as $plugin => $details ) {
+					if ( $details->package && in_array($plugin, $active_plugins) )
+						$plugins_todo = true;
+						break;
+				}
+			}
+		}
+		
+		$themes_todo = false;
+		$template = get_option('template');
+		$stylesheet = get_option('stylesheet');
+		
+		if ( $template && $stylesheet ) {
+			$themes_response = get_transient('update_themes');
+			if ( $themes_response && !empty($themes_response->response) ) {
+				foreach ( array('template', 'stylesheet') as $theme ) {
+					if ( !empty($themes_response->response[$$theme]) ) {
+						$themes_todo = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		if ( $plugins_todo && $pagenow == 'plugins.php' ) {
+			$plugins_todo = false;
+			$plugins = get_plugins();
+			
+			foreach ( array_keys($plugins_response->response) as $plugin ) {
+				if ( $plugins[$plugin]['Version'] == $plugins_response->response[$plugin]->new_version ) {
+					delete_transient('update_plugins');
+					delete_transient('sem_update_plugins');
+					break;
+				}
+			}
+		}
+		
+		if ( $themes_todo && $pagenow == 'themes.php' ) {
+			$themes_todo = false;
+			$themes = get_themes();
+			
+			foreach ( $themes as $details ) {
+				if ( $details['Stylesheet'] == $$theme ) {
+					if ( $themes_response->response[$$theme]['new_version'] == $details['Version'] )
+					delete_transient('update_themes');
+					delete_transient('sem_update_themes');
+					break;
+				}
+			}
+		}
+		
+		if ( !$plugins_todo && !$themes_todo )
+			return;
+		
+		echo '<div id="extra_update_nag">' . "\n";
+		
+		if ( $plugins_todo ) {
+			echo '<p>'
+				. sprintf(__('<strong>A new version is available for one or more of your plugins</strong>. <a href="%s">Please update now!</a>', 'version-checker'), 'plugins.php?plugin_status=upgrade')
+				. '</p>' . "\n";
+		} elseif ( $themes_todo ) {
+			echo '<p>'
+				. sprintf(__('<strong>A new version is available for your theme</strong>. <a href="%s">Please update now!</a>', 'version-checker'), 'themes.php')
+				. '</p>' . "\n";
+		}
+		
+		echo '</div>' . "\n";
+	} # extra_update_nag()
 	
 	
 	/**
@@ -146,6 +230,18 @@ class version_checker {
 
 #dolly {
 	display: none;
+}
+
+#extra_update_nag {
+	margin-top: 32px;
+	line-height: 29px;
+	font-size: 12px;
+	border-width: 1px 0;
+	border-style: solid none;
+	text-align: center;
+	background-color: #fffeeb;
+	border-color: #ccc;
+	color: #555;
 }
 </style>
 EOS;
