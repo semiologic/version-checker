@@ -77,7 +77,7 @@ class version_checker {
 		
 		if ( version_checker::check('sem-pro') ) {
 			if ( get_option('sem_pro_version') ) {
-				$msg = sprintf(__('Semiologic Pro %1$s is available! <a href="%2$s">Please update now</a>.', 'version-checker'),
+				$msg = sprintf(__('<strong>Semiologic Pro %1$s is available!</strong> <a href="%2$s">Please update now</a>.', 'version-checker'),
 					$cur->current,
 					'update-core.php');
 			} else {
@@ -86,13 +86,24 @@ class version_checker {
 					$cur->current);
 			}
 		} else {
-			$msg = sprintf(__('WordPress %1$s is available! Be wary of not <a href="%2$s">upgrading</a> before checking your plugin and theme compatibility.', 'version-checker'),
+			$msg = sprintf(__('<strong>WordPress %1$s is available!</strong> Be wary of not <a href="%2$s">upgrading</a> before checking your plugin and theme compatibility.', 'version-checker'),
 				$cur->current,
 				'update-core.php');
 		}
 		
+		$msg = '<p>' . $msg . '</p>' . "\n";
+		
+		$extra = '';
+		$hub = @ preg_match("|/usr/local/www/[^/]+/www/|", ABSPATH) && file_exists('/etc/semiologic');
+		if ( $hub ) {
+			$extra = '<p>'
+				. sprintf(__('Note: It is faster and safer to upgrade using the <a href="%s">account management system</a> (AMS).'), 'https://ams.hub.org')
+				. '</p>' . "\n";
+		}
+		
 		echo '<div id="update-nag">' . "\n"
 			. $msg
+			. $extra
 			. '</div>' . "\n";
 	} # update_nag()
 	
