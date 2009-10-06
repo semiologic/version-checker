@@ -21,7 +21,7 @@ class sem_update_core {
 			return $in;
 		
 		if ( !$done ) {
-			if ( is_a($wp_filesystem, 'WP_Filesystem_FTPext') ) {
+			if ( strpos($wp_filesystem->method, 'ftp') ) {
 				if ( $wp_filesystem->link ) {
 					if ( @ftp_get_option($wp_filesystem->link, FTP_TIMEOUT_SEC) < 600 )
 						@ftp_set_option($wp_filesystem->link, FTP_TIMEOUT_SEC, 600);
@@ -101,6 +101,10 @@ class sem_update_core {
 					. __('Do not interrupt a core upgrade once it\'s started. It can take several minutes to complete - albeit never more than 10 minutes.', 'version-checker')
 					. '</p>' . "\n";
 
+				echo '<p>'
+					. sprintf(__('Version Checker proactively works around a couple of known WP bugs, so be sure to you\'re using its latest version before proceeding (<a href="%s">change log</a>). Else you may be in for a manual upgrade.', 'version-checker'), 'http://www.semiologic.com/software/version-checker')
+					. '</p>';
+				
 				echo '<p>'
 					. __('Frequently, failed upgrades will be related to your server\'s configuration, and should be reported to your host. Before you do, however:', 'version-checker')
 					. '</p>' . "\n";
