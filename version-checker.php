@@ -25,6 +25,9 @@ load_plugin_textdomain('version-checker', false, dirname(plugin_basename(__FILE_
 if ( !defined('version_checker_debug') )
 	define('version_checker_debug', false);
 
+if ( !defined('FS_TIMEOUT') )
+	define('FS_TIMEOUT', 900); // 15 minutes
+
 
 /**
  * version_checker
@@ -58,9 +61,9 @@ class version_checker {
 	function update_nag() {
 		global $pagenow, $page_hook;
 		
-		if ( 'update-core.php' == $pagenow || !current_user_can('manage_options') )
+		if ( !current_user_can('manage_options') )
 			return version_checker::sem_news_feed();
-		elseif ( 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
+		elseif ( 'update-core.php' == $pagenow || 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
 			return;
 		
 		if ( 'settings_page_sem-api-key' == $page_hook && $_POST )
@@ -476,6 +479,8 @@ EOS;
 		
 		$args['cookies'] = array_merge((array) $args['cookies'], $cookies);
 		$args['timeout'] = 180;
+		
+		version_checker::force_flush();
 		
 		return $args;
 	} # http_request_args()
@@ -1072,26 +1077,143 @@ EOS;
 	
 	
 	/**
+	 * update_feedback()
+	 *
+	 * @param mixed $in
+	 * @return mixed $in
+	 **/
+
+	function update_feedback($in = null) {
+		global $wp_filesystem;
+		
+		if ( !$_POST || !is_object($wp_filesystem) )
+			return $in;
+		
+		version_checker::reconnect_ftp();
+		version_checker::force_flush();
+		
+		return $in;
+	} # update_feedback()
+	
+	
+	/**
+	 * force_flush()
+	 *
+	 * @return void
+	 **/
+
+	function force_flush() {
+		echo "\n\n<!-- Deal with browser-related buffering by sending some incompressible strings -->\n\n";
+		
+		for ( $i = 0; $i < 5; $i++ )
+			echo "<!-- abcdefghijklmnopqrstuvwxyz1234567890aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz11223344556677889900abacbcbdcdcededfefegfgfhghgihihjijikjkjlklkmlmlnmnmononpopoqpqprqrqsrsrtstsubcbcdcdedefefgfabcadefbghicjkldmnoepqrfstugvwxhyz1i234j567k890laabmbccnddeoeffpgghqhiirjjksklltmmnunoovppqwqrrxsstytuuzvvw0wxx1yyz2z113223434455666777889890091abc2def3ghi4jkl5mno6pqr7stu8vwx9yz11aab2bcc3dd4ee5ff6gg7hh8ii9j0jk1kl2lmm3nnoo4p5pq6qrr7ss8tt9uuvv0wwx1x2yyzz13aba4cbcb5dcdc6dedfef8egf9gfh0ghg1ihi2hji3jik4jkj5lkl6kml7mln8mnm9ono -->\n\n";
+		
+		while ( ob_get_level() )
+			ob_end_flush();
+		
+		@ob_flush();
+		@flush();
+		@set_time_limit(FS_TIMEOUT);
+	} # force_flush()
+	
+	
+	/**
+	 * reconnect_ftp()
+	 *
+	 * @return void
+	 **/
+
+	function reconnect_ftp() {
+		global $wp_filesystem;
+		
+		if ( !$wp_filesystem || !is_object($wp_filesystem) )
+			return;
+		
+		if ( strpos($wp_filesystem->method, 'ftp') !== false ) {
+			if ( $wp_filesystem->link ) {
+				@ftp_close($wp_filesystem->link);
+				$wp_filesystem->connect();
+				if ( @ftp_get_option($wp_filesystem->link, FTP_TIMEOUT_SEC) < FS_TIMEOUT )
+					@ftp_set_option($wp_filesystem->link, FTP_TIMEOUT_SEC, FS_TIMEOUT);
+			} elseif ( $wp_filesystem->ftp && $wp_filesystem->ftp->_connected ) {
+				$wp_filesystem->ftp->quit();
+				$wp_filesystem->connect();
+				if ( $wp_filesystem->ftp->_timeout < FS_TIMEOUT )
+					$wp_filesystem->ftp->SetTimeout(FS_TIMEOUT);
+			}
+		}
+	} # reconnect_ftp()
+	
+	
+	/**
+	 * maybe_flush()
+	 *
+	 * @param mixed $response
+	 * @param mixed $call
+	 * @return mixed $response
+	 **/
+
+	function maybe_flush($response = null, $call = null) {
+		if ( $call != 'response' )
+			return $response;
+		
+		version_checker::force_flush();
+		version_checker::reconnect_ftp();
+		
+		return $response;
+	} # maybe_flush()
+	
+	
+	/**
 	 * option_ftp_credentials()
 	 *
 	 * @return void
 	 **/
 
 	function option_ftp_credentials($in) {
-		if ( !is_admin() || !$_POST || defined('FTP_BASE') )
-			return $in;
-		
-		if ( !is_array($in) || empty($in['connection_type']) || strpos($in['connection_type'], 'ftp') === false )
-			return $in;
-		
 		global $wp_filesystem;
-		if ( !$wp_filesystem || !$wp_filesystem->link )
+		
+		if ( !is_admin() || !$_POST || defined('FTP_BASE')
+			|| !is_array($in) || empty($in['connection_type'])
+			|| !$wp_filesystem || !is_object($wp_filesystem)
+			|| strpos($in['connection_type'], 'ftp') === false
+			|| !$wp_filesystem->link && !$wp_filesystem->ftp )
 			return $in;
 		
 		$ftp_base = $wp_filesystem->abspath();
 		
 		if ( $ftp_base )
 			define('FTP_BASE', $ftp_base);
+		
+		version_checker::force_flush();
+		version_checker::reconnect_ftp();
+		
+		if ( class_exists('sem_update_core') && $wp_filesystem->abspath() ) {
+			if ( $files = glob(WP_CONTENT_DIR . '/sem-pro*.zip') ) {
+				foreach ( $files as $file ) {
+					$dir = $wp_filesystem->find_folder(dirname($file));
+					$file = $dir . basename($file);
+					$wp_filesystem->delete($file);
+				}
+			}
+			
+			version_checker::reconnect_ftp();
+
+			if ( $folders = glob(WP_CONTENT_DIR . '/upgrade/sem-pro*/') ) {
+				foreach ( $folders as $folder ) {
+					$folder = $wp_filesystem->find_folder($folder);
+					show_message(sprintf(__('Cleaning up %1$s. Based on our testing, this step can readily take about 10 minutes without the slightest amount of feedback from WordPress. You can avoid it by deleting your %2$s folder using your FTP software before proceeding.', 'version-checker'), $folder, basename($folder)));
+					version_checker::force_flush();
+					$wp_filesystem->delete($folder, true);
+					version_checker::reconnect_ftp();
+				}
+			}
+			
+			show_message(__('Starting upgrade... Again, this can take several minutes without any feedback from WordPress.', 'version-checker'));
+			version_checker::force_flush();
+			
+			add_action('http_api_debug', array('version_checker', 'maybe_flush'), 100, 2);
+		}
 		
 		return $in;
 	} # option_ftp_credentials()
@@ -1106,6 +1228,11 @@ function sem_api_key() {
 add_action('load-settings_page_sem-api-key', 'sem_api_key');
 
 function sem_update_core() {
+	if ( function_exists('apache_setenv') )
+		@apache_setenv('no-gzip', 1);
+	@ini_set('zlib.output_compression', 0);
+	@ini_set('implicit_flush', 1);
+
 	if ( !class_exists('sem_update_core') )
 		include dirname(__FILE__) . '/core.php';
 }
@@ -1113,11 +1240,25 @@ function sem_update_core() {
 add_action('load-update-core.php', 'sem_update_core');
 
 function sem_update_plugins() {
+	if ( function_exists('apache_setenv') )
+		@apache_setenv('no-gzip', 1);
+	@ini_set('zlib.output_compression', 0);
+	@ini_set('implicit_flush', 1);
+
 	if ( !class_exists('sem_update_plugins') )
 		include dirname(__FILE__) . '/plugins.php';
 }
 
 add_action('load-plugin-install.php', 'sem_update_plugins');
+
+function sem_update_themes() {
+	if ( function_exists('apache_setenv') )
+		@apache_setenv('no-gzip', 1);
+	@ini_set('zlib.output_compression', 0);
+	@ini_set('implicit_flush', 1);
+}
+
+add_action('load-theme-install.php', 'sem_update_themes');
 
 add_option('sem_api_key', '');
 add_option('sem_pro_version', '');
@@ -1171,6 +1312,7 @@ if ( is_admin() && function_exists('get_transient') ) {
 	add_action('show_user_profile', array('version_checker', 'edit_news_pref'));
 	add_action('profile_update', array('version_checker', 'save_news_pref'));
 	
+	add_filter('update_feedback', array('version_checker', 'update_feedback'), 100);
 	add_action('option_ftp_credentials', array('version_checker', 'option_ftp_credentials'));
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
