@@ -17,13 +17,19 @@ class sem_update_core {
 		static $done = false;
 		global $wp_filesystem;
 		
-		if ( $done || !$_POST || !is_object($wp_filesystem) )
+		if ( !$_POST || !is_object($wp_filesystem) )
 			return $in;
 		
-		if ( is_a($wp_filesystem, 'WP_Filesystem_FTPext') && $wp_filesystem->link ) {
-			if ( @ftp_get_option($wp_filesystem->link, FTP_TIMEOUT_SEC) < 600 )
-				@ftp_set_option($wp_filesystem->link, FTP_TIMEOUT_SEC, 600);
-			$done = true;
+		if ( !$done ) {
+			if ( is_a($wp_filesystem, 'WP_Filesystem_FTPext') ) {
+				if ( $wp_filesystem->link ) {
+					if ( @ftp_get_option($wp_filesystem->link, FTP_TIMEOUT_SEC) < 600 )
+						@ftp_set_option($wp_filesystem->link, FTP_TIMEOUT_SEC, 600);
+					$done = true;
+				}
+			} else {
+				$done = true;
+			}
 		}
 		
 		return $in;

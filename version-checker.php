@@ -116,7 +116,7 @@ class version_checker {
 
 	function extra_update_nag() {
 		global $pagenow, $page_hook;
-		if ( $pagenow == 'update.php' || !current_user_can('manage_options') )
+		if ( in_array($pagenow, array('update.php', 'update-core.php')) || !current_user_can('manage_options') )
 			return;
 		
 		$plugins_todo = false;
@@ -1069,6 +1069,32 @@ EOS;
 			. '</p>'
 			. '</div>' . "\n";
 	} # add_warning()
+	
+	
+	/**
+	 * option_ftp_credentials()
+	 *
+	 * @return void
+	 **/
+
+	function option_ftp_credentials($in) {
+		if ( !is_admin() || !$_POST || defined('FTP_BASE') )
+			return $in;
+		
+		if ( !is_array($in) || empty($in['connection_type']) || strpos($in['connection_type'], 'ftp') === false )
+			return $in;
+		
+		global $wp_filesystem;
+		if ( !$wp_filesystem || !$wp_filesystem->link )
+			return $in;
+		
+		$ftp_base = $wp_filesystem->abspath();
+		
+		if ( $ftp_base )
+			define('FTP_BASE', $ftp_base);
+		
+		return $in;
+	} # option_ftp_credentials()
 } # version_checker
 
 
@@ -1144,6 +1170,8 @@ if ( is_admin() && function_exists('get_transient') ) {
 	add_action('edit_user_profile', array('version_checker', 'edit_news_pref'));
 	add_action('show_user_profile', array('version_checker', 'edit_news_pref'));
 	add_action('profile_update', array('version_checker', 'save_news_pref'));
+	
+	add_action('option_ftp_credentials', array('version_checker', 'option_ftp_credentials'));
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
 }
