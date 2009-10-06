@@ -21,7 +21,7 @@ class sem_update_core {
 			return $in;
 		
 		if ( !$done ) {
-			if ( strpos($wp_filesystem->method, 'ftp') ) {
+			if ( strpos($wp_filesystem->method, 'ftp') !== false ) {
 				if ( $wp_filesystem->link ) {
 					if ( @ftp_get_option($wp_filesystem->link, FTP_TIMEOUT_SEC) < 600 )
 						@ftp_set_option($wp_filesystem->link, FTP_TIMEOUT_SEC, 600);
