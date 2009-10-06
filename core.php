@@ -215,6 +215,10 @@ class sem_update_core {
 
 		echo '</ol>' . "\n";
 		
+		echo '<p>'
+			. sprintf(__('And yes, it\'s <strong>much faster</strong> (and much safer) to upgrade from the control panel when you\'re <strong>hosted with us on <a href="%s">hub</a></strong>.', 'version-checker'), 'http://members.semiologic.com/hosting/')
+			. '</p>' . "\n";
+		
 		echo '</div>' . "\n";
 		
 		version_checker::force_flush();
