@@ -43,8 +43,8 @@ class version_checker {
 	 **/
 
 	function init() {
-		if ( !get_option('sem_api_key') && preg_match("/usr/local/www/[^/]+/www/", ABSPATH) ) {
-			$hub = @file_exists('/etc/semiologic') && is_readable('/etc/semiologic');
+		if ( !get_option('sem_api_key') ) {
+			$hub = @ preg_match("|/usr/local/www/[^/]+/www/|", ABSPATH) ) && file_exists('/etc/semiologic') && is_readable('/etc/semiologic');
 			if ( $hub && ( $api_key = file_get_contents('/etc/semiologic') ) ) {
 				update_option('sem_api_key', $api_key);
 			}
@@ -216,7 +216,7 @@ class version_checker {
 		
 		echo '<div class="error">' . "\n"
 			. '<p>'
-			. sprintf(__('The Version Checker plugin is almost ready. Please enter your <a href="%s">Semiologic API key</a> to receive update notifications.', 'version-checker'), 'options-general.php?page=sem-api-key')
+			. sprintf(__('The Version Checker plugin is almost ready. Please enter your <a href="%s">Semiologic API key</a> to receive update notifications for packages hosted on semiologic.com.', 'version-checker'), 'options-general.php?page=sem-api-key')
 			. '</p>' . "\n"
 			. '</div>';
 	} # api_key_nag()
