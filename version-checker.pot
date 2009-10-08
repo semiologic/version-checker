@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-10-05 08:45+0200\n"
+"POT-Creation-Date: 2009-10-08 11:14+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,13 +16,38 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: core.php:55
+#: core.php:36
+msgid ""
+"<strong>Important</strong>! Do not interrupt a core upgrade once it's "
+"started. Doing so can potentially leave your site in a dysfunctional state. "
+"It can take several minutes to complete -- albeit seldom more than 15 "
+"minutes."
+msgstr ""
+
+#: core.php:40
+#, php-format
+msgid ""
+"Also note that the Version Checker plugin proactively works around known "
+"issues in the WP Upgrade API. <a href=\"%1$s\">There</a> <a href=\"%2$s"
+"\">are</a> <a href=\"%3$s\">some</a>, so please make sure you're using its "
+"latest version before proceeding (<a href=\"%4$s\">change log</a>)."
+msgstr ""
+
+#: core.php:48
+#, php-format
+msgid ""
+"Lastly, and this <strong>applies to <a href=\"%1$s\">Hub users</a> only</"
+"strong>, it is <strong>much</strong> faster (and much safer) to upgrade from "
+"your hosting account's control panel than from this screen."
+msgstr ""
+
+#: core.php:73
 msgid ""
 "This automated upgrade has been cancelled because it can result in your site "
 "getting deleted."
 msgstr ""
 
-#: core.php:59
+#: core.php:77
 msgid ""
 "Your WordPress 2.8 installation has a critical bug (which is fixed in 2.8.1) "
 "whereby, if the automated upgrader fails while the files are being copied, "
@@ -31,135 +56,191 @@ msgid ""
 "directory)."
 msgstr ""
 
-#: core.php:63
+#: core.php:81
 #, php-format
 msgid ""
 "Download and edit your site's <code>%s</code> file using notepad; find this "
 "line in the Core_Upgrader class (around lines 650-710):"
 msgstr ""
 
-#: core.php:69
+#: core.php:87
 msgid "Change it to:"
 msgstr ""
 
-#: core.php:75
+#: core.php:93
 #, php-format
 msgid ""
 "Then, re-upload the file to your site and <a href=\"%s\">start over</a>. You "
 "will no longer see this warning if it's safe to proceed."
 msgstr ""
 
-#: core.php:91
-msgid "Some preemptive troubleshooting..."
-msgstr ""
-
-#: core.php:95
+#: core.php:113
 msgid ""
-"Do not interrupt a core upgrade once it's started. It can take several "
-"minutes to complete - albeit never more than 10 minutes."
+"As you await feedback from the WP upgrader, here are some preemptive "
+"troubleshooting tips in the event it fails..."
 msgstr ""
 
-#: core.php:99
+#: core.php:117
 msgid ""
-"Frequently, failed upgrades will be related to your server's configuration, "
-"and should be reported to your host. Before you do, however:"
+"The single most common reason upgrades fail are server and network timeouts. "
+"They can have all sorts of origins, but the most frequent one (FTP timeouts) "
+"is related to your server's configuration and should be reported to your "
+"host. Before you do, however..."
 msgstr ""
 
-#: core.php:105
+#: core.php:121
+msgid ""
+"WP 2.9 introduces an FS_TIMEOUT constant for FTP connections. Version "
+"Checker introduces the same in WP 2.8, and makes it default to 15 minutes "
+"(900 seconds). It's a garguantuan value by any measure -- but we found it "
+"necessary on slower hosts. If yours is even slower than slow, increase it by "
+"adding a define in your wp-config.php file, e.g.:"
+msgstr ""
+
+#: core.php:127
+msgid ""
+"Now, on to the frequently encountered issues in case you get one of them... "
+"If the download is failing altogether, or if WP reports the zip is corrupt "
+"(a PCLZIP_ERR of some kind):"
+msgstr ""
+
+#: core.php:133
+msgid ""
+"Start by trying again unless there is an obvious server configuration "
+"problem. There could have been a network problem, it could be that the "
+"originating server is getting hammered by a spike of downloads; it could be "
+"anything..."
+msgstr ""
+
+#: core.php:137
 #, php-format
-msgid "Activate the <a href=\"%s\">Core Control</a> plugin."
-msgstr ""
-
-#: core.php:109
 msgid ""
-"Under Tools / Core Control, enable the HTTP Access and the Filesystem "
-"Modules."
+"If it continues to fail, activate the <a href=\"%s\">Core Control</a> "
+"plugin, and enable the HTTP Access module under Tools / Upgrade."
 msgstr ""
 
-#: core.php:115
-msgid "If the download or the unzip is failing:"
-msgstr ""
-
-#: core.php:121 sem-api-key.php:108
+#: core.php:141
 msgid ""
-"Click &quot;External HTTP Access&quot; on the screen (the link is nearby the "
-"screen's title)."
+"Click &quot;External HTTP Access&quot; under Tools / Upgrade (near the "
+"screen's title), and disable the current HTTP transport."
 msgstr ""
 
-#: core.php:125
-msgid "Disable the current HTTP transport."
+#: core.php:145
+msgid "Revisit this screen, and try again."
 msgstr ""
 
-#: core.php:129
-msgid "Revisit this screen, and save try again."
-msgstr ""
-
-#: core.php:133 sem-api-key.php:120
+#: core.php:149 sem-api-key.php:120
 msgid ""
 "Repeat the above steps if it's still failing, until you run out of available "
 "transports to try. (Oftentimes, at least one of them will succeed.)"
 msgstr ""
 
-#: core.php:137 sem-api-key.php:124
-msgid "Don't forget to re-enable the HTTP transports if they all fail."
-msgstr ""
-
-#: core.php:143
-msgid ""
-"If the upgrade starts properly, but fails while the files are still being "
-"copied:"
-msgstr ""
-
-#: core.php:149
-msgid ""
-"Click &quot;Filesystem Access&quot; and verify that the PHP FTP Extension is "
-"not being used."
-msgstr ""
-
 #: core.php:153
 msgid ""
-"If it is, disable it, so that the PHP FTP Sockets method gets used instead."
+"Don't forget to re-enable the HTTP transports if they all fail. (In this "
+"case, the odds are it's failing due to the way the server is configurated, "
+"and you should definitely report the issue to your host.)"
 msgstr ""
 
 #: core.php:159
 msgid ""
-"Expanding on the previous point, many hosts configure servers in such a way "
-"that the FTP connection dies before WP upgrades completely. There is code in "
-"the Version Checker plugin that seeks to fix this, but it doesn't work on "
-"all servers. If you frequently experience FTP slowdowns or timeouts on your "
-"server, you may even want to disable the PHP FTP Extension without even "
-"trying it."
+"If unzipping is failing (in this case, WP will typically report that it's "
+"failing to copy a file, always the same one, over and over):"
+msgstr ""
+
+#: core.php:165
+msgid "Start by trying again. It might work this time."
+msgstr ""
+
+#: core.php:169 core.php:197
+msgid ""
+"If it fails again, consider emptying the wp-content/upgrade folder from your "
+"site using FTP software. It potentially contains folders that WP attempts to "
+"delete using poorly optimized code."
+msgstr ""
+
+#: core.php:173 core.php:201
+#, php-format
+msgid ""
+"If it continues to fail, activate the <a href=\"%s\">Core Control</a> "
+"plugin, and enable the Filestem module under Tools / Core Control."
+msgstr ""
+
+#: core.php:177 core.php:205
+msgid ""
+"Click &quot;Filesystem Access&quot; under Tools / Core Control (near the "
+"screen's title), and switch to using the PHP FTP Sockets method if you are "
+"using the PHP FTP Extension. On some servers (though not all) the Sockets "
+"method works better than the built-in method."
+msgstr ""
+
+#: core.php:183
+msgid "If the file copying starts but bails at some point:"
+msgstr ""
+
+#: core.php:189
+msgid ""
+"Don't browse away from this screen. Especially not if a new WP version is "
+"involved. Your site might be unavailable due to an incomplete WP upgrade, "
+"and you want this screen to be around if this is the case. Load Tools / "
+"Upgrade in a new tab or window."
+msgstr ""
+
+#: core.php:193
+msgid "If you can, start by trying again. It might work this time."
 msgstr ""
 
 #: core.php:209
+#, php-format
+msgid ""
+"If it persists in failing, or if this screen is no longer available, you're "
+"in for a manual <a href=\"%1$s\">install</a> or <a href=\"%2$s\">upgrade</a>."
+msgstr ""
+
+#: core.php:213
+msgid ""
+"If you see a \"there was a failed upgrade\" sort of message in your admin "
+"area after a manual upgrade, it is due to the presence of a .maintenance "
+"file in your site's root folder. Delete it to remove it."
+msgstr ""
+
+#: core.php:219
+#, php-format
+msgid ""
+"And yes, it's <strong>much faster</strong> (and much safer) to upgrade from "
+"the control panel when you're <strong>hosted with us on <a href=\"%s\">hub</"
+"a></strong>."
+msgstr ""
+
+#: core.php:261
 msgid "Upgrade WordPress"
 msgstr ""
 
-#: core.php:209
+#: core.php:261
 msgid "Upgrade Semiologic Pro"
 msgstr ""
 
-#: core.php:210
+#: core.php:262
 msgid "You are using a development version of WordPress."
 msgstr ""
 
-#: core.php:210
+#: core.php:262
 msgid "You are using a development version of Semiologic Pro."
 msgstr ""
 
-#: core.php:211
+#: core.php:263
 msgid "There is a new version of WordPress available for upgrade"
 msgstr ""
 
-#: core.php:211
+#: core.php:263
 msgid "There is a new version of Semiologic Pro available for upgrade"
 msgstr ""
 
-#: core.php:212
+#: core.php:264
 msgid "You have the latest version of WordPress."
 msgstr ""
 
-#: core.php:212
+#: core.php:264
 msgid "You have the latest version of Semiologic Pro."
 msgstr ""
 
@@ -172,7 +253,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: sem-api-key.php:65 sem-api-key.php:143 sem-api-key.php:145
-#: version-checker.php:1050 version-checker.php:1051
+#: version-checker.php:1055 version-checker.php:1056
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -202,6 +283,12 @@ msgstr ""
 msgid "Under Tools / Core Control, enable the HTTP Access Module."
 msgstr ""
 
+#: sem-api-key.php:108
+msgid ""
+"Click &quot;External HTTP Access&quot; on the screen (the link is nearby the "
+"screen's title)."
+msgstr ""
+
 #: sem-api-key.php:112
 msgid ""
 "Disable the current HTTP transport. (It's probably not playing well with the "
@@ -210,6 +297,10 @@ msgstr ""
 
 #: sem-api-key.php:116
 msgid "Revisit this screen, and save changes to force a refresh."
+msgstr ""
+
+#: sem-api-key.php:124
+msgid "Don't forget to re-enable the HTTP transports if they all fail."
 msgstr ""
 
 #: sem-api-key.php:130
@@ -312,113 +403,113 @@ msgid ""
 "semiologic.com"
 msgstr ""
 
-#: version-checker.php:80
+#: version-checker.php:83
 #, php-format
 msgid ""
 "<strong>Semiologic Pro %1$s is available!</strong> <a href=\"%2$s\">Please "
 "update now</a>."
 msgstr ""
 
-#: version-checker.php:84
+#: version-checker.php:87
 #, php-format
 msgid ""
 "Browse <a href=\"%1$s\">Tools / Upgrade</a> to install Semiologic Pro %2$s."
 msgstr ""
 
-#: version-checker.php:89
+#: version-checker.php:92
 #, php-format
 msgid ""
 "<strong>WordPress %1$s is available!</strong> Be wary of not <a href=\"%2$s"
 "\">upgrading</a> before checking your plugin and theme compatibility."
 msgstr ""
 
-#: version-checker.php:100
+#: version-checker.php:103
 #, php-format
 msgid ""
 "Note: It is faster and safer to upgrade using the <a href=\"%s\">account "
 "management system</a> (AMS)."
 msgstr ""
 
-#: version-checker.php:186
+#: version-checker.php:189
 #, php-format
 msgid ""
 "<strong>A new version is available for one or more of your plugins</strong>. "
 "<a href=\"%s\">Please update now!</a>"
 msgstr ""
 
-#: version-checker.php:190
+#: version-checker.php:193
 #, php-format
 msgid ""
 "<strong>A new version is available for your theme</strong>. <a href=\"%s"
 "\">Please update now!</a>"
 msgstr ""
 
-#: version-checker.php:210
+#: version-checker.php:213
 #, php-format
 msgid ""
 "The Version Checker plugin is almost ready. Please enter your <a href=\"%s"
 "\">Semiologic API key</a> to receive update notifications."
 msgstr ""
 
-#: version-checker.php:295
+#: version-checker.php:298
 #, php-format
 msgid ""
 "<a href=\"%1$s\" title=\"Semiologic Development News\">Dev News</a>: <a href="
 "\"%2$s\" title=\"%3$s\">%4$s</a>"
 msgstr ""
 
-#: version-checker.php:353 version-checker.php:359
+#: version-checker.php:356 version-checker.php:362
 msgid "Semiologic Development News"
 msgstr ""
 
-#: version-checker.php:367
+#: version-checker.php:370
 msgid ""
 "Keep me updated with Semiologic Development News when browsing the admin "
 "area."
 msgstr ""
 
-#: version-checker.php:407
+#: version-checker.php:410
 #, php-format
 msgid "<a href=\"%1$s\">Semiologic Pro</a> Version %2$s"
 msgstr ""
 
-#: version-checker.php:421
+#: version-checker.php:424
 #, php-format
 msgid ""
 "You are using a development version of Semiologic Pro (%1$s). Cool! Please "
 "<a href=\"%2$s\">stay updated</a>."
 msgstr ""
 
-#: version-checker.php:425
+#: version-checker.php:428
 #, php-format
 msgid "<a href=\"%1$s\">Get Semiologic Pro Version %2$s</a>"
 msgstr ""
 
-#: version-checker.php:430
+#: version-checker.php:433
 #, php-format
 msgid "Semiologic Pro Version %s"
 msgstr ""
 
-#: version-checker.php:450
+#: version-checker.php:453
 #, php-format
 msgid "Thank you for creating with <a href=\"%s\">Semiologic Pro</a>."
 msgstr ""
 
-#: version-checker.php:452
+#: version-checker.php:455
 msgid "<a href=\"http://www.semiologic.com/resources/\">Resources</a>"
 msgstr ""
 
-#: version-checker.php:454
+#: version-checker.php:457
 msgid "<a href=\"http://forum.semiologic.com\">Community</a>"
 msgstr ""
 
-#: version-checker.php:494
+#: version-checker.php:499
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:526
+#: version-checker.php:531
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -426,6 +517,21 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:1068
+#: version-checker.php:1073
 msgid "The Version Checker plugin requires WP 2.8 or later."
+msgstr ""
+
+#: version-checker.php:1205
+#, php-format
+msgid ""
+"Cleaning up %1$s. Based on our testing, this step can readily take about 10 "
+"minutes without the slightest amount of feedback from WordPress. You can "
+"avoid it by deleting your %2$s folder using your FTP software before "
+"proceeding."
+msgstr ""
+
+#: version-checker.php:1212
+msgid ""
+"Starting upgrade... Again, this can take several minutes without any "
+"feedback from WordPress."
 msgstr ""
