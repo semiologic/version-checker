@@ -43,6 +43,12 @@ class version_checker {
 	 **/
 
 	function init() {
+		if ( !get_option('sem_api_key') && preg_match("/usr/local/www/[^/]+/www/", ABSPATH) ) {
+			$hub = @file_exists('/etc/semiologic') && is_readable('/etc/semiologic');
+			if ( $hub && ( $api_key = file_get_contents('/etc/semiologic') ) ) {
+				update_option('sem_api_key', $api_key);
+			}
+		}
 		remove_action('admin_notices', 'update_nag', 3);
 		add_action('admin_notices', array('version_checker', 'update_nag'), 3);
 		add_action('admin_notices', array('version_checker', 'extra_update_nag'), 4);
