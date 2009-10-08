@@ -45,7 +45,7 @@ class version_checker {
 	function init() {
 		if ( !get_option('sem_api_key') ) {
 			$hub = @ preg_match("|/usr/local/www/[^/]+/www/|", ABSPATH) && file_exists('/etc/semiologic') && is_readable('/etc/semiologic');
-			if ( $hub && ( $api_key = trim(file_get_contents('/etc/semiologic')) && preg_match("/^[0-9a-f]{32}$/i", $api_key)) )
+			if ( $hub && ( $api_key = trim(file_get_contents('/etc/semiologic')) ) && preg_match("/^[0-9a-f]{32}$/i", $api_key) )
 				update_option('sem_api_key', $api_key);
 		}
 		remove_action('admin_notices', 'update_nag', 3);
