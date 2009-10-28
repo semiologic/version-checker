@@ -94,7 +94,7 @@ class version_checker {
 					$cur->current);
 			}
 		} else {
-			$msg = sprintf(__('<strong>WordPress %1$s is available!</strong> Be wary of not <a href="%2$s">upgrading</a> before checking your plugin and theme compatibility.', 'version-checker'),
+			$msg = sprintf(__('<strong>WordPress %1$s is available!</strong> Be wary of not <a href="%2$s">upgrading</a> before checking the compatibility of your theme and plugins.', 'version-checker'),
 				$cur->current,
 				'update-core.php');
 		}

@@ -420,7 +420,7 @@ msgstr ""
 #, php-format
 msgid ""
 "<strong>WordPress %1$s is available!</strong> Be wary of not <a href=\"%2$s"
-"\">upgrading</a> before checking your plugin and theme compatibility."
+"\">upgrading</a> before checking the compatibility of your theme and plugins."
 msgstr ""
 
 #: version-checker.php:109
