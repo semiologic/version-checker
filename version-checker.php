@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.0 RC5
+Version: 2.0 RC6
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -75,27 +75,22 @@ class version_checker {
 			wp_version_check();
 		
 		$cur = get_preferred_from_update_core();
-		
-		if ( !isset($cur->response) || !isset($cur->package) || $cur->response != 'upgrade' ) {
+		$sem_pro_version = get_option('sem_pro_version');
+		if ( empty($cur->response) || empty($cur->package) || $cur->response != 'upgrade' ) {
 			version_checker::sem_news_feed();
 			if ( !get_option('sem_api_key') )
 				version_checker::api_key_nag();
 			return;
 		}
 		
-		if ( version_checker::check('sem-pro') ) {
-			if ( get_option('sem_pro_version') ) {
-				$msg = sprintf(__('<strong>Semiologic Pro %1$s is available!</strong> <a href="%2$s">Please update now</a>.', 'version-checker'),
-					$cur->current,
-					'update-core.php');
-			} else {
-				$msg = sprintf(__('Browse <a href="%1$s">Tools / Upgrade</a> to install Semiologic Pro %2$s.', 'version-checker'),
-					'update-core.php',
-					$cur->current);
-			}
+		if ( version_checker::check('sem-pro') && !$sem_pro_version ) {
+			$msg = sprintf(__('Browse <a href="%1$s">Tools / Upgrade</a> to install Semiologic Pro %2$s.', 'version-checker'),
+				'update-core.php',
+				$cur->current);
 		} else {
-			$msg = sprintf(__('<strong>WordPress %1$s is available!</strong> Be wary of not <a href="%2$s">upgrading</a> before checking the compatibility of your theme and plugins.', 'version-checker'),
+			$msg = sprintf(__('<strong>WordPress %1$s is available</strong>! Please see the <a href="%2$s">release notes</a>, if any, before <a href="%3$s">upgrading your site</a>.', 'version-checker'),
 				$cur->current,
+				'http://www.semiologic.com',
 				'update-core.php');
 		}
 		
@@ -403,40 +398,18 @@ EOS;
 	 **/
 
 	function core_update_footer($msg = '') {
-		global $wp_version;
-		$update_core = get_transient('update_core');
+		if ( !current_user_can('manage_options') || get_option('sem_pro_version') )
+			return $msg;
 		
+		$update_core = get_transient('update_core');
 		if ( empty($update_core->response) || empty($update_core->response->package) )
 			return $msg;
 		
-		$sem_pro_version = get_option('sem_pro_version');
-		
-		if ( !current_user_can('manage_options') )
-			return sprintf(__('<a href="%1$s">Semiologic Pro</a> Version %2$s', 'version-checker'), 'http://www.getsemiologic.com', $sem_pro_version);
-
 		$cur = get_preferred_from_update_core();
-		if ( ! isset( $cur->current ) )
-			$cur->current = '';
+		if ( !empty($cur->response) && $cur->response == 'upgrade' )
+			return sprintf('<strong>' . __( '<a href="%1$s">Get Semiologic Pro Version %2$s</a>', 'version-checker') . '</strong>', 'update-core.php', $cur->current);
 		
-		if ( ! isset( $cur->url ) )
-			$cur->url = '';
-		
-		if ( ! isset( $cur->response ) )
-			$cur->response = '';
-		
-		switch ( $cur->response ) {
-		case 'development':
-			return sprintf(__('You are using a development version of Semiologic Pro (%1$s). Cool! Please <a href="%2$s">stay updated</a>.', 'version-checker'), $sem_pro_version, 'update-core.php');
-		
-		case 'upgrade':
-			if ( current_user_can('manage_options') ) {
-				return sprintf('<strong>' . __( '<a href="%1$s">Get Semiologic Pro Version %2$s</a>', 'version-checker') . '</strong>', 'update-core.php', $cur->current);
-			}
-
-		case 'latest':
-		default:
-			return sprintf(__('Semiologic Pro Version %s', 'version-checker'), $sem_pro_version);
-		}
+		return $msg;
 	} # core_update_footer()
 	
 	
@@ -448,18 +421,13 @@ EOS;
 	 **/
 
 	function admin_footer_text($text = '') {
-		$sem_pro_version = get_option('sem_pro_version');
-		$update_core = get_transient('update_core');
+		if ( get_option('sem_pro_version') && version_checker::get_news_pref() != 'false' ) {
+			$text .= ' | <a href="http://www.semiologic.com">'
+				. __('Semiologic', 'version-checker')
+				. '</a>';
+		}
 		
-		if ( !$sem_pro_version || empty($update_core->response) || empty($update_core->response->package) )
-			return $text;
-		
-		return '<span id="footer-thankyou">'
-			. sprintf(__('Thank you for creating with <a href="%s">Semiologic Pro</a>.', 'version-checker'), 'http://www.getsemiologic.com')
-			. '</span> | '
-			. __('<a href="http://www.semiologic.com/resources/">Resources</a>', 'version-checker')
-			. ' | '
-			. __('<a href="http://forum.semiologic.com">Community</a>', 'version-checker');
+		return $text;
 	} # admin_footer_text()
 	
 	
@@ -649,12 +617,12 @@ EOS;
 	function get_core($checked = null) {
 		$sem_api_key = get_option('sem_api_key');
 		
-		if ( !$sem_api_key || !version_checker::check('sem-pro') )
+		$sem_pro_version = get_option('sem_pro_version');
+		
+		if ( !$sem_api_key || $sem_pro_version || !version_checker::check('sem-pro') )
 			return array();
 		
 		$obj = get_transient('sem_update_core');
-		
-		$sem_pro_version = get_option('sem_pro_version');
 		
 		if ( !is_object($obj) ) {
 			$obj = new stdClass;
@@ -739,11 +707,16 @@ EOS;
 	 **/
 
 	function update_core($ops) {
+		$sem_pro_version = get_option('sem_pro_version');
+		
+		if ( $sem_pro_version )
+			return $ops;
+		
 		if ( !is_object($ops) )
 			$ops = new stdClass;
 		
 		if ( !is_array($ops->checked) )
-			$ops->checked = array('sem-pro' => get_option('sem_pro_version'));
+			$ops->checked = array('sem-pro' => $sem_pro_version);
 		
 		if ( !is_array($ops->updates) )
 			$ops->response = array();
