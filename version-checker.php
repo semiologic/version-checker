@@ -119,7 +119,7 @@ class version_checker {
 
 	function extra_update_nag() {
 		global $pagenow, $page_hook;
-		if ( in_array($pagenow, array('update.php', 'update-core.php')) || !current_user_can('manage_options') )
+		if ( in_array($pagenow, array('update.php', 'update-core.php')) || !current_user_can('manage_options') || get_option('sem_packages') != 'stable' )
 			return;
 		
 		$plugins_todo = false;
