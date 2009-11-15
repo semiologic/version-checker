@@ -442,7 +442,7 @@ EOS;
 	function http_request_args($args, $url) {
 		#dump($url);
 		
-		if ( !preg_match("/https?:\/\/([^\/]+).semiologic.com\/media\/([^\/]+)/i", $url, $match) )
+		if ( !preg_match("/^https?:\/\/([^\/]+)\.semiologic\.com\/media\/([^\/]+)/i", $url, $match) )
 			return $args;
 		
 		if ( $match[1] != 'members' && $match[2] != 'members' )
@@ -451,7 +451,10 @@ EOS;
 		$cookies = version_checker::get_auth();
 		
 		$args['cookies'] = array_merge((array) $args['cookies'], $cookies);
-		$args['timeout'] = 180;
+		if ( preg_match("/^https?:\/\/members\.semiologic\.com\/media\/sem-pro\//i", $url) )
+			$args['timeout'] = 600;
+		else
+			$args['timeout'] = 300;
 		
 		version_checker::force_flush();
 		
