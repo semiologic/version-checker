@@ -134,9 +134,9 @@ class sem_update_plugins {
 		while ( $junk = array_shift($header) );
 		
 		$obj->short_description = Markdown(implode("\n", $header));
+		$obj->sections = array();
 		
 		if ( $readme ) {
-			$obj->sections = array();
 			do {
 				$section = array_shift($readme);
 				$section = trim($section);
