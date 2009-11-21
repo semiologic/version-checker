@@ -115,7 +115,8 @@ class sem_update_plugins {
 		
 		if ( !function_exists('Markdown') )
 			include_once dirname(__FILE__) . '/markdown/markdown.php';
-		global $allowedposttags, $plugins_allowedtags;
+		global $allowedposttags;
+		$plugins_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
 		
 		$readme = str_replace(array("\r\n", "\r"), "\n", $obj->readme);
 		$readme = preg_split("/^\s*(==[^=].+?)\s*$/m", $readme, null, PREG_SPLIT_DELIM_CAPTURE);
@@ -173,6 +174,7 @@ class sem_update_plugins {
 			case 'requires':
 			case 'tested':
 			case 'last_updated':
+			case 'author':
 				$obj->$key = wp_kses($val, $plugins_allowedtags);
 				break;
 			
@@ -190,7 +192,7 @@ class sem_update_plugins {
 				break; # already sanitized
 			
 			default:
-				unset($obj->key);
+				unset($obj->$key);
 				break;
 			}
 		}

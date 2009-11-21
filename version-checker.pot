@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-11-14 12:53+0100\n"
+"POT-Creation-Date: 2009-11-21 16:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -252,8 +252,13 @@ msgstr ""
 msgid "Install Automatically"
 msgstr ""
 
-#: plugins.php:40
-msgid "Compatible with the latest version of WordPress."
+#: plugins.php:155
+#, php-format
+msgid "Version %s"
+msgstr ""
+
+#: plugins.php:166 version-checker.php:426
+msgid "Semiologic"
 msgstr ""
 
 #: sem-api-key.php:44
@@ -261,7 +266,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: sem-api-key.php:65 sem-api-key.php:143 sem-api-key.php:145
-#: version-checker.php:1033 version-checker.php:1034
+#: version-checker.php:1036 version-checker.php:1037
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -476,17 +481,13 @@ msgstr ""
 msgid "<a href=\"%1$s\">Get Semiologic Pro Version %2$s</a>"
 msgstr ""
 
-#: version-checker.php:426
-msgid "Semiologic"
-msgstr ""
-
-#: version-checker.php:472
+#: version-checker.php:475
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:504
+#: version-checker.php:507
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -494,11 +495,11 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:1051
+#: version-checker.php:1054
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""
 
-#: version-checker.php:1183
+#: version-checker.php:1186
 #, php-format
 msgid ""
 "Cleaning up %1$s. Based on our testing, this step can readily take about 10 "
@@ -507,7 +508,7 @@ msgid ""
 "proceeding."
 msgstr ""
 
-#: version-checker.php:1190
+#: version-checker.php:1193
 msgid ""
 "Starting upgrade... Again, this can take several minutes without any "
 "feedback from WordPress."
