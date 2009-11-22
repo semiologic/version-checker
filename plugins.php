@@ -75,7 +75,7 @@ class sem_update_plugins {
 			'plugins' => array(),
 			);
 		
-		$response = version_checker::query('plugins');
+		$response = sem_update_plugins::cache();
 		if ( $response && is_array($response) ) {
 			$res->info['results'] = count($response);
 			$res->plugins = $response;
@@ -96,7 +96,7 @@ class sem_update_plugins {
 	 **/
 
 	function info($res, $action, $args) {
-		$plugins = version_checker::query('plugins');
+		$plugins = sem_update_plugins::cache();
 		if ( !isset($plugins[$args->slug]) || empty($plugins[$args->slug]->download_link) )
 			return $res;
 		
@@ -118,6 +118,60 @@ class sem_update_plugins {
 	function sort($a, $b) {
 		return strnatcmp($a->name, $b->name);
 	} # sort()
+	
+	
+	/**
+	 * cache()
+	 *
+	 * @param string $type
+	 * @return array $plugins
+	 **/
+
+	function cache() {
+		$response = get_transient('sem_query_plugins');
+		if ( $response !== false )
+			return $response;
+		
+		global $wp_version;
+		$sem_api_key = get_option('sem_api_key');
+		
+		if ( !version_checker_debug ) {
+			$url = "https://api.semiologic.com/info/0.1/plugins/" . $sem_api_key;
+		} elseif ( version_checker_debug == 'localhost' ) {
+			$url = "http://localhost/~denis/api/info/plugins/" . $sem_api_key;
+		} else {
+			$url = "https://api.semiologic.com/info/trunk/plugins/" . $sem_api_key;
+		}
+		
+		$body = array(
+			'action' => 'query',
+			);
+		
+		$options = array(
+			'timeout' => 3,
+			'body' => $body,
+			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
+			);
+		
+		$cache_id = serialize(array($url, $options));
+		$raw_response = wp_cache_get($cache_id, 'sem_api');
+		if ( $raw_response === false ) {
+			$raw_response = wp_remote_post($url, $options);
+			wp_cache_set($cache_id, $raw_response, 'sem_api');
+		}
+		
+		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
+			$response = false;
+		else
+			$response = @unserialize($raw_response['body']);
+		
+		if ( $response !== false ) {
+			$response = sem_update_plugins::parse($response);
+			set_transient('sem_query_plugins', $response, 900);
+		}
+		
+		return $response;
+	} # cache()
 	
 	
 	/**

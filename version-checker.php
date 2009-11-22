@@ -1204,61 +1204,6 @@ EOS;
 		
 		return $in;
 	} # option_ftp_credentials()
-	
-	
-	/**
-	 * query()
-	 *
-	 * @param string $type
-	 * @return array $plugins
-	 **/
-
-	function query($type) {
-		$response = get_transient('sem_query_' . $type);
-		if ( $response !== false )
-			return $response;
-		
-		global $wp_version;
-		$sem_api_key = get_option('sem_api_key');
-		$type = sanitize_title($type);
-		
-		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/info/0.1/$type/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
-			$url = "http://localhost/~denis/api/info/$type/" . $sem_api_key;
-		} else {
-			$url = "https://api.semiologic.com/info/trunk/$type/" . $sem_api_key;
-		}
-		
-		$body = array(
-			'action' => 'query',
-			);
-		
-		$options = array(
-			'timeout' => 3,
-			'body' => $body,
-			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
-			);
-		
-		$cache_id = serialize(array($url, $options));
-		$raw_response = wp_cache_get($cache_id, 'sem_api');
-		if ( $raw_response === false ) {
-			$raw_response = wp_remote_post($url, $options);
-			wp_cache_set($cache_id, $raw_response, 'sem_api');
-		}
-		
-		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
-			$response = false;
-		else
-			$response = @unserialize($raw_response['body']);
-		
-		if ( $response !== false ) {
-			$response = sem_update_plugins::parse($response);
-			set_transient('sem_query_' . $type, $response, 900);
-		}
-		
-		return $response;
-	} # query()
 } # version_checker
 
 
