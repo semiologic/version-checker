@@ -7,6 +7,33 @@
 
 class sem_update_plugins {
 	/**
+	 * install_plugins_tabs()
+	 *
+	 * @param array $tabs
+	 * @return array $tabs
+	 **/
+
+	function install_plugins_tabs($tabs) {
+		$tabs['semiologic'] = __('Semiologic', 'version-checker');
+		return $tabs;
+	} # install_plugins_tabs()
+	
+	
+	/**
+	 * install_plugins_semiologic()
+	 *
+	 * @param int $page
+	 * @return void
+	 **/
+
+	function install_plugins_semiologic($page = 1) {
+		$args = array('browse' => 'semiologic', 'page' => $page);
+		$api = plugins_api('query_plugins', $args);
+		display_plugins_table($api->plugins, $api->info['page'], $api->info['pages']);
+	} # install_plugins_semiologic()
+	
+	
+	/**
 	 * plugins_api()
 	 *
 	 * @param false $res
@@ -16,9 +43,16 @@ class sem_update_plugins {
 	 **/
 
 	function plugins_api($res, $action, $args) {
+		if ( $res || !get_option('sem_api_key') )
+			return $res;
+		
 		switch ( $action ) {
 		case 'plugin_information':
 			return sem_update_plugins::info($res, $action, $args);
+		
+		case 'query_plugins':
+		if ( !empty($args->browse) && $args->browse == 'semiologic' )
+			return sem_update_plugins::query($res, $action, $args);
 		
 		default:
 			return $res;
@@ -27,66 +61,63 @@ class sem_update_plugins {
 	
 	
 	/**
+	 * query()
+	 *
+	 * @param false $res
+	 * @param string $action
+	 * @param array $args
+	 * @return mixed $res
+	 **/
+
+	function query($res, $action, $args) {
+		$res = (object) array(
+			'info' => array('page' => 1, 'pages' => 1, 'results' => 0),
+			'plugins' => array(),
+			);
+		
+		$response = version_checker::query('plugins');
+		if ( $response && is_array($response) ) {
+			$res->info['results'] = count($response);
+			$res->plugins = $response;
+			usort($res->plugins, array('sem_update_plugins', 'sort'));
+		}
+		
+		return $res;
+	} # query()
+	
+	
+	/**
 	 * info()
 	 *
 	 * @param false $res
 	 * @param string $action
 	 * @param array $args
-	 * @return $res
+	 * @return mixed $res
 	 **/
 
 	function info($res, $action, $args) {
-		$sem_api_key = get_option('sem_api_key');
-		
-		if ( !$sem_api_key )
+		$plugins = version_checker::query('plugins');
+		if ( !isset($plugins[$args->slug]) || empty($plugins[$args->slug]->download_link) )
 			return $res;
 		
-		$plugin = get_plugins("/$args->slug");
-		if ( !$plugin )
+		if ( !preg_match("!^https?://[^/]+.semiologic.com!", $plugins[$args->slug]->download_link) )
 			return $res;
 		
-		$plugin = current($plugin);
-		if ( empty($plugin['PluginURI']) || !preg_match("!^https?://[^/]+.semiologic.com!", $plugin['PluginURI']) )
-			return $res;
-		
-		global $wp_version;
-		
-		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/info/0.1/plugins/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
-			$url = "http://localhost/~denis/api/info/plugins/" . $sem_api_key;
-		} else {
-			$url = "https://api.semiologic.com/info/trunk/plugins/" . $sem_api_key;
-		}
-		
-		$body = array(
-			'action' => 'info',
-			'slug' => $args->slug,
-			);
-		
-		$options = array(
-			'timeout' => 3,
-			'body' => $body,
-			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
-			);
-		
-		$cache_id = serialize(array($url, $options));
-		$raw_response = wp_cache_get($cache_id, 'sem_api');
-		if ( $raw_response === false ) {
-			$raw_response = wp_remote_post($url, $options);
-			wp_cache_set($cache_id, $raw_response, 'sem_api');
-		}
-		
-		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
-			$response = false;
-		else
-			$response = @unserialize($raw_response['body']);
-		
-		if ( $response !== false )
-			return sem_update_plugins::parse($response);
-		
-		return $res;
+		return $plugins[$args->slug];
 	} # info()
+	
+	
+	/**
+	 * sort()
+	 *
+	 * @param object $a
+	 * @param object $b
+	 * @return int $sort
+	 **/
+
+	function sort($a, $b) {
+		return strnatcmp($a->name, $b->name);
+	} # sort()
 	
 	
 	/**
@@ -98,14 +129,14 @@ class sem_update_plugins {
 
 	function parse($obj) {
 		if ( is_array($obj) ) {
+			$res = array();
 			foreach ( $obj as $k => $v ) {
 				$v = sem_update_plugins::parse($v);
-				if ( $obj[$k] )
-					$obj[$k] = $v;
-				else
-				 	unset($obj[$k]);
+				if ( $v && is_object($v) && $v->slug )
+					$res[$v->slug] = $v;
 			}
-			return $obj;
+			$obj = null;
+			return $res;
 		} elseif ( !is_object($obj) ) {
 			return false;
 		}
@@ -121,7 +152,6 @@ class sem_update_plugins {
 		$readme = str_replace(array("\r\n", "\r"), "\n", $obj->readme);
 		$readme = preg_split("/^\s*(==[^=].+?)\s*$/m", $readme, null, PREG_SPLIT_DELIM_CAPTURE);
 		
-		# dump header
 		$header = array_shift($readme);
 		$header = explode("\n", $header);
 		
@@ -132,9 +162,13 @@ class sem_update_plugins {
 				$obj->name = end($name);
 		} while ( $header && !$obj->name );
 		
-		while ( $junk = array_shift($header) );
+		while ( $field = array_shift($header) ) {
+			if ( preg_match("/\s*Contributors\s*:\s*(.*)/i", $field, $author) )
+				$obj->author = end($author);
+		}
 		
-		$obj->short_description = Markdown(implode("\n", $header));
+		$obj->short_description = wp_kses(Markdown(implode("\n", $header)), $allowedposttags);
+		$obj->description = $obj->short_description;
 		$obj->sections = array();
 		
 		if ( $readme ) {
@@ -162,9 +196,6 @@ class sem_update_plugins {
 		
 		# sanitize
 		$obj->compatability = array();
-		$obj->author = '<a href="http://www.semiologic.com">'
-			. strip_tags(__('Semiologic', 'version-checker'))
-			. '</a>';
 		
 		foreach ( get_object_vars($obj) as $key => $val ) {
 			switch ( $key ) {
@@ -174,7 +205,6 @@ class sem_update_plugins {
 			case 'requires':
 			case 'tested':
 			case 'last_updated':
-			case 'author':
 				$obj->$key = wp_kses($val, $plugins_allowedtags);
 				break;
 			
@@ -188,6 +218,17 @@ class sem_update_plugins {
 				$obj->$key = clean_url($val);
 				break;
 			
+			case 'author':
+				$url = clean_url($obj->homepage);
+				if ( preg_match("!^https?://[^/]+.semiologic.com!", $url) )
+					$url = 'http://www.semiologic.com';
+				$obj->$key = '<a href="' . $url . '">'
+					. str_replace('-', ' ', wp_kses($val, $plugins_allowedtags))
+					. '</a>';
+				break;
+			
+			case 'short_description':
+			case 'description':
 			case 'sections':
 				break; # already sanitized
 			
@@ -200,6 +241,9 @@ class sem_update_plugins {
 		return $obj;
 	} # parse()
 } # sem_update_plugins
+
+add_filter('install_plugins_tabs', array('sem_update_plugins', 'install_plugins_tabs'));
+add_action('install_plugins_semiologic', array('sem_update_plugins', 'install_plugins_semiologic'));
 
 add_filter('plugins_api', array('sem_update_plugins', 'plugins_api'), 10, 3);
 ?>
