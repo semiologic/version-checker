@@ -32,3 +32,4 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 - Use the new API service
 - Allow for theme and plugin updates
 - Allow for bleeding edge package updates across the board
+- Allow for plugin installs
