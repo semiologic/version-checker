@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-11-22 11:30+0100\n"
+"POT-Creation-Date: 2009-11-23 10:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -252,11 +252,11 @@ msgstr ""
 msgid "Install Automatically"
 msgstr ""
 
-#: plugins.php:17 version-checker.php:428
+#: plugins.php:17 themes.php:17 version-checker.php:428
 msgid "Semiologic"
 msgstr ""
 
-#: plugins.php:189
+#: plugins.php:242 themes.php:243
 #, php-format
 msgid "Version %s"
 msgstr ""

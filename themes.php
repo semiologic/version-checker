@@ -1,40 +1,40 @@
 <?php
 /**
- * sem_update_plugins
+ * sem_update_themes
  *
  * @package Version Checker
  **/
 
-class sem_update_plugins {
+class sem_update_themes {
 	/**
-	 * install_plugins_tabs()
+	 * install_themes_tabs()
 	 *
 	 * @param array $tabs
 	 * @return array $tabs
 	 **/
 
-	function install_plugins_tabs($tabs) {
+	function install_themes_tabs($tabs) {
 		$tabs['semiologic'] = __('Semiologic', 'version-checker');
 		return $tabs;
-	} # install_plugins_tabs()
+	} # install_themes_tabs()
 	
 	
 	/**
-	 * install_plugins_semiologic()
+	 * install_themes_semiologic()
 	 *
 	 * @param int $page
 	 * @return void
 	 **/
 
-	function install_plugins_semiologic($page = 1) {
+	function install_themes_semiologic($page = 1) {
 		$args = array('browse' => 'semiologic', 'page' => $page);
-		$api = plugins_api('query_plugins', $args);
-		display_plugins_table($api->plugins, $api->info['page'], $api->info['pages']);
-	} # install_plugins_semiologic()
+		$api = themes_api('query_themes', $args);
+		display_themes($api->themes, $api->info['page'], $api->info['pages']);
+	} # install_themes_semiologic()
 	
 	
 	/**
-	 * plugins_api()
+	 * themes_api()
 	 *
 	 * @param false $res
 	 * @param string $action
@@ -42,22 +42,22 @@ class sem_update_plugins {
 	 * @return $res
 	 **/
 
-	function plugins_api($res, $action, $args) {
+	function themes_api($res, $action, $args) {
 		if ( $res || !get_option('sem_api_key') )
 			return $res;
 		
 		switch ( $action ) {
-		case 'plugin_information':
-			return sem_update_plugins::info($res, $action, $args);
+		case 'theme_information':
+			return sem_update_themes::info($res, $action, $args);
 		
-		case 'query_plugins':
+		case 'query_themes':
 		if ( !empty($args->browse) && $args->browse == 'semiologic' )
-			return sem_update_plugins::query($res, $action, $args);
+			return sem_update_themes::query($res, $action, $args);
 		
 		default:
 			return $res;
 		}
-	} # plugins_api()
+	} # themes_api()
 	
 	
 	/**
@@ -72,14 +72,14 @@ class sem_update_plugins {
 	function query($res, $action, $args) {
 		$res = (object) array(
 			'info' => array('page' => 1, 'pages' => 1, 'results' => 0),
-			'plugins' => array(),
+			'themes' => array(),
 			);
 		
-		$response = sem_update_plugins::cache();
+		$response = sem_update_themes::cache();
 		if ( $response && is_array($response) ) {
 			$res->info['results'] = count($response);
-			$res->plugins = $response;
-			usort($res->plugins, array('sem_update_plugins', 'sort'));
+			$res->themes = $response;
+			usort($res->themes, array('sem_update_themes', 'sort'));
 		}
 		
 		return $res;
@@ -96,14 +96,14 @@ class sem_update_plugins {
 	 **/
 
 	function info($res, $action, $args) {
-		$plugins = sem_update_plugins::cache();
-		if ( !isset($plugins[$args->slug]) || empty($plugins[$args->slug]->download_link) )
+		$themes = sem_update_themes::cache();
+		if ( !isset($themes[$args->slug]) || empty($themes[$args->slug]->download_link) )
 			return $res;
 		
-		if ( !preg_match("!^https?://[^/]+.semiologic.com!", $plugins[$args->slug]->download_link) )
+		if ( !preg_match("!^https?://[^/]+.semiologic.com!", $themes[$args->slug]->download_link) )
 			return $res;
 		
-		return $plugins[$args->slug];
+		return $themes[$args->slug];
 	} # info()
 	
 	
@@ -124,11 +124,12 @@ class sem_update_plugins {
 	 * cache()
 	 *
 	 * @param string $type
-	 * @return array $plugins
+	 * @return array $themes
 	 **/
 
 	function cache() {
-		$response = get_transient('sem_query_plugins');
+		$response = get_transient('sem_query_themes');
+		$response = false;
 		if ( $response !== false )
 			return $response;
 		
@@ -136,11 +137,11 @@ class sem_update_plugins {
 		$sem_api_key = get_option('sem_api_key');
 		
 		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/info/0.1/plugins/" . $sem_api_key;
+			$url = "https://api.semiologic.com/info/0.1/themes/" . $sem_api_key;
 		} elseif ( version_checker_debug == 'localhost' ) {
-			$url = "http://localhost/~denis/api/info/plugins/" . $sem_api_key;
+			$url = "http://localhost/~denis/api/info/themes/" . $sem_api_key;
 		} else {
-			$url = "https://api.semiologic.com/info/trunk/plugins/" . $sem_api_key;
+			$url = "https://api.semiologic.com/info/trunk/themes/" . $sem_api_key;
 		}
 		
 		$body = array(
@@ -166,8 +167,8 @@ class sem_update_plugins {
 			$response = @unserialize($raw_response['body']);
 		
 		if ( $response !== false ) {
-			$response = sem_update_plugins::parse($response);
-			set_transient('sem_query_plugins', $response, 900);
+			$response = sem_update_themes::parse($response);
+			set_transient('sem_query_themes', $response, 900);
 		}
 		
 		return $response;
@@ -185,7 +186,7 @@ class sem_update_plugins {
 		if ( is_array($obj) ) {
 			$res = array();
 			foreach ( $obj as $k => $v ) {
-				$v = sem_update_plugins::parse($v);
+				$v = sem_update_themes::parse($v);
 				if ( $v && is_object($v) && $v->slug )
 					$res[$v->slug] = $v;
 			}
@@ -201,7 +202,7 @@ class sem_update_plugins {
 		if ( !function_exists('Markdown') )
 			include_once dirname(__FILE__) . '/markdown/markdown.php';
 		global $allowedposttags;
-		$plugins_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
+		$themes_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
 		
 		$readme = str_replace(array("\r\n", "\r"), "\n", $obj->readme);
 		$readme = preg_split("/^\s*(==[^=].+?)\s*$/m", $readme, null, PREG_SPLIT_DELIM_CAPTURE);
@@ -258,7 +259,7 @@ class sem_update_plugins {
 			case 'requires':
 			case 'tested':
 			case 'last_updated':
-				$obj->$key = wp_kses($val, $plugins_allowedtags);
+				$obj->$key = wp_kses($val, $themes_allowedtags);
 				break;
 			
 			case 'rating':
@@ -268,6 +269,8 @@ class sem_update_plugins {
 			
 			case 'homepage':
 			case 'download_link':
+			case 'preview_url':
+			case 'screenshot_url':
 				$obj->$key = clean_url($val);
 				break;
 			
@@ -276,7 +279,7 @@ class sem_update_plugins {
 				if ( preg_match("!^https?://[^/]+.semiologic.com!", $url) )
 					$url = 'http://www.semiologic.com';
 				$obj->$key = '<a href="' . $url . '">'
-					. str_replace('-', ' ', wp_kses($val, $plugins_allowedtags))
+					. str_replace('-', ' ', wp_kses($val, $themes_allowedtags))
 					. '</a>';
 				break;
 			
@@ -292,10 +295,10 @@ class sem_update_plugins {
 		
 		return $obj;
 	} # parse()
-} # sem_update_plugins
+} # sem_update_themes
 
-add_filter('install_plugins_tabs', array('sem_update_plugins', 'install_plugins_tabs'));
-add_action('install_plugins_semiologic', array('sem_update_plugins', 'install_plugins_semiologic'));
+add_filter('install_themes_tabs', array('sem_update_themes', 'install_themes_tabs'));
+add_action('install_themes_semiologic', array('sem_update_themes', 'install_themes_semiologic'));
 
-add_filter('plugins_api', array('sem_update_plugins', 'plugins_api'), 10, 3);
+add_filter('themes_api', array('sem_update_themes', 'themes_api'), 10, 3);
 ?>

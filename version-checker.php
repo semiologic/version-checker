@@ -1243,6 +1243,9 @@ function sem_update_themes() {
 		@apache_setenv('no-gzip', 1);
 	@ini_set('zlib.output_compression', 0);
 	@ini_set('implicit_flush', 1);
+
+	if ( !class_exists('sem_update_themes') )
+		include dirname(__FILE__) . '/themes.php';
 }
 
 add_action('load-theme-install.php', 'sem_update_themes');
