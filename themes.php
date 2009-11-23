@@ -130,7 +130,7 @@ class sem_update_themes {
 
 	function cache() {
 		$response = get_transient('sem_query_themes');
-		if ( $response !== false )
+		if ( $response !== false && !version_checker_debug )
 			return $response;
 		
 		global $wp_version;
@@ -191,6 +191,7 @@ class sem_update_themes {
 					$res[$v->slug] = $v;
 			}
 			$obj = null;
+			ksort($res);
 			return $res;
 		} elseif ( !is_object($obj) ) {
 			return false;

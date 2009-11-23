@@ -21,6 +21,38 @@ class sem_update_plugins {
 	
 	
 	/**
+	 * install_plugins_pre_semiologic()
+	 *
+	 * @return void
+	 **/
+
+	function install_plugins_pre_semiologic() {
+		if ( !$_POST )
+			return;
+		
+		$plugins = sem_update_plugins::cache();
+		$to_install = array();
+		$to_upgrade = array();
+		$current = get_plugins();
+		foreach ( array_keys($plugins) as $slug ) {
+			$file = "$slug/$slug.php";
+			if ( !isset($current[$file]) )
+				$to_install[] = $slug;
+			elseif ( version_compare($plugins[$slug]->version, $current[$file]['Version'], '>') )
+				$to_upgrade[] = $slug;
+		}
+		
+		include('admin-header.php');
+		if ( $_REQUEST['action'] == 'mass-install' )
+			sem_update_plugins::mass_install($to_install);
+		else
+			sem_update_plugins::mass_upgrade($to_upgrade);
+		include('admin-footer.php');
+		die;
+	} # install_plugins_pre_semiologic()
+	
+	
+	/**
 	 * install_plugins_semiologic()
 	 *
 	 * @param int $page
@@ -28,10 +60,77 @@ class sem_update_plugins {
 	 **/
 
 	function install_plugins_semiologic($page = 1) {
+		if ( $_POST )
+			return;
+		
+		$plugins = sem_update_plugins::cache();
+		$to_install = array();
+		$to_upgrade = array();
+		$current = get_plugins();
+		foreach ( array_keys($plugins) as $slug ) {
+			$file = "$slug/$slug.php";
+			if ( !isset($current[$file]) )
+				$to_install[] = $slug;
+			elseif ( version_compare($plugins[$slug]->version, $current[$file]['Version'], '>') )
+				$to_upgrade[] = $slug;
+		}
+		
 		$args = array('browse' => 'semiologic', 'page' => $page);
 		$api = plugins_api('query_plugins', $args);
+		echo '<div>';
+		if ( $to_install ) {
+			echo '<form method="post" action="" style="display: inline;">' . "\n"
+				. '<input type="submit" class="button" value="' . esc_attr(sprintf(__('Mass Install (%s)', 'version-checker'), count($to_install))) . '" />'
+				. '<input type="hidden" name="action" value="mass-install" />' . "\n";
+			wp_nonce_field('mass-install');
+			echo '</form>' . "\n";
+		}
+		if ( $to_upgrade ) {
+			echo '<form method="post" action="" style="display: inline;">' . "\n"
+				. '<input type="submit" class="button" value="' . esc_attr(sprintf(__('Mass Upgrade (%s)', 'version-checker'), count($to_upgrade))) . '" />'
+				. '<input type="hidden" name="action" value="mass-upgrade" />' . "\n";
+			wp_nonce_field('mass-upgrade');
+			echo '</form>' . "\n";
+		}
+		echo '</div>';
 		display_plugins_table($api->plugins, $api->info['page'], $api->info['pages']);
 	} # install_plugins_semiologic()
+	
+	
+	/**
+	 * mass_install()
+	 *
+	 * @param array $todo
+	 * @return void
+	 **/
+
+	function mass_install($plugins) {
+		include_once dirname(__FILE__) . '/upgrader.php';
+		
+		$url = 'plugin-install.php?tab=semiologic&amp;action=' . urlencode($_REQUEST['action']);
+		$title = __('Install Plugins', 'version-checker');
+		$nonce = 'mass-install';
+		$upgrader = new sem_upgrader( new sem_installer_skin( compact('title', 'nonce', 'url', 'plugin') ) );
+		$upgrader->bulk_install($plugins);
+	} # mass_install()
+	
+	
+	/**
+	 * mass_upgrade()
+	 *
+	 * @param array $todo
+	 * @return void
+	 **/
+
+	function mass_upgrade($plugins) {
+		include_once dirname(__FILE__) . '/upgrader.php';
+		
+		$url = 'plugin-install.php?tab=semiologic&amp;action=' . urlencode($_REQUEST['action']);
+		$title = __('Upgrade Plugins', 'version-checker');
+		$nonce = 'mass-upgrade';
+		$upgrader = new sem_upgrader( new sem_upgrader_skin( compact('title', 'nonce', 'url', 'plugin') ) );
+		$upgrader->bulk_upgrade($plugins);
+	} # mass_upgrade()
 	
 	
 	/**
@@ -130,7 +229,7 @@ class sem_update_plugins {
 
 	function cache() {
 		$response = get_transient('sem_query_plugins');
-		if ( $response !== false )
+		if ( $response !== false && !version_checker_debug )
 			return $response;
 		
 		global $wp_version;
@@ -190,6 +289,7 @@ class sem_update_plugins {
 				if ( $v && is_object($v) && $v->slug )
 					$res[$v->slug] = $v;
 			}
+			ksort($res);
 			$obj = null;
 			return $res;
 		} elseif ( !is_object($obj) ) {
@@ -296,6 +396,7 @@ class sem_update_plugins {
 } # sem_update_plugins
 
 add_filter('install_plugins_tabs', array('sem_update_plugins', 'install_plugins_tabs'));
+add_action('install_plugins_pre_semiologic', array('sem_update_plugins', 'install_plugins_pre_semiologic'));
 add_action('install_plugins_semiologic', array('sem_update_plugins', 'install_plugins_semiologic'));
 
 add_filter('plugins_api', array('sem_update_plugins', 'plugins_api'), 10, 3);

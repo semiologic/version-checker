@@ -152,7 +152,7 @@ class version_checker {
 			}
 		}
 		
-		if ( $plugins_todo && $pagenow == 'plugins.php' ) {
+		if ( $plugins_todo && !in_array($pagenow, array('plugins.php', 'plugins-install.php')) ) {
 			$plugins_todo = false;
 			$plugins = get_plugins();
 			
@@ -166,7 +166,7 @@ class version_checker {
 			}
 		}
 		
-		if ( $themes_todo && $pagenow == 'themes.php' ) {
+		if ( $themes_todo && !in_array($pagenow, array('themes.php', 'themes-install.php')) ) {
 			$themes_todo = false;
 			$themes = get_themes();
 			
@@ -1237,6 +1237,7 @@ function sem_update_plugins() {
 }
 
 add_action('load-plugin-install.php', 'sem_update_plugins');
+add_action('load-update.php', 'sem_update_plugins');
 
 function sem_update_themes() {
 	if ( function_exists('apache_setenv') )
@@ -1249,6 +1250,7 @@ function sem_update_themes() {
 }
 
 add_action('load-theme-install.php', 'sem_update_themes');
+add_action('load-update.php', 'sem_update_themes');
 
 add_option('sem_api_key', '');
 add_option('sem_pro_version', '');
