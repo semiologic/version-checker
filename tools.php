@@ -31,7 +31,7 @@ class sem_tools {
 
 			foreach ( array_keys($plugins) as $slug ) {
 				$file = "$slug/$slug.php";
-				if ( !isset($installed[$file]) && $plugins[$plugin]->download_link )
+				if ( !isset($installed[$file]) && $plugins[$slug]->download_link )
 					$to_install[] = $slug;
 				elseif ( version_compare($response[$file]->new_version, $current[$file]['Version'], '>') && $response[$file]->package )
 					$to_upgrade[] = $slug;
