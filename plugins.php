@@ -21,38 +21,6 @@ class sem_update_plugins {
 	
 	
 	/**
-	 * install_plugins_pre_semiologic()
-	 *
-	 * @return void
-	 **/
-
-	function install_plugins_pre_semiologic() {
-		if ( !$_POST )
-			return;
-		
-		$plugins = sem_update_plugins::cache();
-		$to_install = array();
-		$to_upgrade = array();
-		$current = get_plugins();
-		foreach ( array_keys($plugins) as $slug ) {
-			$file = "$slug/$slug.php";
-			if ( !isset($current[$file]) )
-				$to_install[] = $slug;
-			elseif ( version_compare($plugins[$slug]->version, $current[$file]['Version'], '>') )
-				$to_upgrade[] = $slug;
-		}
-		
-		include('admin-header.php');
-		if ( $_REQUEST['action'] == 'mass-install' )
-			sem_update_plugins::mass_install($to_install);
-		else
-			sem_update_plugins::mass_upgrade($to_upgrade);
-		include('admin-footer.php');
-		die;
-	} # install_plugins_pre_semiologic()
-	
-	
-	/**
 	 * install_plugins_semiologic()
 	 *
 	 * @param int $page
@@ -63,21 +31,51 @@ class sem_update_plugins {
 		if ( $_POST )
 			return;
 		
-		$plugins = sem_update_plugins::cache();
+		$args = array('browse' => 'semiologic', 'page' => $page);
+		$api = plugins_api('query_plugins', $args);
+		sem_update_plugins::display_plugins_table($api->plugins, $api->info['page'], $api->info['pages']);
+	} # install_plugins_semiologic()
+	
+	
+	/**
+	 * display_plugins_table()
+	 *
+	 * @param array $plugins
+	 * @param int $page
+	 * @param int $pages
+	 * @return void
+	 **/
+
+	function display_plugins_table($plugins, $page = 1, $pages = 1) {
+		$sem_plugins = sem_update_plugins::cache();
+		
 		$to_install = array();
 		$to_upgrade = array();
-		$current = get_plugins();
-		foreach ( array_keys($plugins) as $slug ) {
+		
+		$installed = get_plugins();
+		$response = get_transient('update_plugins');
+		$response = is_object($response) ? (array) $response->response : array();
+		
+		foreach ( array_keys($sem_plugins) as $slug ) {
 			$file = "$slug/$slug.php";
-			if ( !isset($current[$file]) )
+			if ( !isset($installed[$file]) && $sem_plugins[$plugin]->download_link )
 				$to_install[] = $slug;
-			elseif ( version_compare($plugins[$slug]->version, $current[$file]['Version'], '>') )
+			elseif ( version_compare($response[$file]->new_version, $current[$file]['Version'], '>') && $response[$file]->package )
 				$to_upgrade[] = $slug;
 		}
 		
-		$args = array('browse' => 'semiologic', 'page' => $page);
-		$api = plugins_api('query_plugins', $args);
-		echo '<div>';
+		$type = isset($_REQUEST['type']) ? stripslashes( $_REQUEST['type'] ) : '';
+		$term = isset($_REQUEST['s']) ? stripslashes( $_REQUEST['s'] ) : '';
+	
+		$plugins_allowedtags = array('a' => array('href' => array(),'title' => array(), 'target' => array()),
+									'abbr' => array('title' => array()),'acronym' => array('title' => array()),
+									'code' => array(), 'pre' => array(), 'em' => array(),'strong' => array(),
+									'ul' => array(), 'ol' => array(), 'li' => array(), 'p' => array(), 'br' => array());
+
+?>
+	<div class="tablenav">
+		<div class="alignleft actions">
+		<?php
 		if ( $to_install ) {
 			echo '<form method="post" action="" style="display: inline;">' . "\n"
 				. '<input type="submit" class="button" value="' . esc_attr(sprintf(__('Mass Install (%s)', 'version-checker'), count($to_install))) . '" />'
@@ -92,9 +90,113 @@ class sem_update_plugins {
 			wp_nonce_field('mass-upgrade');
 			echo '</form>' . "\n";
 		}
-		echo '</div>';
-		display_plugins_table($api->plugins, $api->info['page'], $api->info['pages']);
-	} # install_plugins_semiologic()
+		?>
+		</div>
+		<?php
+			$url = esc_url($_SERVER['REQUEST_URI']);
+			if ( ! empty($term) )
+				$url = add_query_arg('s', $term, $url);
+			if ( ! empty($type) )
+				$url = add_query_arg('type', $type, $url);
+
+			$page_links = paginate_links( array(
+				'base' => add_query_arg('paged', '%#%', $url),
+				'format' => '',
+				'prev_text' => __('&laquo;', 'version-checker'),
+				'next_text' => __('&raquo;', 'version-checker'),
+				'total' => $totalpages,
+				'current' => $page
+			));
+
+			if ( $page_links )
+				echo "\t\t<div class='tablenav-pages'>$page_links</div>";
+?>
+		<br class="clear" />
+	</div>
+	<table class="widefat" id="install-plugins" cellspacing="0">
+		<thead>
+			<tr>
+				<th scope="col" class="name"><?php _e('Name', 'version-checker'); ?></th>
+				<th scope="col" class="num"><?php _e('Version', 'version-checker'); ?></th>
+				<th scope="col" class="desc"><?php _e('Description', 'version-checker'); ?></th>
+				<th scope="col" class="action-links"><?php _e('Actions', 'version-checker'); ?></th>
+			</tr>
+		</thead>
+
+		<tfoot>
+			<tr>
+				<th scope="col" class="name"><?php _e('Name', 'version-checker'); ?></th>
+				<th scope="col" class="num"><?php _e('Version', 'version-checker'); ?></th>
+				<th scope="col" class="desc"><?php _e('Description', 'version-checker'); ?></th>
+				<th scope="col" class="action-links"><?php _e('Actions', 'version-checker'); ?></th>
+			</tr>
+		</tfoot>
+
+		<tbody class="plugins">
+		<?php
+			if( empty($plugins) )
+				echo '<tr><td colspan="5">', __('No plugins match your request.', 'version-checker'), '</td></tr>';
+
+			foreach( (array) $plugins as $plugin ){
+				if ( is_object($plugin) )
+					$plugin = (array) $plugin;
+				
+				$title = wp_kses($plugin['name'], $plugins_allowedtags);
+				//Limit description to 400char, and remove any HTML.
+				$description = strip_tags($plugin['description']);
+				if ( strlen($description) > 400 )
+					$description = mb_substr($description, 0, 400) . '&#8230;';
+				//remove any trailing entities
+				$description = preg_replace('/&[^;\s]{0,6}$/', '', $description);
+				//strip leading/trailing & multiple consecutive lines
+				$description = trim($description);
+				$description = preg_replace("|(\r?\n)+|", "\n", $description);
+				//\n => <br>
+				$description = nl2br($description);
+				$version = wp_kses($plugin['version'], $plugins_allowedtags);
+
+				$name = strip_tags($title . ' ' . $version);
+
+				$author = $plugin['author'];
+				if( ! empty($plugin['author']) )
+					$author = ' <cite>' . sprintf( __('By %s', 'version-checker'), $author ) . '.</cite>';
+
+				$author = wp_kses($author, $plugins_allowedtags);
+
+				if( isset($plugin['homepage']) )
+					$title = '<a target="_blank" href="' . esc_attr($plugin['homepage']) . '">' . $title . '</a>';
+
+				$action_links = array();
+				if ( in_array($plugin['slug'], $to_install) ) {
+					$action_links[] = '<a href="' . admin_url('plugin-install.php?tab=plugin-information&amp;plugin=' . $plugin['slug'] .
+										'&amp;TB_iframe=true&amp;width=600&amp;height=550') . '" class="thickbox onclick" title="' .
+										esc_attr($name) . '">' . __('Install', 'version-checker') . '</a>';
+				} elseif ( in_array($plugin['slug'], $to_upgrade) ) {
+					$action_links[] = '<a href="' . admin_url('plugin-install.php?tab=plugin-information&amp;plugin=' . $plugin['slug'] .
+										'&amp;TB_iframe=true&amp;width=600&amp;height=550') . '" class="thickbox onclick" title="' .
+										esc_attr($name) . '">' . __('Upgrade', 'version-checker') . '</a>';
+				}
+			?>
+			<tr>
+				<td class="name"><?php echo $title; ?></td>
+				<td class="vers"><?php echo $version; ?></td>
+				<td class="desc"><?php echo $description, $author; ?></td>
+				<td class="action-links"><?php if ( !empty($action_links) )	echo implode(' | ', $action_links); ?></td>
+			</tr>
+			<?php
+			}
+			?>
+		</tbody>
+	</table>
+
+	<div class="tablenav">
+		<?php if ( $page_links )
+				echo "\t\t<div class='tablenav-pages'>$page_links</div>"; ?>
+		<br class="clear" />
+	</div>
+
+<?php
+	} # display_plugins_table()
 	
 	
 	/**
@@ -107,7 +209,7 @@ class sem_update_plugins {
 	function mass_install($plugins) {
 		include_once dirname(__FILE__) . '/upgrader.php';
 		
-		$url = 'plugin-install.php?tab=semiologic&amp;action=' . urlencode($_REQUEST['action']);
+		$url = 'tools.php?page=sem-upgrader&amp;action=' . urlencode($_REQUEST['action']);
 		$title = __('Install Plugins', 'version-checker');
 		$nonce = 'mass-install';
 		$upgrader = new sem_upgrader( new sem_installer_skin( compact('title', 'nonce', 'url', 'plugin') ) );
@@ -125,7 +227,7 @@ class sem_update_plugins {
 	function mass_upgrade($plugins) {
 		include_once dirname(__FILE__) . '/upgrader.php';
 		
-		$url = 'plugin-install.php?tab=semiologic&amp;action=' . urlencode($_REQUEST['action']);
+		$url = 'tools.php?page=sem-upgrader&amp;action=' . urlencode($_REQUEST['action']);
 		$title = __('Upgrade Plugins', 'version-checker');
 		$nonce = 'mass-upgrade';
 		$upgrader = new sem_upgrader( new sem_upgrader_skin( compact('title', 'nonce', 'url', 'plugin') ) );
@@ -396,7 +498,6 @@ class sem_update_plugins {
 } # sem_update_plugins
 
 add_filter('install_plugins_tabs', array('sem_update_plugins', 'install_plugins_tabs'));
-add_action('install_plugins_pre_semiologic', array('sem_update_plugins', 'install_plugins_pre_semiologic'));
 add_action('install_plugins_semiologic', array('sem_update_plugins', 'install_plugins_semiologic'));
 
 add_filter('plugins_api', array('sem_update_plugins', 'plugins_api'), 10, 3);

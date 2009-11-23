@@ -103,6 +103,8 @@ class sem_upgrader extends Plugin_Upgrader {
 		if ( !$is_multi )
 			$this->skin->footer();
 		
+		version_checker::force_flush();
+		
 		return $result;
 	} # run()
 	

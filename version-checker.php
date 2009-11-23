@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.0 RC7
+Version: 0.2.0 RC7
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -760,7 +760,7 @@ EOS;
 			$obj->response = array();
 		}
 		
-		if ( current_filter() == 'load-themes.php' ) {
+		if ( in_array(current_filter(), array('load-themes.php', 'load-tools_page_sem-tools')) ) {
 			$timeout = 3600;
 		} else {
 			$timeout = 43200;
@@ -899,7 +899,7 @@ EOS;
 			$obj->response = array();
 		}
 		
-		if ( current_filter() == 'load-plugins.php' ) {
+		if ( in_array(current_filter(), array('load-plugins.php', 'load-tools_page_sem-tools')) ) {
 			$timeout = 3600;
 		} else {
 			$timeout = 43200;
@@ -1045,6 +1045,16 @@ EOS;
 			'sem-api-key',
 			array('sem_api_key', 'edit_options')
 			);
+		
+		if ( get_option('sem_api_key') ) {
+			add_management_page(
+				__('Semiologic', 'version-checker'),
+				__('Semiologic', 'version-checker'),
+				'manage_options',
+				'sem-tools',
+				array('sem_tools', 'display')
+				);
+		}
 	} # admin_menu()
 	
 	
@@ -1219,38 +1229,52 @@ function sem_update_core() {
 		@apache_setenv('no-gzip', 1);
 	@ini_set('zlib.output_compression', 0);
 	@ini_set('implicit_flush', 1);
-
+	
 	if ( !class_exists('sem_update_core') )
 		include dirname(__FILE__) . '/core.php';
 }
 
 add_action('load-update-core.php', 'sem_update_core');
 
+function sem_tools() {
+	if ( function_exists('apache_setenv') )
+		@apache_setenv('no-gzip', 1);
+	@ini_set('zlib.output_compression', 0);
+	@ini_set('implicit_flush', 1);
+	
+	if ( !class_exists('sem_tools') )
+		include dirname(__FILE__) . '/tools.php';
+} # sem_tools()
+
+add_action('load-tools_page_sem-tools', 'sem_tools');
+
 function sem_update_plugins() {
 	if ( function_exists('apache_setenv') )
 		@apache_setenv('no-gzip', 1);
 	@ini_set('zlib.output_compression', 0);
 	@ini_set('implicit_flush', 1);
-
+	
 	if ( !class_exists('sem_update_plugins') )
 		include dirname(__FILE__) . '/plugins.php';
 }
 
 add_action('load-plugin-install.php', 'sem_update_plugins');
 add_action('load-update.php', 'sem_update_plugins');
+add_action('load-tools_page_sem-tools', 'sem_update_plugins');
 
 function sem_update_themes() {
 	if ( function_exists('apache_setenv') )
 		@apache_setenv('no-gzip', 1);
 	@ini_set('zlib.output_compression', 0);
 	@ini_set('implicit_flush', 1);
-
+	
 	if ( !class_exists('sem_update_themes') )
 		include dirname(__FILE__) . '/themes.php';
 }
 
 add_action('load-theme-install.php', 'sem_update_themes');
 add_action('load-update.php', 'sem_update_themes');
+add_action('load-tools_page_sem-tools', 'sem_update_themes');
 
 add_option('sem_api_key', '');
 add_option('sem_pro_version', '');
@@ -1275,24 +1299,28 @@ if ( is_admin() && function_exists('get_transient') ) {
 		'load-themes.php',
 		'load-plugins.php',
 		'wp_version_check',
+		'load-tools_page_sem-tools',
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_memberships'), 11);
 	
 	foreach ( array(
 		'load-update-core.php',
 		'wp_version_check',
+		'load-tools_page_sem-tools',
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_core'), 12);
 	
 	foreach ( array(
 		'load-themes.php',
 		'wp_update_themes',
+		'load-tools_page_sem-tools',
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_themes'), 12);
 	
 	foreach ( array(
 		'load-plugins.php',
 		'wp_update_plugins',
+		'load-tools_page_sem-tools',
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_plugins'), 12);
 	

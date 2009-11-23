@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 2.0\n"
+"Project-Id-Version: 0.2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-11-23 10:53+0100\n"
+"POT-Creation-Date: 2009-11-23 18:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -252,11 +252,71 @@ msgstr ""
 msgid "Install Automatically"
 msgstr ""
 
-#: plugins.php:17 themes.php:17 version-checker.php:428
+#: plugins.php:18 themes.php:18 version-checker.php:428
+#: version-checker.php:1051 version-checker.php:1052
 msgid "Semiologic"
 msgstr ""
 
-#: plugins.php:242 themes.php:243
+#: plugins.php:81
+#, php-format
+msgid "Mass Install (%s)"
+msgstr ""
+
+#: plugins.php:88
+#, php-format
+msgid "Mass Upgrade (%s)"
+msgstr ""
+
+#: plugins.php:105
+msgid "&laquo;"
+msgstr ""
+
+#: plugins.php:106
+msgid "&raquo;"
+msgstr ""
+
+#: plugins.php:119 plugins.php:128
+msgid "Name"
+msgstr ""
+
+#: plugins.php:120 plugins.php:129
+msgid "Version"
+msgstr ""
+
+#: plugins.php:121 plugins.php:130
+msgid "Description"
+msgstr ""
+
+#: plugins.php:122 plugins.php:131
+msgid "Actions"
+msgstr ""
+
+#: plugins.php:138
+msgid "No plugins match your request."
+msgstr ""
+
+#: plugins.php:162
+#, php-format
+msgid "By %s"
+msgstr ""
+
+#: plugins.php:173
+msgid "Install"
+msgstr ""
+
+#: plugins.php:177
+msgid "Upgrade"
+msgstr ""
+
+#: plugins.php:213
+msgid "Install Plugins"
+msgstr ""
+
+#: plugins.php:231
+msgid "Upgrade Plugins"
+msgstr ""
+
+#: plugins.php:445 themes.php:244
 #, php-format
 msgid "Version %s"
 msgstr ""
@@ -406,6 +466,28 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
+#: tools.php:49
+msgid "Semiologic Packages"
+msgstr ""
+
+#: tools.php:51
+msgid "Plugins"
+msgstr ""
+
+#: tools.php:55
+msgid "Themes"
+msgstr ""
+
+#: upgrader.php:141
+#, php-format
+msgid "Updating plugin %1$d of %2$d..."
+msgstr ""
+
+#: upgrader.php:216
+#, php-format
+msgid "Installing plugin %1$d of %2$d..."
+msgstr ""
+
 #: version-checker-info.php:2
 msgid "Version Checker"
 msgstr ""
@@ -495,11 +577,11 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:1060
+#: version-checker.php:1070
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""
 
-#: version-checker.php:1192
+#: version-checker.php:1202
 #, php-format
 msgid ""
 "Cleaning up %1$s. Based on our testing, this step can readily take about 10 "
@@ -508,7 +590,7 @@ msgid ""
 "proceeding."
 msgstr ""
 
-#: version-checker.php:1199
+#: version-checker.php:1209
 msgid ""
 "Starting upgrade... Again, this can take several minutes without any "
 "feedback from WordPress."
