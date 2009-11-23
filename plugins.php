@@ -14,7 +14,8 @@ class sem_update_plugins {
 	 **/
 
 	function install_plugins_tabs($tabs) {
-		$tabs['semiologic'] = __('Semiologic', 'version-checker');
+		if ( get_option('sem_api_key') )
+			$tabs['semiologic'] = __('Semiologic', 'version-checker');
 		return $tabs;
 	} # install_plugins_tabs()
 	
