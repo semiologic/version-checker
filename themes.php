@@ -130,7 +130,6 @@ class sem_update_themes {
 
 	function cache() {
 		$response = get_transient('sem_query_themes');
-		$response = false;
 		if ( $response !== false )
 			return $response;
 		
