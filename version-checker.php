@@ -186,11 +186,19 @@ class version_checker {
 		
 		if ( $plugins_todo ) {
 			echo '<p>'
-				. sprintf(__('<strong>A new version is available for one or more of your plugins</strong>. <a href="%s">Please update now!</a>', 'version-checker'), 'plugins.php?plugin_status=upgrade')
+				. sprintf(
+					__('<strong>A new version is available for one or more of <a href="%s">your plugins</a></strong>.', 'version-checker'),
+					'plugins.php')
+				. '</p>'
+				. '<form method="post" action="tools.php?page=sem-tools" style="margin: 0px auto;">' . "\n"
+					. '<input type="submit" class="button" value="' . esc_attr(__('Mass Upgrade', 'version-checker')) . '" />'
+					. '<input type="hidden" name="action" value="mass-upgrade" />';
+			wp_nonce_field('mass-upgrade');
+			echo '</form>' . "\n"
 				. '</p>' . "\n";
 		} elseif ( $themes_todo ) {
 			echo '<p>'
-				. sprintf(__('<strong>A new version is available for your theme</strong>. <a href="%s">Please update now!</a>', 'version-checker'), 'themes.php')
+				. sprintf(__('<strong>A new version is available for <a href="%s">your theme</a></strong>.', 'version-checker'), 'themes.php')
 				. '</p>' . "\n";
 		}
 		
