@@ -263,7 +263,7 @@ class sem_upgrader extends Plugin_Upgrader {
 			$to_activate = array();
 
 			foreach ( array_keys($sem_plugins) as $plugin ) {
-				if ( in_array($plugin, $plugins) && !is_wp_error($results[$plugin]) )
+				if ( in_array($plugin, $plugins) && !is_wp_error($results[$plugin]) && $this->sem_activate($plugin) )
 					$to_activate["$plugin/$plugin.php"] = $sem_plugins[$plugin]->name;
 			}
 			
@@ -346,7 +346,11 @@ class sem_upgrader extends Plugin_Upgrader {
 			'wp-hashcash',
 			);
 		
-		return in_array($plugin, $defaults) && !is_plugin_active($plugin);
+		if ( get_option('blog_public') && get_option('permalink_structure') ) {
+			$defaults[] = 'xml-sitemaps';
+		}
+		
+		return in_array($plugin, $defaults) && !is_plugin_active("$plugin/$plugin.php");
 	} # sem_activate()
 } # sem_upgrader
 
