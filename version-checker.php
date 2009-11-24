@@ -160,7 +160,6 @@ class version_checker {
 				if ( $plugins[$plugin]['Version'] == $plugins_response->response[$plugin]->new_version ) {
 					delete_transient('update_plugins');
 					delete_transient('sem_update_plugins');
-					delete_transient('sem_query_plugins');
 					break;
 				}
 			}
@@ -175,7 +174,6 @@ class version_checker {
 					if ( $themes_response->response[$$theme]['new_version'] == $details['Version'] )
 					delete_transient('update_themes');
 					delete_transient('sem_update_themes');
-					delete_transient('sem_query_themes');
 					break;
 				}
 			}
@@ -769,7 +767,6 @@ EOS;
 		if ( is_array($checked) && $checked && $obj->checked && $obj->checked != $checked ) {
 			delete_transient('sem_update_themes');
 			delete_transient('update_themes');
-			delete_transient('sem_query_themes');
 			return false;
 		}
 		
@@ -908,7 +905,6 @@ EOS;
 		if ( is_array($checked) && $checked && $obj->checked && $obj->checked != $checked ) {
 			delete_transient('sem_update_plugins');
 			delete_transient('update_plugins');
-			delete_transient('sem_query_plugins');
 			return false;
 		}
 		
@@ -1214,6 +1210,49 @@ EOS;
 		
 		return $in;
 	} # option_ftp_credentials()
+	
+	
+	/**
+	 * bulk_activate_plugins()
+	 *
+	 * @return void
+	 **/
+
+	function bulk_activate_plugins() {
+		if ( !current_user_can('activate_plugins') )
+			wp_die(__('You do not have sufficient permissions to activate plugins for this blog.', 'version-checker'));
+		
+		check_admin_referer('bulk-activate-plugins');
+		
+		if ( !empty($_GET['plugins']) ) {
+			$plugins = (array) $_GET['plugins'];
+			$plugins = array_filter($plugins, create_function('$plugin', 'return !is_plugin_active($plugin);') ); //Only activate plugins which are not already active.
+		}
+		
+		if( ! isset($_GET['failure']) && ! isset($_GET['success']) ) {
+			wp_redirect( 'update.php?action=bulk-activate-plugins&failure=true&plugins[]=' . implode('&plugins[]=', $plugins) . '&_wpnonce=' . $_GET['_wpnonce'] );
+			foreach ( $plugins as $plugin )
+				activate_plugin($plugin);
+			wp_redirect( 'update.php?action=bulk-activate-plugins&success=true&plugins[]=' . implode('&plugins[]=', $plugins) . '&_wpnonce=' . $_GET['_wpnonce'] );
+			die();
+		}
+		iframe_header( __('Bulk Plugin Activation', 'version-checker'), true );
+		if ( isset($_GET['success']) )
+			echo '<p>' . __('Plugins activated successfully.', 'version-checker') . '</p>';
+
+		if ( isset($_GET['failure']) ) {
+			echo '<p>' . __('Plugins failed to reactivate due to a fatal error.', 'version-checker') . '</p>';
+			if ( defined('E_RECOVERABLE_ERROR') )
+				error_reporting(E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR);
+			else
+				error_reporting(E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING);
+			
+			@ini_set('display_errors', true); //Ensure that Fatal errors are displayed.
+			foreach ( $plugins as $plugin )
+				include_once WP_PLUGIN_DIR . '/' . $plugin;
+		}
+		iframe_footer();
+	} # bulk_activate_plugins()
 } # version_checker
 
 
@@ -1244,6 +1283,14 @@ function sem_tools() {
 	
 	if ( !class_exists('sem_tools') )
 		include dirname(__FILE__) . '/tools.php';
+	
+	
+	wp_enqueue_style( 'plugin-install' );
+	wp_enqueue_script( 'plugin-install' );
+	wp_enqueue_style( 'theme-install' );
+	wp_enqueue_script( 'theme-install' );
+	add_thickbox();
+	wp_enqueue_script( 'theme-preview' );
 } # sem_tools()
 
 add_action('load-tools_page_sem-tools', 'sem_tools');
@@ -1334,6 +1381,8 @@ if ( is_admin() && function_exists('get_transient') ) {
 	
 	add_filter('update_feedback', array('version_checker', 'update_feedback'), 100);
 	add_action('option_ftp_credentials', array('version_checker', 'option_ftp_credentials'));
+	
+	add_action('update-custom_bulk-activate-plugins', array('version_checker', 'bulk_activate_plugins'));
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
 }

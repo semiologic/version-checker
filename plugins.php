@@ -49,6 +49,13 @@ class sem_update_plugins {
 	function display_plugins_table($plugins, $page = 1, $pages = 1) {
 		$sem_plugins = sem_update_plugins::cache();
 		
+		if ( !$sem_plugins ) {
+			echo '<p>'
+				. __('Plugin lookup failed. Please refresh this page in a few minutes to try again.', 'version-checker')
+				. '</p>' . "\n";
+			return;
+		}
+		
 		$to_install = array();
 		$to_upgrade = array();
 		
@@ -350,7 +357,7 @@ class sem_update_plugins {
 			);
 		
 		$options = array(
-			'timeout' => 3,
+			'timeout' => 15,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
 			);
@@ -369,7 +376,7 @@ class sem_update_plugins {
 		
 		if ( $response !== false ) {
 			$response = sem_update_plugins::parse($response);
-			set_transient('sem_query_plugins', $response, 900);
+			set_transient('sem_query_plugins', $response, 7200);
 		}
 		
 		return $response;

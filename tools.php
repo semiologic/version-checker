@@ -60,11 +60,4 @@ class sem_tools {
 		}
 	} # display()
 } # sem_tools
-
-wp_enqueue_style( 'plugin-install' );
-wp_enqueue_script( 'plugin-install' );
-wp_enqueue_style( 'theme-install' );
-wp_enqueue_script( 'theme-install' );
-add_thickbox();
-wp_enqueue_script( 'theme-preview' );
 ?>

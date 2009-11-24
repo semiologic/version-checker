@@ -149,7 +149,7 @@ class sem_update_themes {
 			);
 		
 		$options = array(
-			'timeout' => 3,
+			'timeout' => 15,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
 			);
@@ -168,7 +168,7 @@ class sem_update_themes {
 		
 		if ( $response !== false ) {
 			$response = sem_update_themes::parse($response);
-			set_transient('sem_query_themes', $response, 900);
+			set_transient('sem_query_themes', $response, 7200);
 		}
 		
 		return $response;
