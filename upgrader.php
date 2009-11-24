@@ -388,7 +388,22 @@ class sem_installer_skin extends Plugin_Installer_Skin {
 	 **/
 
 	function after() {
-		return;
 	} # after()
+	
+	
+	/**
+	 * footer()
+	 *
+	 * @return void
+	 **/
+
+	function footer() {
+		if ( current_user_can('install_themes') && !is_dir(WP_CONTENT_DIR . '/themes/sem-reloaded') ) {
+			echo '<p>'
+				. '<a class="button-primary" id="install" href="' . wp_nonce_url(admin_url('update.php?action=install-theme&theme=sem-reloaded'), 'install-theme_sem-reloaded') . '" target="_parent">' . __('Install the Semiologic theme', 'version-checker') . '</a>'
+				. '</p>' . "\n";
+		}
+		echo '</div>' . "\n";
+	} # footer()
 } # sem_installer_skin
 ?>
