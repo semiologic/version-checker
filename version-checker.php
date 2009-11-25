@@ -491,7 +491,7 @@ EOS;
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/auth/0.1/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug === 'localhost' ) {
 			$url = "http://localhost/~denis/api/auth/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/auth/trunk/" . $sem_api_key;
@@ -568,7 +568,7 @@ EOS;
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/memberships/0.2/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug === 'localhost' ) {
 			$url = "http://localhost/~denis/api/memberships/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/memberships/trunk/" . $sem_api_key;
@@ -663,7 +663,7 @@ EOS;
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/version/0.2/core/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug === 'localhost' ) {
 			$url = "http://localhost/~denis/api/version/core/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/version/trunk/core/" . $sem_api_key;
@@ -791,7 +791,7 @@ EOS;
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/version/0.2/themes/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug === 'localhost' ) {
 			$url = "http://localhost/~denis/api/version/themes/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/version/trunk/themes/" . $sem_api_key;
@@ -929,7 +929,7 @@ EOS;
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/version/0.2/plugins/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug === 'localhost' ) {
 			$url = "http://localhost/~denis/api/version/plugins/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/version/trunk/plugins/" . $sem_api_key;

@@ -138,7 +138,7 @@ class sem_update_themes {
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/info/0.1/themes/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug === 'localhost' ) {
 			$url = "http://localhost/~denis/api/info/themes/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/info/trunk/themes/" . $sem_api_key;

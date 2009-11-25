@@ -350,7 +350,7 @@ class sem_update_plugins {
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/info/0.1/plugins/" . $sem_api_key;
-		} elseif ( version_checker_debug == 'localhost' ) {
+		} elseif ( version_checker_debug === 'localhost' ) {
 			$url = "http://localhost/~denis/api/info/plugins/" . $sem_api_key;
 		} else {
 			$url = "https://api.semiologic.com/info/trunk/plugins/" . $sem_api_key;
