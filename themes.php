@@ -130,7 +130,7 @@ class sem_update_themes {
 
 	function cache() {
 		$response = get_transient('sem_query_themes');
-		if ( $response !== false && !version_checker_debug )
+		if ( $response !== false )
 			return $response;
 		
 		global $wp_version;

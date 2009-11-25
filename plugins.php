@@ -182,6 +182,10 @@ class sem_update_plugins {
 					$action_links[] = '<a href="' . admin_url('plugin-install.php?tab=plugin-information&amp;plugin=' . $plugin['slug'] .
 										'&amp;TB_iframe=true&amp;width=600&amp;height=550') . '" class="thickbox onclick" title="' .
 										esc_attr($name) . '">' . __('Upgrade', 'version-checker') . '</a>';
+				} elseif ( !$sem_plugins[$plugin['slug']]->download_link ) {
+					$action_links[] = '<strong><a href="http://oldbackend.semiologic.com/order.php">'
+						. __('Order', 'version-checker')
+						. '</a></strong>';
 				}
 			?>
 			<tr>
@@ -338,7 +342,7 @@ class sem_update_plugins {
 
 	function cache() {
 		$response = get_transient('sem_query_plugins');
-		if ( $response !== false && !version_checker_debug )
+		if ( $response !== false )
 			return $response;
 		
 		global $wp_version;
