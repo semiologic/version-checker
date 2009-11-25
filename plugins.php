@@ -65,7 +65,7 @@ class sem_update_plugins {
 		
 		foreach ( array_keys($sem_plugins) as $slug ) {
 			$file = "$slug/$slug.php";
-			if ( !isset($installed[$file]) && $sem_plugins[$slug]->download_link )
+			if ( !isset($installed[$slug . '.php']) && !isset($installed[$file]) && $sem_plugins[$slug]->download_link )
 				$to_install[] = $slug;
 			elseif ( version_compare($response[$file]->new_version, $current[$file]['Version'], '>') && $response[$file]->package )
 				$to_upgrade[] = $slug;
