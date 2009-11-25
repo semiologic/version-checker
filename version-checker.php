@@ -119,7 +119,7 @@ class version_checker {
 
 	function extra_update_nag() {
 		global $pagenow, $page_hook;
-		if ( in_array($pagenow, array('update.php', 'update-core.php')) || $pagenow == 'tools.php' && $page_hook = 'sem-tools' || !current_user_can('manage_options') )
+		if ( in_array($pagenow, array('update.php', 'update-core.php')) || $pagenow == 'tools.php' && $page_hook == 'sem-tools' || !current_user_can('manage_options') )
 			return;
 		
 		$plugins_todo = false;
@@ -1292,13 +1292,12 @@ function sem_tools() {
 	if ( !class_exists('sem_tools') )
 		include dirname(__FILE__) . '/tools.php';
 	
-	
-	wp_enqueue_style( 'plugin-install' );
-	wp_enqueue_script( 'plugin-install' );
-	wp_enqueue_style( 'theme-install' );
-	wp_enqueue_script( 'theme-install' );
+	wp_enqueue_style('plugin-install');
+	wp_enqueue_script('plugin-install');
+	wp_enqueue_style('theme-install');
+	wp_enqueue_script('theme-install');
 	add_thickbox();
-	wp_enqueue_script( 'theme-preview' );
+	wp_enqueue_script('theme-preview');
 } # sem_tools()
 
 add_action('load-tools_page_sem-tools', 'sem_tools');
