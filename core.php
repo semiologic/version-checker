@@ -7,22 +7,6 @@
 
 class sem_update_core {
 	/**
-	 * update_feedback()
-	 *
-	 * @param mixed $in
-	 * @return mixed $in
-	 **/
-
-	function update_feedback($in = null) {
-		if ( !get_option('sem_pro_version') ) {
-			ob_start(array('sem_update_core', 'ob_callback'));
-			add_action('in_footer', array('sem_update_core', 'ob_flush'), -1000);
-		}
-		return $in;
-	} # update_feedback()
-	
-	
-	/**
 	 * ob_start()
 	 *
 	 * @return void
@@ -48,20 +32,14 @@ class sem_update_core {
 			. '</p>';
 		
 		echo '<p>'
-			. sprintf(__('Lastly, please note that it\'s <strong>much</strong> faster (and much safer) to upgrade WordPress from your hosting account\'s control panel than from this screen. <strong><a href="%1$s">Hub users</a></strong>, in particular, get to upgrade Semiologic software as a bonus when they do so.', 'version-checker'), 'http://members.semiologic.com/hosting/')
+			. sprintf(__('Lastly, please note that it\'s <strong>much</strong> faster (and much safer) to upgrade WordPress from your hosting account\'s control panel than from this screen. Note that <strong><a href="%1$s">Hub users</a></strong> get to upgrade Semiologic packages as a bonus when they do so.', 'version-checker'), 'http://members.semiologic.com/hosting/')
 			. '</p>' . "\n";
 
 		echo '</div>' . "\n";
 		
 		global $action;
-		if ( !$_POST && $action == 'upgrade-core' ) {
-			if ( !get_option('sem_pro_version') && !empty($update_core->response) && !empty($update_core->response->package) ) {
-				ob_start(array('sem_update_core', 'ob_callback'));
-				add_action('in_footer', array('sem_update_core', 'ob_flush'), -1000);
-			}
-			
+		if ( !$_POST && $action == 'upgrade-core' )
 			return;
-		}
 		
 		global $wp_version;
 		$bail = false;
@@ -252,28 +230,7 @@ class sem_update_core {
 	function wp_2_8_ob_callback($buffer) {
 		return preg_replace('/<form\b.+<\/form>/s', '', $buffer);
 	} # wp_2_8_ob_callback()
-	
-	
-	/**
-	 * ob_callback()
-	 *
-	 * @param string $buffer
-	 * @return string $buffer
-	 **/
-
-	function ob_callback($buffer) {
-		$update_core = get_transient('update_core');
-		$version_string = $update_core->response->current;
-		$find_replace = array(
-			__('Upgrade WordPress') => __('Install Semiologic Pro', 'version-checker'),
-			__('There is a new version of WordPress available for upgrade') => __('Click &quot;Upgrade Automatically&quot; to install Semiologic Pro on this site', 'version-checker'),
-			sprintf(__('You can upgrade to version %s automatically or download the package and install it manually:'), $version_string) => sprintf(__('You can install version %s automatically or download the package and install it manually:', 'version-checker'), $version_string),
-			__('Upgrade Automatically') => __('Install Automatically', 'version-checker'),
-			);
-		return str_replace(array_keys($find_replace), array_values($find_replace), $buffer);
-	} # ob_callback()
 } # sem_update_core
 
 add_action('admin_notices', array('sem_update_core', 'ob_start'), 1000);
-add_filter('update_feedback', array('sem_update_core', 'update_feedback'), 200);
 ?>

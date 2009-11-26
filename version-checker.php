@@ -52,7 +52,6 @@ class version_checker {
 		add_action('admin_notices', array('version_checker', 'update_nag'), 3);
 		add_action('admin_notices', array('version_checker', 'extra_update_nag'), 4);
 		add_action('settings_page_sem-api-key', array('version_checker', 'update_nag'), 9);
-		add_filter('update_footer', array('version_checker', 'core_update_footer'), 20);
 		add_filter('admin_footer_text', array('version_checker', 'admin_footer_text'), 20);
 	} # init()
 	
@@ -75,7 +74,6 @@ class version_checker {
 			wp_version_check();
 		
 		$cur = get_preferred_from_update_core();
-		$sem_pro_version = get_option('sem_pro_version');
 		if ( empty($cur->response) || empty($cur->package) || $cur->response != 'upgrade' ) {
 			version_checker::sem_news_feed();
 			if ( !get_option('sem_api_key') )
@@ -83,16 +81,10 @@ class version_checker {
 			return;
 		}
 		
-		if ( version_checker::check('sem-pro') && !$sem_pro_version ) {
-			$msg = sprintf(__('Browse <a href="%1$s">Tools / Upgrade</a> to install Semiologic Pro %2$s.', 'version-checker'),
-				'update-core.php',
-				$cur->current);
-		} else {
-			$msg = sprintf(__('<strong>WordPress %1$s is available</strong>! Please see the <a href="%2$s">release notes</a>, if any, before <a href="%3$s">upgrading your site</a>.', 'version-checker'),
-				$cur->current,
-				'http://www.semiologic.com',
-				'update-core.php');
-		}
+		$msg = sprintf(__('<strong>WordPress %1$s is available</strong>! Please see the <a href="%2$s">release notes</a>, if any, before <a href="%3$s">upgrading your site</a>.', 'version-checker'),
+			$cur->current,
+			'http://www.semiologic.com',
+			'update-core.php');
 		
 		$msg = '<p>' . $msg . '</p>' . "\n";
 		
@@ -399,29 +391,6 @@ EOS;
 	
 	
 	/**
-	 * core_update_footer()
-	 *
-	 * @param string $msg
-	 * @return string $msg
-	 **/
-
-	function core_update_footer($msg = '') {
-		if ( !current_user_can('manage_options') || get_option('sem_pro_version') )
-			return $msg;
-		
-		$update_core = get_transient('update_core');
-		if ( empty($update_core->response) || empty($update_core->response->package) )
-			return $msg;
-		
-		$cur = get_preferred_from_update_core();
-		if ( !empty($cur->response) && $cur->response == 'upgrade' )
-			return sprintf('<strong>' . __( '<a href="%1$s">Get Semiologic Pro Version %2$s</a>', 'version-checker') . '</strong>', 'update-core.php', $cur->current);
-		
-		return $msg;
-	} # core_update_footer()
-	
-	
-	/**
 	 * admin_footer_text()
 	 *
 	 * @param string $text
@@ -429,7 +398,7 @@ EOS;
 	 **/
 
 	function admin_footer_text($text = '') {
-		if ( get_option('sem_pro_version') && version_checker::get_news_pref() != 'false' ) {
+		if ( current_user_can('unfiltered_html') ) {
 			$text .= ' | <a href="http://www.semiologic.com">'
 				. __('Semiologic', 'version-checker')
 				. '</a>';
@@ -618,130 +587,6 @@ EOS;
 		
 		return $obj->response;
 	} # get_memberships()
-	
-	
-	/**
-	 * get_core()
-	 *
-	 * @param string $checked
-	 * @return array $response
-	 **/
-
-	function get_core($checked = null) {
-		$sem_api_key = get_option('sem_api_key');
-		
-		$sem_pro_version = get_option('sem_pro_version');
-		
-		if ( !$sem_api_key || $sem_pro_version || !version_checker::check('sem-pro') )
-			return array();
-		
-		$obj = get_transient('sem_update_core');
-		
-		if ( !is_object($obj) ) {
-			$obj = new stdClass;
-			$obj->last_checked = false;
-			$obj->checked =  array('sem-pro' => $sem_pro_version);
-			$obj->response = null;
-		}
-		
-		if ( current_filter() == 'load-update-core.php' ) {
-			$timeout = 3600;
-		} else {
-			$timeout = 43200;
-		}
-		
-		if ( is_array($checked) && $checked != $obj->checked )
-			$timeout = 0;
-		
-		if ( $obj->last_checked >= time() - $timeout )
-			return $obj->response;
-		
-		global $wp_version;
-		
-		$obj->last_checked = time();
-		set_transient('sem_update_core', $obj);
-		
-		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/version/0.2/core/" . $sem_api_key;
-		} elseif ( version_checker_debug === 'localhost' ) {
-			$url = "http://localhost/~denis/api/version/core/" . $sem_api_key;
-		} else {
-			$url = "https://api.semiologic.com/version/trunk/core/" . $sem_api_key;
-		}
-		
-		$check = array('sem-pro' => $sem_pro_version);
-		
-		$obj->checked = $check;
-		set_transient('sem_update_core', $obj);
-		
-		$body = array(
-			'check' => $check,
-			'packages' => get_option('sem_packages'),
-			'locale' => apply_filters('core_version_check_locale', get_locale()),
-			);
-		
-		$options = array(
-			'timeout' => 3,
-			'body' => $body,
-			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
-			);
-		
-		$cache_id = serialize(array($url, $options));
-		$raw_response = wp_cache_get($cache_id, 'sem_api');
-		if ( $raw_response === false ) {
-			$raw_response = wp_remote_post($url, $options);
-			wp_cache_set($cache_id, $raw_response, 'sem_api');
-		}
-		
-		if ( is_wp_error($raw_response) )
-			set_transient('sem_api_error', $raw_response->get_error_messages());
-		else
-			delete_transient('sem_api_error');
-		
-		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
-			$response = false;
-		else
-			$response = @unserialize($raw_response['body']);
-		
-		if ( $response !== false ) { // keep old response in case of error
-			$obj->response = $response;
-			set_transient('sem_update_core', $obj);
-		}
-		
-		return $obj->response;
-	} # get_core()
-	
-	
-	/**
-	 * update_core()
-	 *
-	 * @param object $ops
-	 * @return object $ops
-	 **/
-
-	function update_core($ops) {
-		$sem_pro_version = get_option('sem_pro_version');
-		
-		if ( $sem_pro_version )
-			return $ops;
-		
-		if ( !is_object($ops) )
-			$ops = new stdClass;
-		
-		if ( !is_array($ops->checked) )
-			$ops->checked = array('sem-pro' => $sem_pro_version);
-		
-		if ( !is_array($ops->updates) )
-			$ops->response = array();
-		
-		$ops->response = version_checker::get_core($ops->checked);
-		
-		if ( is_object($ops->response) && !empty($ops->response->package) ) {
-			$ops->updates = array($ops->response);
-		}
-		
-		return $ops;
-	} # update_core()
 	
 	
 	/**
@@ -1210,6 +1055,16 @@ EOS;
 				}
 			}
 			
+			if ( $folders = glob(WP_CONTENT_DIR . '/upgrade/wordpress*/') ) {
+				foreach ( $folders as $folder ) {
+					$folder = $wp_filesystem->find_folder($folder);
+					show_message(sprintf(__('Cleaning up %1$s. Based on our testing, this step can readily take about 10 minutes without the slightest amount of feedback from WordPress. You can avoid it by deleting your %2$s folder using your FTP software before proceeding.', 'version-checker'), $folder, basename($folder)));
+					version_checker::force_flush();
+					$wp_filesystem->delete($folder, true);
+					version_checker::reconnect_ftp();
+				}
+			}
+			
 			show_message(__('Starting upgrade... Again, this can take several minutes without any feedback from WordPress.', 'version-checker'));
 			version_checker::force_flush();
 			
@@ -1331,16 +1186,7 @@ add_action('load-update.php', 'sem_update_themes');
 add_action('load-tools_page_sem-tools', 'sem_update_themes');
 
 add_option('sem_api_key', '');
-add_option('sem_pro_version', '');
 add_option('sem_packages', 'stable');
-
-if ( !isset($sem_pro_version) )
-	$sem_pro_version = '';
-
-if ( $sem_pro_version && get_option('sem_pro_version') !== $sem_pro_version ) {
-	update_option('sem_pro_version', $sem_pro_version);
-	delete_transient('sem_update_core');
-}
 
 wp_cache_add_non_persistent_groups(array('sem_api'));
 
@@ -1356,13 +1202,6 @@ if ( is_admin() && function_exists('get_transient') ) {
 		'load-tools_page_sem-tools',
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_memberships'), 11);
-	
-	foreach ( array(
-		'load-update-core.php',
-		'wp_version_check',
-		'load-tools_page_sem-tools',
-		) as $hook )
-		add_action($hook, array('version_checker', 'get_core'), 12);
 	
 	foreach ( array(
 		'load-themes.php',
@@ -1394,7 +1233,6 @@ if ( is_admin() && function_exists('get_transient') ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
 }
 
-add_filter('transient_update_core', array('version_checker', 'update_core'));
 add_filter('transient_update_themes', array('version_checker', 'update_themes'));
 add_filter('transient_update_plugins', array('version_checker', 'update_plugins'));
 ?>
