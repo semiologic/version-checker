@@ -68,8 +68,11 @@ class sem_update_plugins {
 			$file2 = "$slug.php";
 			if ( !isset($installed[$file1]) && !isset($installed[$file2]) && $sem_plugins[$slug]->download_link )
 				$to_install[] = $slug;
-			elseif ( isset($response[$file1]) && version_compare($response[$file1]->new_version, $current[$file1]['Version'], '>') && $response[$file1]->package || isset($response[$file2]) && version_compare($response[$file2]->new_version, $current[$file2]['Version'], '>') && $response[$file2]->package )
-				$to_upgrade[] = $slug;
+		}
+		
+		foreach ( $response as $file => $resp ) {
+			if ( version_compare($response[$file]->new_version, $installed[$file]['Version'], '>') && $response[$file]->package )
+				$to_upgrade[] = $resp->slug;
 		}
 		
 		$type = isset($_REQUEST['type']) ? stripslashes( $_REQUEST['type'] ) : '';

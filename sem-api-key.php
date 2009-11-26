@@ -66,18 +66,6 @@ class sem_api_key {
 		echo '<h2>' . __('Semiologic API Key', 'version-checker') . '</h2>' . "\n";
 		
 		$sem_api_key = get_option('sem_api_key');
-		
-		if ( !$sem_api_key ) {
-			echo '<p><strong>'
-				. __('Tools / Semiologic becomes available once this screen is configured. Browsing it will allows you to manage Semiologic packages on your site.', 'version-checker')
-				. '</strong></p>';
-		} else {
-			echo '<div class="updated fade"><p><strong>'
-				. sprintf(__('Browse <a href="%s">Tools / Semiologic</a> to manage Semiologic packages on your site.', 'version-checker'), 'tools.php?page=sem-tools')
-				. '</strong></p></div>';
-		}
-		
-		
 		$sem_packages = get_option('sem_packages');
 		$memberships = version_checker::get_memberships();
 		$sem_api_error = get_transient('sem_api_error');

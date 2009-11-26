@@ -50,8 +50,6 @@ class version_checker {
 		}
 		remove_action('admin_notices', 'update_nag', 3);
 		add_action('admin_notices', array('version_checker', 'update_nag'), 3);
-		add_action('admin_notices', array('version_checker', 'extra_update_nag'), 4);
-		add_action('settings_page_sem-api-key', array('version_checker', 'update_nag'), 9);
 		add_filter('admin_footer_text', array('version_checker', 'admin_footer_text'), 20);
 	} # init()
 	
@@ -66,64 +64,45 @@ class version_checker {
 		global $pagenow, $page_hook;
 		
 		if ( !current_user_can('manage_options') )
-			return version_checker::sem_news_feed();
-		elseif ( 'update-core.php' == $pagenow || 'settings_page_sem-api-key' == $page_hook && current_filter() == 'admin_notices' )
 			return;
 		
-		if ( 'settings_page_sem-api-key' == $page_hook && $_POST )
-			wp_version_check();
-		
-		$cur = get_preferred_from_update_core();
-		if ( empty($cur->response) || empty($cur->package) || $cur->response != 'upgrade' ) {
-			version_checker::sem_news_feed();
-			if ( !get_option('sem_api_key') )
-				version_checker::api_key_nag();
+		if ( in_array($pagenow, array('update.php', 'update-core.php')) )
 			return;
+		
+		$msg = array();
+		$sem_api_key = get_option('sem_api_key');
+		
+		if ( $page_hook != 'settings_page_sem-api-key' ) {
+			if ( !$sem_api_key ) {
+				$msg[] = '<p>'
+					. sprintf(__('The Version Checker plugin is almost ready. Please enter your <a href="%s">Semiologic API key</a> to manage your Semiologic packages.', 'version-checker'), 'options-general.php?page=sem-api-key')
+					. '</p>' . "\n";
+			}
+		} elseif ( $page_hook == 'settings_page_sem-api-key' ) {
+			if ( !$sem_api_key ) {
+				$msg[] = '<p>'
+					. __('Tools / Semiologic becomes available once this screen is configured. Browsing it will allows you to manage Semiologic packages on your site.', 'version-checker')
+					. '</p>' . "\n";
+			} else {
+				$msg[] = '<p>'
+					. sprintf(__('Browse <a href="%s">Tools / Semiologic</a> to manage Semiologic packages on your site.', 'version-checker'), 'tools.php?page=sem-tools')
+					. '</p>' . "\n";
+			}
 		}
-		
-		$msg = sprintf(__('<strong>WordPress %1$s is available</strong>! Please see the <a href="%2$s">release notes</a>, if any, before <a href="%3$s">upgrading your site</a>.', 'version-checker'),
-			$cur->current,
-			'http://www.semiologic.com',
-			'update-core.php');
-		
-		$msg = '<p>' . $msg . '</p>' . "\n";
-		
-		$extra = '';
-		$hub = @ preg_match("|/usr/local/www/[^/]+/www/|", ABSPATH) && file_exists('/etc/semiologic');
-		if ( $hub ) {
-			$extra = '<p>'
-				. sprintf(__('Note: It is faster and safer to upgrade using the <a href="%s">account management system</a> (AMS).'), 'https://ams.hub.org')
-				. '</p>' . "\n";
-		}
-		
-		echo '<div id="update-nag">' . "\n"
-			. $msg
-			. $extra
-			. '</div>' . "\n";
-	} # update_nag()
-	
-	
-	/**
-	 * extra_update_nag()
-	 *
-	 * @return void
-	 **/
-
-	function extra_update_nag() {
-		global $pagenow, $page_hook;
-		if ( in_array($pagenow, array('update.php', 'update-core.php')) || $pagenow == 'tools.php' && $page_hook == 'sem-tools' || !current_user_can('manage_options') )
-			return;
 		
 		$plugins_todo = false;
+		$plugins_count = 0;
 		$active_plugins = get_option('active_plugins');
 		
-		if ( $active_plugins ) {
+		if ( $active_plugins && !in_array($pagenow, array('plugins.php', 'plugin-install.php')) ) {
 			$plugins_response = get_transient('update_plugins');
 			if ( $plugins_response && !empty($plugins_response->response) ) {
 				foreach ( $plugins_response->response as $plugin => $details ) {
-					if ( $details->package && in_array($plugin, $active_plugins) )
-						$plugins_todo = true;
-						break;
+					if ( $details->package ) {
+						$plugins_count++;
+						if ( !$plugins_todo && in_array($plugin, $active_plugins) )
+							$plugins_todo = true;
+					}
 				}
 			}
 		}
@@ -132,7 +111,7 @@ class version_checker {
 		$template = get_option('template');
 		$stylesheet = get_option('stylesheet');
 		
-		if ( $template && $stylesheet ) {
+		if ( $template && $stylesheet && !in_array($pagenow, array('themes.php', 'theme-install.php')) ) {
 			$themes_response = get_transient('update_themes');
 			if ( $themes_response && !empty($themes_response->response) ) {
 				foreach ( array('template', 'stylesheet') as $theme ) {
@@ -144,76 +123,59 @@ class version_checker {
 			}
 		}
 		
-		if ( $plugins_todo && !in_array($pagenow, array('plugins.php', 'plugins-install.php')) ) {
-			$plugins_todo = false;
-			$plugins = get_plugins();
-			
-			foreach ( array_keys($plugins_response->response) as $plugin ) {
-				if ( $plugins[$plugin]['Version'] == $plugins_response->response[$plugin]->new_version ) {
-					delete_transient('update_plugins');
-					delete_transient('sem_update_plugins');
-					break;
+		$core_todo = false;
+		$cur = get_preferred_from_update_core();
+		if ( !empty($cur->response) && !empty($cur->package) && $cur->response == 'upgrade' ) {
+			$core_todo = $cur->current;
+		}
+		
+		if ( $core_todo || $plugins_todo || $themes_todo ) {
+			if ( $themes_todo ) {
+				$msg[] = '<p>'
+					. sprintf(
+						__('A <a href="%s">theme update</a> is available!', 'version-checker'),
+						'themes.php')
+					. '</p>' . "\n";
+			}
+			if ( $plugins_todo ) {
+				$button = '';
+				if ( get_option('sem_api_key') ) {
+					$button = '<input type="submit" class="button" value="' . esc_attr(sprintf(__('Mass Upgrade (%s)', 'version-checker'), count($plugins_todo))) . '" />'
+						. '<input type="hidden" name="action" value="mass-upgrade" />' . "\n"
+						. wp_nonce_field('mass-upgrade', null, null, false);
 				}
+				$msg[] = '<form method="post" action="tools.php?page=sem-tools" style="display: inline;">' . "\n"
+					. '<p>'
+					. sprintf(
+						__('<a href="%1$s">Plugin updates</a> are available! %2$s', 'version-checker'),
+						'plugins.php?plugin_status=upgrade',
+						$button)
+					. '</p>' . "\n"
+					. '</form>' . "\n";
+			}
+			if ( $core_todo ) {
+				$msg[] = '<p>'
+					. sprintf(__('<a href="%1$s">WordPress %2$s</a> is available! Please upgrade your site before it gets <a href="%3$s">hacked</a>.', 'version-checker'),
+					'update-core.php',
+					$core_todo,
+					'http://wordpress.org/development/2009/09/keep-wordpress-secure/')
+					. '</p>' . "\n";
+			}
+			
+			$hub = @ preg_match("|/usr/local/www/[^/]+/www/|", ABSPATH) && file_exists('/etc/semiologic');
+			if ( $hub ) {
+				$msg[] = '<p>'
+					. sprintf(__('<strong>Note</strong>: you can use <a href="%s">AMS</a> to upgrade WordPress and Semiologic software.', 'version-checker'), 'https://ams.hub.org')
+					. '</p>' . "\n";
 			}
 		}
 		
-		if ( $themes_todo && !in_array($pagenow, array('themes.php', 'themes-install.php')) ) {
-			$themes_todo = false;
-			$themes = get_themes();
-			
-			foreach ( $themes as $details ) {
-				if ( $details['Stylesheet'] == $$theme ) {
-					if ( $themes_response->response[$$theme]['new_version'] == $details['Version'] )
-					delete_transient('update_themes');
-					delete_transient('sem_update_themes');
-					break;
-				}
-			}
+		if ( $msg ) {
+			echo '<div id="update-nag">' . "\n"
+				. implode('', $msg)
+				. '</div>' . "\n";
 		}
-		
-		if ( !$plugins_todo && !$themes_todo )
-			return;
-		
-		echo '<div id="extra_update_nag">' . "\n";
-		
-		if ( $plugins_todo ) {
-			echo '<p>'
-				. sprintf(
-					__('<strong>A new version is available for one or more of <a href="%s">your plugins</a></strong>.', 'version-checker'),
-					'plugins.php?plugin_status=upgrade')
-				. '</p>'
-				. '<form method="post" action="tools.php?page=sem-tools" style="margin: 0px auto;">' . "\n"
-					. '<input type="submit" class="button" value="' . esc_attr(__('Mass Upgrade', 'version-checker')) . '" />'
-					. '<input type="hidden" name="action" value="mass-upgrade" />';
-			wp_nonce_field('mass-upgrade');
-			echo '</form>' . "\n"
-				. '</p>' . "\n";
-		} elseif ( $themes_todo ) {
-			echo '<p>'
-				. sprintf(__('<strong>A new version is available for <a href="%s">your theme</a></strong>.', 'version-checker'), 'themes.php')
-				. '</p>' . "\n";
-		}
-		
-		echo '</div>' . "\n";
-	} # extra_update_nag()
-	
-	
-	/**
-	 * api_key_nag()
-	 *
-	 * @return void
-	 **/
-
-	function api_key_nag() {
-		if ( current_filter() == 'settings_page_sem-api-key' )
-			return;
-		
-		echo '<div class="error">' . "\n"
-			. '<p>'
-			. sprintf(__('The Version Checker plugin is almost ready. Please enter your <a href="%s">Semiologic API key</a> to receive update notifications for packages hosted on semiologic.com.', 'version-checker'), 'options-general.php?page=sem-api-key')
-			. '</p>' . "\n"
-			. '</div>';
-	} # api_key_nag()
+	} # update_nag()
 	
 	
 	/**
@@ -223,9 +185,19 @@ class version_checker {
 	 **/
 
 	function sem_news_css() {
-		$pref = version_checker::get_news_pref();
+		echo <<<EOS
+<style type="text/css">
+#update-nag {
+	margin: 40px 0px 0px;
+}
+
+#update-nag a {
+	font-weight: bold;
+}
+</style>
+EOS;
 		
-		if ( $pref == 'false' )
+		if ( version_checker::get_news_pref() == 'false' )
 			return;
 		
 		$position = ( 'rtl' == get_bloginfo( 'text_direction' ) ) ? 'left' : 'right';
@@ -244,18 +216,6 @@ class version_checker {
 
 #dolly {
 	display: none;
-}
-
-#extra_update_nag {
-	margin-top: 32px;
-	line-height: 29px;
-	font-size: 12px;
-	border-width: 1px 0;
-	border-style: solid none;
-	text-align: center;
-	background-color: #fffeeb;
-	border-color: #ccc;
-	color: #555;
 }
 </style>
 EOS;
@@ -1229,6 +1189,7 @@ if ( is_admin() && function_exists('get_transient') ) {
 	add_action('option_ftp_credentials', array('version_checker', 'option_ftp_credentials'));
 	
 	add_action('update-custom_bulk-activate-plugins', array('version_checker', 'bulk_activate_plugins'));
+	add_action('admin_footer', array('version_checker', 'sem_news_feed'));
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
 }
