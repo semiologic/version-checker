@@ -146,6 +146,7 @@ class sem_update_themes {
 		
 		$body = array(
 			'action' => 'query',
+			'packages' => get_option('sem_packages'),
 			);
 		
 		$options = array(

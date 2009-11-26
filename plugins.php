@@ -64,10 +64,11 @@ class sem_update_plugins {
 		$response = is_object($response) ? (array) $response->response : array();
 		
 		foreach ( array_keys($sem_plugins) as $slug ) {
-			$file = "$slug/$slug.php";
-			if ( !isset($installed[$slug . '.php']) && !isset($installed[$file]) && $sem_plugins[$slug]->download_link )
+			$file1 = "$slug/$slug.php";
+			$file2 = "$slug.php";
+			if ( !isset($installed[$file1]) && !isset($installed[$file2]) && $sem_plugins[$slug]->download_link )
 				$to_install[] = $slug;
-			elseif ( version_compare($response[$file]->new_version, $current[$file]['Version'], '>') && $response[$file]->package )
+			elseif ( isset($response[$file1]) && version_compare($response[$file1]->new_version, $current[$file1]['Version'], '>') && $response[$file1]->package || isset($response[$file2]) && version_compare($response[$file2]->new_version, $current[$file2]['Version'], '>') && $response[$file2]->package )
 				$to_upgrade[] = $slug;
 		}
 		
@@ -358,6 +359,7 @@ class sem_update_plugins {
 		
 		$body = array(
 			'action' => 'query',
+			'packages' => get_option('sem_packages'),
 			);
 		
 		$options = array(
