@@ -33,9 +33,10 @@ class sem_api_key {
 		
 		delete_transient('sem_api_error');
 		delete_transient('sem_memberships');
-		foreach ( array('core', 'themes', 'plugins') as $transient ) {
+		foreach ( array('themes', 'plugins') as $transient ) {
 			delete_transient('update_' . $transient);
 			delete_transient('sem_update_' . $transient);
+			delete_transient('sem_query_' . $transient);
 		}
 		
 		echo '<div class="updated fade">' . "\n"
