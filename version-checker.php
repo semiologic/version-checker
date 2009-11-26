@@ -188,7 +188,7 @@ class version_checker {
 			echo '<p>'
 				. sprintf(
 					__('<strong>A new version is available for one or more of <a href="%s">your plugins</a></strong>.', 'version-checker'),
-					'plugins.php')
+					'plugins.php?plugin_status=upgrade')
 				. '</p>'
 				. '<form method="post" action="tools.php?page=sem-tools" style="margin: 0px auto;">' . "\n"
 					. '<input type="submit" class="button" value="' . esc_attr(__('Mass Upgrade', 'version-checker')) . '" />'
