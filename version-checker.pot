@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-11-25 09:44+0100\n"
+"POT-Creation-Date: 2009-11-26 13:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,14 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: core.php:39
+#: core.php:23
 msgid ""
 "<strong>Important</strong>: Do not interrupt an upgrade once it's started. "
 "Doing so can potentially leave your site in a dysfunctional state. It can "
 "take several minutes to complete -- albeit seldom more than 15 minutes."
 msgstr ""
 
-#: core.php:43
+#: core.php:27
 #, php-format
 msgid ""
 "Also note that the Version Checker plugin proactively works around known "
@@ -32,22 +32,22 @@ msgid ""
 "latest version before proceeding (<a href=\"%4$s\">change log</a>)."
 msgstr ""
 
-#: core.php:51
+#: core.php:35
 #, php-format
 msgid ""
 "Lastly, please note that it's <strong>much</strong> faster (and much safer) "
 "to upgrade WordPress from your hosting account's control panel than from "
-"this screen. <strong><a href=\"%1$s\">Hub users</a></strong>, in particular, "
-"get to upgrade Semiologic software as a bonus when they do so."
+"this screen. Note that <strong><a href=\"%1$s\">Hub users</a></strong> get "
+"to upgrade Semiologic packages as a bonus when they do so."
 msgstr ""
 
-#: core.php:78
+#: core.php:56
 msgid ""
 "This automated upgrade has been cancelled because it can result in your site "
 "getting deleted."
 msgstr ""
 
-#: core.php:82
+#: core.php:60
 msgid ""
 "Your WordPress 2.8 installation has a critical bug (which is fixed in 2.8.1) "
 "whereby, if the automated upgrader fails while the files are being copied, "
@@ -56,31 +56,31 @@ msgid ""
 "directory)."
 msgstr ""
 
-#: core.php:86
+#: core.php:64
 #, php-format
 msgid ""
 "Download and edit your site's <code>%s</code> file using notepad; find this "
 "line in the Core_Upgrader class (around lines 650-710):"
 msgstr ""
 
-#: core.php:92
+#: core.php:70
 msgid "Change it to:"
 msgstr ""
 
-#: core.php:98
+#: core.php:76
 #, php-format
 msgid ""
 "Then, re-upload the file to your site and <a href=\"%s\">start over</a>. You "
 "will no longer see this warning if it's safe to proceed."
 msgstr ""
 
-#: core.php:118
+#: core.php:96
 msgid ""
 "As you await feedback from the WP upgrader, here are some preemptive "
 "troubleshooting tips in the event it fails..."
 msgstr ""
 
-#: core.php:122
+#: core.php:100
 msgid ""
 "The single most common reason upgrades fail are server and network timeouts. "
 "They can have all sorts of origins, but the most frequent one (FTP timeouts) "
@@ -88,7 +88,7 @@ msgid ""
 "host. Before you do, however..."
 msgstr ""
 
-#: core.php:126
+#: core.php:104
 msgid ""
 "WP 2.9 introduces an FS_TIMEOUT constant for FTP connections. Version "
 "Checker introduces the same in WP 2.8, and makes it default to 15 minutes "
@@ -97,14 +97,14 @@ msgid ""
 "adding a define in your wp-config.php file, e.g.:"
 msgstr ""
 
-#: core.php:132
+#: core.php:110
 msgid ""
 "Now, on to the frequently encountered issues in case you get one of them... "
 "If the download is failing altogether, or if WP reports the zip is corrupt "
 "(a PCLZIP_ERR of some kind):"
 msgstr ""
 
-#: core.php:138
+#: core.php:116
 msgid ""
 "Start by trying again unless there is an obvious server configuration "
 "problem. There could have been a network problem, it could be that the "
@@ -112,61 +112,61 @@ msgid ""
 "anything..."
 msgstr ""
 
-#: core.php:142
+#: core.php:120
 #, php-format
 msgid ""
 "If it continues to fail, activate the <a href=\"%s\">Core Control</a> "
 "plugin, and enable the HTTP Access module under Tools / Upgrade."
 msgstr ""
 
-#: core.php:146
+#: core.php:124
 msgid ""
 "Click &quot;External HTTP Access&quot; under Tools / Upgrade (near the "
 "screen's title), and disable the current HTTP transport."
 msgstr ""
 
-#: core.php:150
+#: core.php:128
 msgid "Revisit this screen, and try again."
 msgstr ""
 
-#: core.php:154 sem-api-key.php:120
+#: core.php:132 sem-api-key.php:121
 msgid ""
 "Repeat the above steps if it's still failing, until you run out of available "
 "transports to try. (Oftentimes, at least one of them will succeed.)"
 msgstr ""
 
-#: core.php:158
+#: core.php:136
 msgid ""
 "Don't forget to re-enable the HTTP transports if they all fail. (In this "
 "case, the odds are it's failing due to the way the server is configurated, "
 "and you should definitely report the issue to your host.)"
 msgstr ""
 
-#: core.php:164
+#: core.php:142
 msgid ""
 "If unzipping is failing (in this case, WP will typically report that it's "
 "failing to copy a file, always the same one, over and over):"
 msgstr ""
 
-#: core.php:170
+#: core.php:148
 msgid "Start by trying again. It might work this time."
 msgstr ""
 
-#: core.php:174 core.php:202
+#: core.php:152 core.php:180
 msgid ""
 "If it fails again, consider emptying the wp-content/upgrade folder from your "
 "site using FTP software. It potentially contains folders that WP attempts to "
 "delete using poorly optimized code."
 msgstr ""
 
-#: core.php:178 core.php:206
+#: core.php:156 core.php:184
 #, php-format
 msgid ""
 "If it continues to fail, activate the <a href=\"%s\">Core Control</a> "
 "plugin, and enable the Filestem module under Tools / Core Control."
 msgstr ""
 
-#: core.php:182 core.php:210
+#: core.php:160 core.php:188
 msgid ""
 "Click &quot;Filesystem Access&quot; under Tools / Core Control (near the "
 "screen's title), and switch to using the PHP FTP Sockets method if you are "
@@ -174,11 +174,11 @@ msgid ""
 "method works better than the built-in method."
 msgstr ""
 
-#: core.php:188
+#: core.php:166
 msgid "If the file copying starts but bails at some point:"
 msgstr ""
 
-#: core.php:194
+#: core.php:172
 msgid ""
 "Don't browse away from this screen. Especially not if a new WP version is "
 "involved. Your site might be unavailable due to an incomplete WP upgrade, "
@@ -186,25 +186,25 @@ msgid ""
 "Upgrade in a new tab or window."
 msgstr ""
 
-#: core.php:198
+#: core.php:176
 msgid "If you can, start by trying again. It might work this time."
 msgstr ""
 
-#: core.php:214
+#: core.php:192
 #, php-format
 msgid ""
 "If it persists in failing, or if this screen is no longer available, you're "
 "in for a manual <a href=\"%1$s\">install</a> or <a href=\"%2$s\">upgrade</a>."
 msgstr ""
 
-#: core.php:218
+#: core.php:196
 msgid ""
 "If you see a \"there was a failed upgrade\" sort of message in your admin "
 "area after a manual upgrade, it is due to the presence of a .maintenance "
 "file in your site's root folder. Delete it to remove it."
 msgstr ""
 
-#: core.php:224
+#: core.php:202
 #, php-format
 msgid ""
 "And yes, it's <strong>much faster</strong> (and much safer) to upgrade from "
@@ -212,232 +212,192 @@ msgid ""
 "consider <strong><a href=\"%s\">Hub</a></strong>."
 msgstr ""
 
-#: core.php:268
-msgid "Upgrade WordPress"
-msgstr ""
-
-#: core.php:268
-msgid "Install Semiologic Pro"
-msgstr ""
-
-#: core.php:269
-msgid "There is a new version of WordPress available for upgrade"
-msgstr ""
-
-#: core.php:269
-msgid ""
-"Click &quot;Upgrade Automatically&quot; to install Semiologic Pro on this "
-"site"
-msgstr ""
-
-#: core.php:270
-#, php-format
-msgid ""
-"You can upgrade to version %s automatically or download the package and "
-"install it manually:"
-msgstr ""
-
-#: core.php:270
-#, php-format
-msgid ""
-"You can install version %s automatically or download the package and install "
-"it manually:"
-msgstr ""
-
-#: core.php:271
-msgid "Upgrade Automatically"
-msgstr ""
-
-#: core.php:271
-msgid "Install Automatically"
-msgstr ""
-
-#: plugins.php:18 themes.php:18 version-checker.php:434
-#: version-checker.php:1055 version-checker.php:1056
+#: plugins.php:18 themes.php:18 version-checker.php:363
+#: version-checker.php:860 version-checker.php:861
 msgid "Semiologic"
 msgstr ""
 
-#: plugins.php:54
+#: plugins.php:54 tools.php:28
 msgid ""
 "Plugin lookup failed. Please refresh this page in a few minutes to try again."
 msgstr ""
 
-#: plugins.php:88
+#: plugins.php:92
 #, php-format
 msgid "Mass Install (%s)"
 msgstr ""
 
-#: plugins.php:95
+#: plugins.php:99 version-checker.php:143
 #, php-format
 msgid "Mass Upgrade (%s)"
 msgstr ""
 
-#: plugins.php:112
+#: plugins.php:116
 msgid "&laquo;"
 msgstr ""
 
-#: plugins.php:113
+#: plugins.php:117
 msgid "&raquo;"
 msgstr ""
 
-#: plugins.php:126 plugins.php:135
+#: plugins.php:130 plugins.php:139
 msgid "Name"
 msgstr ""
 
-#: plugins.php:127 plugins.php:136
+#: plugins.php:131 plugins.php:140
 msgid "Version"
 msgstr ""
 
-#: plugins.php:128 plugins.php:137
+#: plugins.php:132 plugins.php:141
 msgid "Description"
 msgstr ""
 
-#: plugins.php:129 plugins.php:138
+#: plugins.php:133 plugins.php:142
 msgid "Actions"
 msgstr ""
 
-#: plugins.php:145
+#: plugins.php:149
 msgid "No plugins match your request."
 msgstr ""
 
-#: plugins.php:169
+#: plugins.php:173
 #, php-format
 msgid "By %s"
 msgstr ""
 
-#: plugins.php:180
+#: plugins.php:184
 msgid "Install"
 msgstr ""
 
-#: plugins.php:184
+#: plugins.php:188
 msgid "Upgrade"
 msgstr ""
 
-#: plugins.php:187
+#: plugins.php:191
 msgid "Order"
 msgstr ""
 
-#: plugins.php:224
+#: plugins.php:228
 msgid "Install Plugins"
 msgstr ""
 
-#: plugins.php:242
+#: plugins.php:246
 msgid "Upgrade Plugins"
 msgstr ""
 
-#: plugins.php:456 themes.php:244
+#: plugins.php:461 themes.php:245
 #, php-format
 msgid "Version %s"
 msgstr ""
 
-#: sem-api-key.php:44
+#: sem-api-key.php:45
 msgid "Settings saved."
 msgstr ""
 
-#: sem-api-key.php:65 sem-api-key.php:143 sem-api-key.php:145
-#: version-checker.php:1046 version-checker.php:1047
+#: sem-api-key.php:66 sem-api-key.php:144 sem-api-key.php:146
+#: version-checker.php:851 version-checker.php:852
 msgid "Semiologic API Key"
 msgstr ""
 
-#: sem-api-key.php:76
+#: sem-api-key.php:77
 msgid ""
 "The following errors occurred while trying to contact api.semiologic.com:"
 msgstr ""
 
-#: sem-api-key.php:90
+#: sem-api-key.php:91
 msgid ""
 "To worried users: the above errors do NOT prevent your site from working in "
 "any way; they merely mean it failed to receive update notifications."
 msgstr ""
 
-#: sem-api-key.php:94
+#: sem-api-key.php:95
 msgid ""
 "Frequently, HTTP errors will be related to your server's configuration, and "
 "should be reported to your host. Before you do, however:"
 msgstr ""
 
-#: sem-api-key.php:100
+#: sem-api-key.php:101
 #, php-format
 msgid "Install the <a href=\"%s\">Core Control</a> plugin."
 msgstr ""
 
-#: sem-api-key.php:104
+#: sem-api-key.php:105
 msgid "Under Tools / Core Control, enable the HTTP Access Module."
 msgstr ""
 
-#: sem-api-key.php:108
+#: sem-api-key.php:109
 msgid ""
 "Click &quot;External HTTP Access&quot; on the screen (the link is nearby the "
 "screen's title)."
 msgstr ""
 
-#: sem-api-key.php:112
+#: sem-api-key.php:113
 msgid ""
 "Disable the current HTTP transport. (It's probably not playing well with the "
 "secure http protocol, which is used to contact api.semiologic.com.)"
 msgstr ""
 
-#: sem-api-key.php:116
+#: sem-api-key.php:117
 msgid "Revisit this screen, and save changes to force a refresh."
 msgstr ""
 
-#: sem-api-key.php:124
+#: sem-api-key.php:125
 msgid "Don't forget to re-enable the HTTP transports if they all fail."
 msgstr ""
 
-#: sem-api-key.php:130
+#: sem-api-key.php:131
 #, php-format
 msgid ""
 "In the event that the issue is clearly related to semiologic.com, please "
 "report it in the <a href=\"%s\">Semiologic forum</a>."
 msgstr ""
 
-#: sem-api-key.php:157
+#: sem-api-key.php:158
 msgid "Packages"
 msgstr ""
 
-#: sem-api-key.php:161
+#: sem-api-key.php:162
 msgid "Keep WordPress, themes and plugins updated using:"
 msgstr ""
 
-#: sem-api-key.php:170
+#: sem-api-key.php:171
 msgid "Stable packages from wordpress.org and semiologic.com (recommended)"
 msgstr ""
 
-#: sem-api-key.php:179
+#: sem-api-key.php:180
 msgid ""
 "Stable packages from wordpress.org, and bleeding edge packages from "
 "semiologic.com"
 msgstr ""
 
-#: sem-api-key.php:190
+#: sem-api-key.php:191
 msgid "Memberships"
 msgstr ""
 
-#: sem-api-key.php:203
+#: sem-api-key.php:204
 msgid "Never expires"
 msgstr ""
 
-#: sem-api-key.php:205
+#: sem-api-key.php:206
 #, php-format
 msgid "Expired %1$s - <a href=\"%2$s\">Renew</a>"
 msgstr ""
 
-#: sem-api-key.php:210
+#: sem-api-key.php:211
 #, php-format
 msgid "Expires %1$s - <a href=\"%2$s\">Renew</a>"
 msgstr ""
 
-#: sem-api-key.php:215
+#: sem-api-key.php:216
 #, php-format
 msgid "Expires %s"
 msgstr ""
 
-#: sem-api-key.php:229
+#: sem-api-key.php:230
 msgid "FAQ"
 msgstr ""
 
-#: sem-api-key.php:233
+#: sem-api-key.php:234
 #, php-format
 msgid ""
 "Your Semiologic API key entitles you (as an individual Semiologic customer) "
@@ -446,7 +406,7 @@ msgid ""
 "end</a>."
 msgstr ""
 
-#: sem-api-key.php:236
+#: sem-api-key.php:237
 #, php-format
 msgid ""
 "The software itself will of course continue to work normally when your "
@@ -455,7 +415,7 @@ msgid ""
 "membership current and your site up to date."
 msgstr ""
 
-#: sem-api-key.php:239
+#: sem-api-key.php:240
 #, php-format
 msgid ""
 "Please do not share your API key, or use it for the benefit of others. It is "
@@ -464,26 +424,30 @@ msgid ""
 "site should be using a separate API key."
 msgstr ""
 
-#: sem-api-key.php:242
+#: sem-api-key.php:243
 #, php-format
 msgid ""
 "Please <a href=\"%s\">email sales</a>, or catch Denis on Skype or YIM (ID is "
 "ddebernardy on both), for any further information."
 msgstr ""
 
-#: sem-api-key.php:251
+#: sem-api-key.php:252
 msgid "Save Changes"
 msgstr ""
 
-#: tools.php:49
+#: tools.php:63
+msgid "Nothing to do... Aborting."
+msgstr ""
+
+#: tools.php:75
 msgid "Semiologic Packages"
 msgstr ""
 
-#: tools.php:51
+#: tools.php:77
 msgid "Plugins"
 msgstr ""
 
-#: tools.php:55
+#: tools.php:82
 msgid "Themes"
 msgstr ""
 
@@ -525,82 +489,74 @@ msgid ""
 "semiologic.com"
 msgstr ""
 
-#: version-checker.php:87
-#, php-format
-msgid ""
-"Browse <a href=\"%1$s\">Tools / Upgrade</a> to install Semiologic Pro %2$s."
-msgstr ""
-
-#: version-checker.php:91
-#, php-format
-msgid ""
-"<strong>WordPress %1$s is available</strong>! Please see the <a href=\"%2$s"
-"\">release notes</a>, if any, before <a href=\"%3$s\">upgrading your site</"
-"a>."
-msgstr ""
-
-#: version-checker.php:103
-#, php-format
-msgid ""
-"Note: It is faster and safer to upgrade using the <a href=\"%s\">account "
-"management system</a> (AMS)."
-msgstr ""
-
-#: version-checker.php:190
-#, php-format
-msgid ""
-"<strong>A new version is available for one or more of <a href=\"%s\">your "
-"plugins</a></strong>."
-msgstr ""
-
-#: version-checker.php:194
-msgid "Mass Upgrade"
-msgstr ""
-
-#: version-checker.php:201
-#, php-format
-msgid ""
-"<strong>A new version is available for <a href=\"%s\">your theme</a></"
-"strong>."
-msgstr ""
-
-#: version-checker.php:221
+#: version-checker.php:78
 #, php-format
 msgid ""
 "The Version Checker plugin is almost ready. Please enter your <a href=\"%s"
-"\">Semiologic API key</a> to receive update notifications for packages "
-"hosted on semiologic.com."
+"\">Semiologic API key</a> to manage your Semiologic packages."
 msgstr ""
 
-#: version-checker.php:306
+#: version-checker.php:84
+msgid ""
+"Tools / Semiologic becomes available once this screen is configured. "
+"Browsing it will allows you to manage Semiologic packages on your site."
+msgstr ""
+
+#: version-checker.php:88
+#, php-format
+msgid ""
+"Browse <a href=\"%s\">Tools / Semiologic</a> to manage Semiologic packages "
+"on your site."
+msgstr ""
+
+#: version-checker.php:136
+#, php-format
+msgid "A <a href=\"%s\">theme update</a> is available!"
+msgstr ""
+
+#: version-checker.php:150
+#, php-format
+msgid "<a href=\"%1$s\">Plugin updates</a> are available! %2$s"
+msgstr ""
+
+#: version-checker.php:158
+#, php-format
+msgid ""
+"<a href=\"%1$s\">WordPress %2$s</a> is available! Please upgrade your site "
+"before it gets <a href=\"%3$s\">hacked</a>."
+msgstr ""
+
+#: version-checker.php:168
+#, php-format
+msgid ""
+"<strong>Note</strong>: you can use <a href=\"%s\">AMS</a> to upgrade "
+"WordPress and Semiologic software."
+msgstr ""
+
+#: version-checker.php:258
 #, php-format
 msgid ""
 "<a href=\"%1$s\" title=\"Semiologic Development News\">Dev News</a>: <a href="
 "\"%2$s\" title=\"%3$s\">%4$s</a>"
 msgstr ""
 
-#: version-checker.php:364 version-checker.php:370
+#: version-checker.php:316 version-checker.php:322
 msgid "Semiologic Development News"
 msgstr ""
 
-#: version-checker.php:378
+#: version-checker.php:330
 msgid ""
 "Keep me updated with Semiologic Development News when browsing the admin "
 "area."
 msgstr ""
 
-#: version-checker.php:418
-#, php-format
-msgid "<a href=\"%1$s\">Get Semiologic Pro Version %2$s</a>"
-msgstr ""
-
-#: version-checker.php:483
+#: version-checker.php:412
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:515
+#: version-checker.php:444
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -608,11 +564,11 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:1074
+#: version-checker.php:879
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""
 
-#: version-checker.php:1206
+#: version-checker.php:1011 version-checker.php:1021
 #, php-format
 msgid ""
 "Cleaning up %1$s. Based on our testing, this step can readily take about 10 "
@@ -621,25 +577,25 @@ msgid ""
 "proceeding."
 msgstr ""
 
-#: version-checker.php:1213
+#: version-checker.php:1028
 msgid ""
 "Starting upgrade... Again, this can take several minutes without any "
 "feedback from WordPress."
 msgstr ""
 
-#: version-checker.php:1231
+#: version-checker.php:1046
 msgid ""
 "You do not have sufficient permissions to activate plugins for this blog."
 msgstr ""
 
-#: version-checker.php:1247
+#: version-checker.php:1062
 msgid "Bulk Plugin Activation"
 msgstr ""
 
-#: version-checker.php:1249
+#: version-checker.php:1064
 msgid "Plugins activated successfully."
 msgstr ""
 
-#: version-checker.php:1252
+#: version-checker.php:1067
 msgid "Plugins failed to reactivate due to a fatal error."
 msgstr ""
