@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-11-28 11:51+0100\n"
+"POT-Creation-Date: 2009-11-28 12:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -495,13 +495,7 @@ msgstr ""
 msgid "Activating permalinks..."
 msgstr ""
 
-#: upgrader.php:402
-msgid ""
-"Disabling user registrations... If you'd like to enable them on your site, "
-"browse Settings / General."
-msgstr ""
-
-#: upgrader.php:497
+#: upgrader.php:496
 msgid "Install the Semiologic theme"
 msgstr ""
 

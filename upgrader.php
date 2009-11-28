@@ -399,7 +399,6 @@ class sem_upgrader extends Plugin_Upgrader {
 			$wp_rewrite->flush_rules();
 		}
 		
-		show_message(__('Disabling user registrations... If you\'d like to enable them on your site, browse Settings / General.', 'version-checker'));
 		update_option('use_balanceTags', '1');
 		update_option('users_can_register', '0');
 	} # sem_reset()
