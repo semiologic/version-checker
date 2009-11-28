@@ -305,7 +305,6 @@ class sem_upgrader extends Plugin_Upgrader {
 					$chdir = ftp_chdir($wp_filesystem->link, $wp_dir);
 				if ( $chdir )
 					$published = $wp_filesystem->put_contents('.htaccess', '');
-				$wp_filesystem->chdir('');
 			}
 		}
 		
