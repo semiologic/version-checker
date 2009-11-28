@@ -79,13 +79,13 @@ class version_checker {
 					. '</p>' . "\n";
 			}
 		} elseif ( $page_hook == 'settings_page_sem-api-key' ) {
-			if ( !$sem_api_key ) {
+			if ( $sem_api_key || $_POST && !empty($_POST['sem_api_key']) ) {
 				$msg[] = '<p>'
-					. __('Tools / Semiologic becomes available once this screen is configured. Browsing it will allows you to manage Semiologic packages on your site.', 'version-checker')
+					. sprintf(__('Browse <a href="%s">Tools / Semiologic</a> to manage Semiologic packages on your site.', 'version-checker'), 'tools.php?page=sem-tools')
 					. '</p>' . "\n";
 			} else {
 				$msg[] = '<p>'
-					. sprintf(__('Browse <a href="%s">Tools / Semiologic</a> to manage Semiologic packages on your site.', 'version-checker'), 'tools.php?page=sem-tools')
+					. __('Tools / Semiologic becomes available once this screen is configured. Browsing it will allows you to manage Semiologic packages on your site.', 'version-checker')
 					. '</p>' . "\n";
 			}
 		}
