@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-11-28 12:20+0100\n"
+"POT-Creation-Date: 2009-11-28 18:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -212,8 +212,8 @@ msgid ""
 "consider <strong><a href=\"%s\">Hub</a></strong>."
 msgstr ""
 
-#: plugins.php:18 themes.php:18 version-checker.php:363
-#: version-checker.php:860 version-checker.php:861
+#: plugins.php:18 themes.php:18 version-checker.php:370
+#: version-checker.php:867 version-checker.php:868
 msgid "Semiologic"
 msgstr ""
 
@@ -295,7 +295,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: sem-api-key.php:66 sem-api-key.php:144 sem-api-key.php:146
-#: version-checker.php:851 version-checker.php:852
+#: version-checker.php:858 version-checker.php:859
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -553,30 +553,41 @@ msgid ""
 "WordPress and Semiologic software."
 msgstr ""
 
-#: version-checker.php:258
+#: version-checker.php:175
+#, php-format
+msgid ""
+"<strong>Security Warning</strong>: Your server is configured with a version "
+"of PHP that is <strong><a href=\"%1$s\">outrageously outdated</a></strong>. "
+"Contact your host, and <s>request</s> <strong><u>insist</u></strong> that "
+"they upgrade your server's software - or seriously consider switching to a "
+"<a href=\"%2$s\">better host</a>, that doesn't leave its users' sites in "
+"such an insecure state."
+msgstr ""
+
+#: version-checker.php:265
 #, php-format
 msgid ""
 "<a href=\"%1$s\" title=\"Semiologic Development News\">Dev News</a>: <a href="
 "\"%2$s\" title=\"%3$s\">%4$s</a>"
 msgstr ""
 
-#: version-checker.php:316 version-checker.php:322
+#: version-checker.php:323 version-checker.php:329
 msgid "Semiologic Development News"
 msgstr ""
 
-#: version-checker.php:330
+#: version-checker.php:337
 msgid ""
 "Keep me updated with Semiologic Development News when browsing the admin "
 "area."
 msgstr ""
 
-#: version-checker.php:412
+#: version-checker.php:419
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:444
+#: version-checker.php:451
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -584,11 +595,11 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:879
+#: version-checker.php:886
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""
 
-#: version-checker.php:1011 version-checker.php:1021
+#: version-checker.php:1018 version-checker.php:1028
 #, php-format
 msgid ""
 "Cleaning up %1$s. Based on our testing, this step can readily take about 10 "
@@ -597,25 +608,25 @@ msgid ""
 "proceeding."
 msgstr ""
 
-#: version-checker.php:1028
+#: version-checker.php:1035
 msgid ""
 "Starting upgrade... Again, this can take several minutes without any "
 "feedback from WordPress."
 msgstr ""
 
-#: version-checker.php:1046
+#: version-checker.php:1053
 msgid ""
 "You do not have sufficient permissions to activate plugins for this blog."
 msgstr ""
 
-#: version-checker.php:1062
+#: version-checker.php:1069
 msgid "Bulk Plugin Activation"
 msgstr ""
 
-#: version-checker.php:1064
+#: version-checker.php:1071
 msgid "Plugins activated successfully."
 msgstr ""
 
-#: version-checker.php:1067
+#: version-checker.php:1074
 msgid "Plugins failed to reactivate due to a fatal error."
 msgstr ""
