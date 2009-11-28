@@ -292,13 +292,28 @@ class sem_upgrader extends Plugin_Upgrader {
 	function sem_permissions() {
 		global $wp_filesystem;
 		
+		$wp_dir = trailingslashit($wp_filesystem->abspath());
+		
+		if ( !file_exists(ABSPATH . '.htaccess') ) {
+			show_message(__('Creating .htaccess file...', 'version-checker'));
+			$file = $wp_dir . '/.htaccess';
+			$published = $wp_filesystem->put_contents($file, '');
+			
+			if ( !$published ) {
+				$chdir = $wp_filesystem->chdir($wp_dir);
+				if ( !$chdir && is_a($wp_filesystem, 'WP_Filesystem_FTPext') )
+					$chdir = ftp_chdir($wp_filesystem->link, $wp_dir);
+				if ( $chdir )
+					$published = $wp_filesystem->put_contents('.htaccess', '');
+			}
+		}
+		
 		foreach ( array(
 			'.htaccess',
 			'wp-config.php',
 			) as $file ) {
 			if ( !is_writable(ABSPATH . $file) ) {
 				show_message(sprintf(__('Changing %s permissions...', 'version-checker'), $file));
-				$wp_dir = trailingslashit($wp_filesystem->abspath());
 				$wp_filesystem->chmod($wp_dir . $file, 0666);
 			}
 		}
