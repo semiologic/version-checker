@@ -344,6 +344,8 @@ class sem_upgrader extends Plugin_Upgrader {
 	 **/
 
 	function sem_reset() {
+		global $wpdb;
+		
 		$max_id = $wpdb->get_var("
 			SELECT	ID
 			FROM	$wpdb->posts
@@ -367,8 +369,6 @@ class sem_upgrader extends Plugin_Upgrader {
 		
 		if ( !$do_reset )
 			return;
-		
-		global $wpdb;
 		
 		# Delete default posts, links and comments
 		$wpdb->query("DELETE FROM $wpdb->posts;");
