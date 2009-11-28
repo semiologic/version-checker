@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-11-26 13:19+0100\n"
+"POT-Creation-Date: 2009-11-28 11:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -456,26 +456,52 @@ msgstr ""
 msgid "Updating plugin %1$d of %2$d..."
 msgstr ""
 
-#: upgrader.php:221
+#: upgrader.php:226
 #, php-format
 msgid "Installing plugin %1$d of %2$d..."
 msgstr ""
 
-#: upgrader.php:271
+#: upgrader.php:278
 #, php-format
 msgid "Attempting to activate %s."
 msgstr ""
 
-#: upgrader.php:300
+#: upgrader.php:309
+msgid "Creating .htaccess file..."
+msgstr ""
+
+#: upgrader.php:327
 #, php-format
 msgid "Changing %s permissions..."
 msgstr ""
 
-#: upgrader.php:307
+#: upgrader.php:333
 msgid "Changing wp-content permissions..."
 msgstr ""
 
-#: upgrader.php:403
+#: upgrader.php:373
+msgid "Flushing the default WP data..."
+msgstr ""
+
+#: upgrader.php:381
+msgid "Renaming the default category..."
+msgstr ""
+
+#: upgrader.php:384
+msgid "News"
+msgstr ""
+
+#: upgrader.php:394
+msgid "Activating permalinks..."
+msgstr ""
+
+#: upgrader.php:402
+msgid ""
+"Disabling user registrations... If you'd like to enable them on your site, "
+"browse Settings / General."
+msgstr ""
+
+#: upgrader.php:497
 msgid "Install the Semiologic theme"
 msgstr ""
 
@@ -497,16 +523,16 @@ msgid ""
 msgstr ""
 
 #: version-checker.php:84
-msgid ""
-"Tools / Semiologic becomes available once this screen is configured. "
-"Browsing it will allows you to manage Semiologic packages on your site."
-msgstr ""
-
-#: version-checker.php:88
 #, php-format
 msgid ""
 "Browse <a href=\"%s\">Tools / Semiologic</a> to manage Semiologic packages "
 "on your site."
+msgstr ""
+
+#: version-checker.php:88
+msgid ""
+"Tools / Semiologic becomes available once this screen is configured. "
+"Browsing it will allows you to manage Semiologic packages on your site."
 msgstr ""
 
 #: version-checker.php:136

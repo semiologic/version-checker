@@ -370,9 +370,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		if ( !$do_reset )
 			return;
 		
-		show_message(__('Flushing the WP junk...', 'version-checker'));
-		
-		# Delete default posts, links and comments
+		show_message(__('Flushing the default WP data...', 'version-checker'));
 		$wpdb->query("DELETE FROM $wpdb->posts;");
 		$wpdb->query("DELETE FROM $wpdb->postmeta;");
 		$wpdb->query("DELETE FROM $wpdb->comments;");
@@ -380,7 +378,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		$wpdb->query("DELETE FROM $wpdb->term_relationships;");
 		$wpdb->query("UPDATE $wpdb->term_taxonomy SET count = 0;");
 
-		# Rename Uncategorized category as Blog
+		show_message(__('Renaming the default category...', 'version-checker'));
 		$wpdb->query("
 			UPDATE	$wpdb->terms
 			SET		name = '" . $wpdb->escape(__('News', 'sem-reloaded')) . "',
@@ -391,8 +389,8 @@ class sem_upgrader extends Plugin_Upgrader {
 		if ( !function_exists('got_mod_rewrite') ) {
 			include_once ABSPATH . 'wp-admin/includes/admin.php';
 		}
-
-		if ( get_option('permalink_structure') && is_file(ABSPATH . '.htaccess') && is_writable(ABSPATH . '.htaccess') && got_mod_rewrite() ) {
+		
+		if ( !get_option('permalink_structure') && is_file(ABSPATH . '.htaccess') && is_writable(ABSPATH . '.htaccess') && got_mod_rewrite() ) {
 			show_message(__('Activating permalinks...', 'version-checker'));
 			
 			update_option('permalink_structure', '/%year%/%monthnum%/%postname%/');
@@ -401,6 +399,7 @@ class sem_upgrader extends Plugin_Upgrader {
 			$wp_rewrite->flush_rules();
 		}
 		
+		show_message(__('Disabling user registrations... If you\'d like to enable them on your site, browse Settings / General.', 'version-checker'));
 		update_option('use_balanceTags', '1');
 		update_option('users_can_register', '0');
 	} # sem_reset()
