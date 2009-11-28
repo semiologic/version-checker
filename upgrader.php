@@ -178,6 +178,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		$this->sem_permissions();
 		
 		$this->maintenance_mode(false);
+		
 		$this->skin->footer();
 		
 		// Cleanup our hooks, incase something else does a upgrade on this connection.
@@ -186,6 +187,10 @@ class sem_upgrader extends Plugin_Upgrader {
 		// Force refresh of plugin update information
 		delete_transient('update_plugins');
 		delete_transient('sem_update_plugins');
+		
+		# force flush everything
+		update_option('db_upgraded', true);
+		wp_cache_flush();
 		
 		return $results;
 	} # bulk_upgrade()
@@ -257,6 +262,8 @@ class sem_upgrader extends Plugin_Upgrader {
 		
 		$this->sem_permissions();
 		
+		$this->sem_reset();
+		
 		$this->maintenance_mode(false);
 		
 		if ( function_exists('activate_plugins') && current_user_can('activate_plugins') ) {
@@ -278,6 +285,10 @@ class sem_upgrader extends Plugin_Upgrader {
 		// Force refresh of plugin update information
 		delete_transient('update_plugins');
 		delete_transient('sem_update_plugins');
+		
+		# force flush everything
+		update_option('db_upgraded', true);
+		wp_cache_flush();
 		
 		return $results;
 	} # bulk_install()
@@ -324,6 +335,71 @@ class sem_upgrader extends Plugin_Upgrader {
 			$wp_filesystem->chmod($content_dir, 0777);
 		}
 	} # sem_permissions()
+	
+	
+	/**
+	 * sem_reset()
+	 *
+	 * @return void
+	 **/
+
+	function sem_reset() {
+		$max_id = $wpdb->get_var("
+			SELECT	ID
+			FROM	$wpdb->posts
+			WHERE	post_type IN ( 'post', 'page' )
+			ORDER BY ID DESC
+			LIMIT 1
+			");
+
+		if ( $max_id == 2 ) {
+			$do_reset = (bool) $wpdb->get_var("
+				SELECT	1 as do_reset
+				FROM	$wpdb->posts as posts,
+				 		$wpdb->posts as pages
+				WHERE	posts.post_type = 'post'
+				AND		pages.post_type = 'page'
+				AND		posts.post_date = pages.post_date
+				");
+		} else {
+			$do_reset = false;
+		}
+		
+		if ( !$do_reset )
+			return;
+		
+		global $wpdb;
+		
+		# Delete default posts, links and comments
+		$wpdb->query("DELETE FROM $wpdb->posts;");
+		$wpdb->query("DELETE FROM $wpdb->postmeta;");
+		$wpdb->query("DELETE FROM $wpdb->comments;");
+		$wpdb->query("DELETE FROM $wpdb->links;");
+		$wpdb->query("DELETE FROM $wpdb->term_relationships;");
+		$wpdb->query("UPDATE $wpdb->term_taxonomy SET count = 0;");
+
+		# Rename Uncategorized category as Blog
+		$wpdb->query("
+			UPDATE	$wpdb->terms
+			SET		name = '" . $wpdb->escape(__('News', 'sem-reloaded')) . "',
+					slug = 'news'
+			WHERE	slug = 'uncategorized'
+			");
+		
+		if ( !function_exists('got_mod_rewrite') ) {
+			include_once ABSPATH . 'wp-admin/includes/admin.php';
+		}
+
+		if ( get_option('permalink_structure') && is_file(ABSPATH . '.htaccess') && is_writable(ABSPATH . '.htaccess') && got_mod_rewrite() ) {
+			update_option('permalink_structure', '/%year%/%monthnum%/%postname%/');
+			update_option('category_base', 'topics');
+			$wp_rewrite =& new WP_Rewrite;
+			$wp_rewrite->flush_rules();
+		}
+		
+		update_option('use_balanceTags', '1');
+		update_option('users_can_register', '0');
+	} # sem_reset()
 	
 	
 	/**
