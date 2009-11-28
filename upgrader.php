@@ -370,6 +370,8 @@ class sem_upgrader extends Plugin_Upgrader {
 		if ( !$do_reset )
 			return;
 		
+		show_message(__('Flushing the WP junk...', 'version-checker'));
+		
 		# Delete default posts, links and comments
 		$wpdb->query("DELETE FROM $wpdb->posts;");
 		$wpdb->query("DELETE FROM $wpdb->postmeta;");
@@ -391,6 +393,8 @@ class sem_upgrader extends Plugin_Upgrader {
 		}
 
 		if ( get_option('permalink_structure') && is_file(ABSPATH . '.htaccess') && is_writable(ABSPATH . '.htaccess') && got_mod_rewrite() ) {
+			show_message(__('Activating permalinks...', 'version-checker'));
+			
 			update_option('permalink_structure', '/%year%/%monthnum%/%postname%/');
 			update_option('category_base', 'topics');
 			$wp_rewrite =& new WP_Rewrite;
