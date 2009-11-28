@@ -38,8 +38,15 @@ class sem_update_core {
 		echo '</div>' . "\n";
 		
 		global $action;
-		if ( !$_POST && $action == 'upgrade-core' )
+		if ( !$_POST && $action == 'upgrade-core' ) {
+			global $mywpdbbackup;
+			if ( $mywpdbbackup ) {
+				remove_action('load-update-core.php', array(&$mywpdbbackup, 'update_notice_action'));
+				ob_start(array('sem_update_core', 'update_notice_action'));
+				add_action('admin_footer', array('sem_update_core', 'ob_flush'));
+			}
 			return;
+		}
 		
 		global $wp_version;
 		$bail = false;
@@ -230,6 +237,22 @@ class sem_update_core {
 	function wp_2_8_ob_callback($buffer) {
 		return preg_replace('/<form\b.+<\/form>/s', '', $buffer);
 	} # wp_2_8_ob_callback()
+	
+	
+	/**
+	 * update_notice_action()
+	 *
+	 * @param string $buffer
+	 * @return string $buffer
+	 **/
+
+	function update_notice_action($buffer) {
+		$buffer = str_replace(array(
+			__('http://codex.wordpress.org/WordPress_Backups'),
+			__('http://codex.wordpress.org/WordPress_Backups', 'version-checker'),
+			), 'tools.php?page=wp-db-backup', $buffer);
+		return $buffer;
+	} # update_notice_action()
 } # sem_update_core
 
 add_action('admin_notices', array('sem_update_core', 'ob_start'), 1000);
