@@ -137,15 +137,14 @@ class sem_upgrader extends Plugin_Upgrader {
 		$all = count($plugins);
 		$i = 1;
 		foreach ( $plugins as $plugin ) {
-			$plugin = "$plugin/$plugin.php";
 			$this->show_before = sprintf( '<h4>' . __('Updating plugin %1$d of %2$d...', 'version-checker') . '</h4>', $i, $all );
 			$i++;
 			
-			if ( !isset( $current->response[ $plugin ] ) ) {
+			if ( !isset($current->response[ $plugin ]) ) {
 				$this->skin->set_result(false);
 				$this->skin->error('up_to_date');
 				$this->skin->after();
-				$results[$plugin] = false;
+				$results["$plugin/$plugin.php"] = false;
 				continue;
 			}
 			

@@ -27,6 +27,11 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.0.1 =
+
+- Fix erroneous link in admin area
+- Allow for bulk upgrade of WP.org plugins with inconsistent file names
+
 = 2.0 =
 
 - Use the new API service

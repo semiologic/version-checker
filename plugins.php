@@ -224,7 +224,7 @@ class sem_update_plugins {
 	function mass_install($plugins) {
 		include_once dirname(__FILE__) . '/upgrader.php';
 		
-		$url = 'tools.php?page=sem-upgrader&amp;action=' . urlencode($_REQUEST['action']);
+		$url = 'tools.php?page=sem-tools&amp;action=' . urlencode($_REQUEST['action']);
 		$title = __('Install Plugins', 'version-checker');
 		$nonce = 'mass-install';
 		$upgrader = new sem_upgrader( new sem_installer_skin( compact('title', 'nonce', 'url', 'plugin') ) );
@@ -242,7 +242,7 @@ class sem_update_plugins {
 	function mass_upgrade($plugins) {
 		include_once dirname(__FILE__) . '/upgrader.php';
 		
-		$url = 'tools.php?page=sem-upgrader&amp;action=' . urlencode($_REQUEST['action']);
+		$url = 'tools.php?page=sem-tools&amp;action=' . urlencode($_REQUEST['action']);
 		$title = __('Upgrade Plugins', 'version-checker');
 		$nonce = 'mass-upgrade';
 		$upgrader = new sem_upgrader( new sem_upgrader_skin( compact('title', 'nonce', 'url', 'plugin') ) );

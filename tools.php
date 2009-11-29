@@ -51,7 +51,7 @@ class sem_tools {
 				
 				foreach ( $response as $file => $resp ) {
 					if ( version_compare($response[$file]->new_version, $installed[$file]['Version'], '>') && $response[$file]->package )
-						$to_upgrade[] = $resp->slug;
+						$to_upgrade[] = $file;
 				}
 				
 				if ( !$to_upgrade ) {
