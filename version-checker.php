@@ -94,7 +94,7 @@ class version_checker {
 		$plugins_count = 0;
 		$active_plugins = get_option('active_plugins');
 		
-		if ( $active_plugins && !in_array($pagenow, array('plugins.php', 'plugin-install.php')) ) {
+		if ( $active_plugins && $pagenow != 'plugins.php' || $pagenow == 'plugins.php' ) {
 			$plugins_response = get_transient('update_plugins');
 			if ( $plugins_response && !empty($plugins_response->response) ) {
 				foreach ( $plugins_response->response as $plugin => $details ) {
@@ -111,7 +111,7 @@ class version_checker {
 		$template = get_option('template');
 		$stylesheet = get_option('stylesheet');
 		
-		if ( $template && $stylesheet && !in_array($pagenow, array('themes.php', 'theme-install.php')) ) {
+		if ( $template && $stylesheet && $pagenow != 'themes.php' ) {
 			$themes_response = get_transient('update_themes');
 			if ( $themes_response && !empty($themes_response->response) ) {
 				foreach ( array('template', 'stylesheet') as $theme ) {
@@ -146,10 +146,15 @@ class version_checker {
 				}
 				$msg[] = '<form method="post" action="tools.php?page=sem-tools" style="display: inline;">' . "\n"
 					. '<p>'
-					. sprintf(
-						__('<a href="%1$s">Plugin updates</a> are available! %2$s', 'version-checker'),
-						'plugins.php?plugin_status=upgrade',
-						$button)
+					. ( $pagenow != 'plugins.php'
+						? sprintf(
+							__('<a href="%1$s">Plugin updates</a> are available! %2$s', 'version-checker'),
+							'plugins.php?plugin_status=upgrade',
+							$button)
+						: sprintf(
+							__('Plugin updates are available! %s', 'version-checker'),
+							$button)
+						)
 					. '</p>' . "\n"
 					. '</form>' . "\n";
 			}
