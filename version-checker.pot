@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 2.0\n"
+"Project-Id-Version: 2.0.2\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-11-29 12:53+0100\n"
+"POT-Creation-Date: 2009-12-03 14:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -216,8 +216,8 @@ msgstr ""
 msgid "http://codex.wordpress.org/WordPress_Backups"
 msgstr ""
 
-#: plugins.php:18 themes.php:18 version-checker.php:375
-#: version-checker.php:872 version-checker.php:873
+#: plugins.php:18 themes.php:18 version-checker.php:376
+#: version-checker.php:873 version-checker.php:874
 msgid "Semiologic"
 msgstr ""
 
@@ -299,7 +299,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: sem-api-key.php:66 sem-api-key.php:144 sem-api-key.php:146
-#: version-checker.php:863 version-checker.php:864
+#: version-checker.php:864 version-checker.php:865
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -455,51 +455,51 @@ msgstr ""
 msgid "Themes"
 msgstr ""
 
-#: upgrader.php:141
+#: upgrader.php:140
 #, php-format
 msgid "Updating plugin %1$d of %2$d..."
 msgstr ""
 
-#: upgrader.php:226
+#: upgrader.php:225
 #, php-format
 msgid "Installing plugin %1$d of %2$d..."
 msgstr ""
 
-#: upgrader.php:278
+#: upgrader.php:277
 #, php-format
 msgid "Attempting to activate %s."
 msgstr ""
 
-#: upgrader.php:309
+#: upgrader.php:308
 msgid "Creating .htaccess file..."
 msgstr ""
 
-#: upgrader.php:327
+#: upgrader.php:326
 #, php-format
 msgid "Changing %s permissions..."
 msgstr ""
 
-#: upgrader.php:333
+#: upgrader.php:332
 msgid "Changing wp-content permissions..."
 msgstr ""
 
-#: upgrader.php:373
+#: upgrader.php:372
 msgid "Flushing the default WP data..."
 msgstr ""
 
-#: upgrader.php:381
+#: upgrader.php:380
 msgid "Renaming the default category..."
 msgstr ""
 
-#: upgrader.php:384
+#: upgrader.php:383
 msgid "News"
 msgstr ""
 
-#: upgrader.php:394
+#: upgrader.php:393
 msgid "Activating permalinks..."
 msgstr ""
 
-#: upgrader.php:496
+#: upgrader.php:495
 msgid "Install the Semiologic theme"
 msgstr ""
 
@@ -562,41 +562,40 @@ msgid ""
 "WordPress and Semiologic software."
 msgstr ""
 
-#: version-checker.php:180
+#: version-checker.php:181
 #, php-format
 msgid ""
-"<strong>Security Warning</strong>: Your server is configured with an "
-"<strong><a href=\"%1$s\">outrageously outdated</a></strong> version of PHP. "
-"Please contact your host, and <s>request</s> <strong><u>insist</u></strong> "
-"that they upgrade your server's software. Alternatively, consider switching "
-"to a <a href=\"%2$s\">better host</a> -- one that doesn't abandon its users "
-"on insecure servers."
+"<strong>Security Warning</strong>: This site is using an <strong><a href=\"%1"
+"$s\">extremely outdated</a></strong> version of PHP (%2$s). Please contact "
+"your host, and <s>request</s> <strong><u>insist</u></strong> that they "
+"upgrade or reconfigure this accordingly. Alternatively, consider switching "
+"to a <a href=\"%3$s\">better host</a>."
 msgstr ""
 
-#: version-checker.php:270
+#: version-checker.php:271
 #, php-format
 msgid ""
 "<a href=\"%1$s\" title=\"Semiologic Development News\">Dev News</a>: <a href="
 "\"%2$s\" title=\"%3$s\">%4$s</a>"
 msgstr ""
 
-#: version-checker.php:328 version-checker.php:334
+#: version-checker.php:329 version-checker.php:335
 msgid "Semiologic Development News"
 msgstr ""
 
-#: version-checker.php:342
+#: version-checker.php:343
 msgid ""
 "Keep me updated with Semiologic Development News when browsing the admin "
 "area."
 msgstr ""
 
-#: version-checker.php:424
+#: version-checker.php:425
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:456
+#: version-checker.php:457
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -604,11 +603,11 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:891
+#: version-checker.php:892
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""
 
-#: version-checker.php:1023 version-checker.php:1033
+#: version-checker.php:1024 version-checker.php:1034
 #, php-format
 msgid ""
 "Cleaning up %1$s. Based on our testing, this step can readily take about 10 "
@@ -617,25 +616,25 @@ msgid ""
 "proceeding."
 msgstr ""
 
-#: version-checker.php:1040
+#: version-checker.php:1041
 msgid ""
 "Starting upgrade... Again, this can take several minutes without any "
 "feedback from WordPress."
 msgstr ""
 
-#: version-checker.php:1058
+#: version-checker.php:1059
 msgid ""
 "You do not have sufficient permissions to activate plugins for this blog."
 msgstr ""
 
-#: version-checker.php:1074
+#: version-checker.php:1075
 msgid "Bulk Plugin Activation"
 msgstr ""
 
-#: version-checker.php:1076
+#: version-checker.php:1077
 msgid "Plugins activated successfully."
 msgstr ""
 
-#: version-checker.php:1079
+#: version-checker.php:1080
 msgid "Plugins failed to reactivate due to a fatal error."
 msgstr ""
