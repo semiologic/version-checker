@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.0.1
+Version: 2.0.2 alpha
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -175,9 +175,10 @@ class version_checker {
 			}
 		}
 		
-		if ( version_compare(phpversion(), '5.0', '<=') ) {
+		$php_version = phpversion();
+		if ( version_compare($php_version, '5.0.0', '<=') ) {
 			$msg[] = '<p class="error" style="padding: 10px;">'
-				. sprintf(__('<strong>Security Warning</strong>: Your server is configured with an <strong><a href="%1$s">outrageously outdated</a></strong> version of PHP. Please contact your host, and <s>request</s> <strong><u>insist</u></strong> that they upgrade your server\'s software. Alternatively, consider switching to a <a href="%2$s">better host</a> -- one that doesn\'t abandon its users on insecure servers.', 'version-checker'), 'http://www.php.net/archive/2007.php#2007-07-13-1', 'http://members.semiologic.com/hosting/')
+				. sprintf(__('<strong>Security Warning</strong>: Your server is configured with an <strong><a href="%1$s">outrageously outdated</a></strong> version of PHP (%3$s). Please contact your host, and <s>request</s> <strong><u>insist</u></strong> that they upgrade your server\'s software. Alternatively, consider switching to a <a href="%2$s">better host</a> -- one that doesn\'t abandon its users on insecure servers.', 'version-checker'), 'http://www.php.net/archive/2007.php#2007-07-13-1', 'http://members.semiologic.com/hosting/', $php_version )
 				. '</p>' . "\n";
 		}
 		

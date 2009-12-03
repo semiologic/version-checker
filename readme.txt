@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.0.2 =
+
+- Improve "your php version is outdated" warning
+
 = 2.0.1 =
 
 - Fix erroneous link in admin area
