@@ -29,7 +29,8 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 = 2.0.2 =
 
-- Improve "your php version is outdated" warning
+- Disable nagging for new (i.e. not bug fixed) versions of WP
+- Improve "php 4 is outdated" nagging
 
 = 2.0.1 =
 

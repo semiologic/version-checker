@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.0.2 alpha
+Version: 2.0.2 beta
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -125,7 +125,7 @@ class version_checker {
 		
 		$core_todo = false;
 		$cur = get_preferred_from_update_core();
-		if ( !empty($cur->response) && !empty($cur->package) && $cur->response == 'upgrade' ) {
+		if ( !empty($cur->response) && !empty($cur->package) && $cur->response == 'upgrade' && !preg_match("/^\d+\.\d+$/", $cur->current) ) {
 			$core_todo = $cur->current;
 		}
 		
