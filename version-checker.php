@@ -66,7 +66,7 @@ class version_checker {
 		if ( !current_user_can('manage_options') )
 			return;
 		
-		if ( in_array($pagenow, array('update.php', 'update-core.php')) || $_POST )
+		if ( in_array($pagenow, array('update.php', 'update-core.php', 'upgrade.php')) || $page_hook == 'tools_page_sem-tools' )
 			return;
 		
 		$msg = array();
@@ -158,20 +158,20 @@ class version_checker {
 					. '</p>' . "\n"
 					. '</form>' . "\n";
 			}
-			if ( $core_todo ) {
+			if ( $core_todo && !$plugins_todo && !$themes_todo ) {
 				$msg[] = '<p>'
 					. sprintf(__('<a href="%1$s">WordPress %2$s</a> is available! Please upgrade your site before it gets <a href="%3$s">hacked</a>.', 'version-checker'),
 					'update-core.php',
 					$core_todo,
 					'http://wordpress.org/development/2009/09/keep-wordpress-secure/')
 					. '</p>' . "\n";
-			}
-			
-			$hub = @ preg_match("|/usr/local/www/[^/]+/www/|", ABSPATH) && file_exists('/etc/semiologic');
-			if ( $hub ) {
-				$msg[] = '<p>'
-					. sprintf(__('<strong>Note</strong>: you can use <a href="%s">AMS</a> to upgrade WordPress and Semiologic software.', 'version-checker'), 'https://ams.hub.org')
-					. '</p>' . "\n";
+				
+				$hub = @ preg_match("|/usr/local/www/[^/]+/www/|", ABSPATH) && file_exists('/etc/semiologic');
+				if ( $hub ) {
+					$msg[] = '<p>'
+							. sprintf(__('<strong>Note</strong>: you can use <a href="%s">AMS</a> to upgrade WordPress and Semiologic software.', 'version-checker'), 'https://ams.hub.org')
+							. '</p>' . "\n";
+				}
 			}
 		}
 		
