@@ -247,12 +247,20 @@ EOS;
 		if ( !empty($upgrading) || version_checker::get_news_pref() == 'false' )
 			return;
 		
+		$sem_news_error = get_transient('sem_news_error');
+		if ( !$sem_news_error )
+			set_transient('sem_news_error', time() - 3600);
+		if ( $sem_news_error + 3600 > time() )
+			return;
+		
 		add_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'sem_news_timeout'));
 		$feed = fetch_feed('http://www.semiologic.com/news/wordpress/feed/');
 		remove_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'sem_news_timeout'));
-		
-		if ( is_wp_error($feed) || !$feed->get_item_quantity() )
+
+		if ( is_wp_error($feed) || !$feed->get_item_quantity() ) {
+			set_transient('sem_news_error', time() + 3600);
 			return;
+		}
 		
 		$dev_news_url = strip_tags($feed->get_permalink());
 		foreach ( $feed->get_items(0,1) as $item ) {
