@@ -155,7 +155,7 @@ class sem_update_themes {
 			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
 			);
 		
-		$cache_id = serialize(array($url, $options));
+		$cache_id = md5(serialize(array($url, $options)));
 		$raw_response = wp_cache_get($cache_id, 'sem_api');
 		if ( $raw_response === false ) {
 			$raw_response = wp_remote_post($url, $options);

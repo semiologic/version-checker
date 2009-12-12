@@ -111,7 +111,7 @@ class version_checker {
 		$template = get_option('template');
 		$stylesheet = get_option('stylesheet');
 		
-		if ( $template && $stylesheet && $pagenow != 'themes.php' ) {
+		if ( $template == 'sem-reloaded' && $stylesheet && $pagenow != 'themes.php' ) {
 			$themes_response = get_transient('update_themes');
 			if ( $themes_response && !empty($themes_response->response) ) {
 				foreach ( array('template', 'stylesheet') as $theme ) {
@@ -133,8 +133,9 @@ class version_checker {
 			if ( $themes_todo ) {
 				$msg[] = '<p>'
 					. sprintf(
-						__('A <a href="%s">theme update</a> is available!', 'version-checker'),
-						'themes.php')
+						__('A <a href="%1%s">theme update</a> is available! (Upgrading the Semiologic theme <a href="%2$s">keeps your customizations</a>.)', 'version-checker'),
+						'themes.php',
+						'http://www.semiologic.com/software/sem-reloaded/')
 					. '</p>' . "\n";
 			}
 			if ( $plugins_todo ) {
@@ -452,7 +453,7 @@ EOS;
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
 			);
 		
-		$cache_id = serialize(array($url, $options));
+		$cache_id = md5(serialize(array($url, $options)));
 		$raw_response = wp_cache_get($cache_id, 'sem_api');
 		if ( $raw_response === false ) {
 			$raw_response = wp_remote_post($url, $options);
@@ -507,7 +508,7 @@ EOS;
 			$timeout = 43200;
 		}
 		
-		if ( $obj->last_checked >= time() - $timeout )
+		if ( ( $obj->last_checked >= time() - $timeout ) || $_POST )
 			return $obj->response;
 		
 		global $wpdb;
@@ -536,7 +537,7 @@ EOS;
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
 			);
 		
-		$cache_id = serialize(array($url, $options));
+		$cache_id = md5(serialize(array($url, $options)));
 		$raw_response = wp_cache_get($cache_id, 'sem_api');
 		if ( $raw_response === false ) {
 			$raw_response = wp_remote_post($url, $options);
@@ -604,7 +605,7 @@ EOS;
 			return false;
 		}
 		
-		if ( $obj->last_checked >= time() - $timeout )
+		if ( ( $obj->last_checked >= time() - $timeout ) || $_POST )
 			return $obj->response;
 		
 		global $wp_version;
@@ -644,7 +645,7 @@ EOS;
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
 			);
 		
-		$cache_id = serialize(array($url, $options));
+		$cache_id = md5(serialize(array($url, $options)));
 		$raw_response = wp_cache_get($cache_id, 'sem_api');
 		if ( $raw_response === false ) {
 			$raw_response = wp_remote_post($url, $options);
@@ -697,7 +698,7 @@ EOS;
 		$extra = version_checker::get_themes($ops->checked);
 		
 		if ( $extra === false )
-			return false;
+			return $ops;
 		
 		$ops->response = array_merge($ops->response, $extra);
 		
@@ -742,7 +743,7 @@ EOS;
 			return false;
 		}
 		
-		if ( $obj->last_checked >= time() - $timeout )
+		if ( ( $obj->last_checked >= time() - $timeout ) || $_POST )
 			return $obj->response;
 		
 		global $wp_version;
@@ -782,7 +783,7 @@ EOS;
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
 			);
 		
-		$cache_id = serialize(array($url, $options));
+		$cache_id = md5(serialize(array($url, $options)));
 		$raw_response = wp_cache_get($cache_id, 'sem_api');
 		
 		if ( $raw_response === false ) {
@@ -834,7 +835,7 @@ EOS;
 		$extra = version_checker::get_plugins($ops->checked);
 		
 		if ( $extra === false )
-			return false;
+			return $ops;
 		
 		$ops->response = array_merge($ops->response, $extra);
 		
