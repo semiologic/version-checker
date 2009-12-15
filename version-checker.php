@@ -177,7 +177,7 @@ class version_checker {
 		}
 		
 		$php_version = phpversion();
-		if ( version_compare($php_version, '5.0.0', '<=') ) {
+		if ( !version_compare($php_version, '5.0', '>=') ) {
 			$msg[] = '<p class="error" style="padding: 10px;">'
 				. sprintf(__('<strong>Security Warning</strong>: This site is using an <strong><a href="%1$s">extremely outdated</a></strong> version of PHP (%2$s). Please contact your host, and <s>request</s> <strong><u>insist</u></strong> that they upgrade or reconfigure this accordingly. Alternatively, consider switching to a <a href="%3$s">better host</a>.', 'version-checker'), 'http://www.php.net/archive/2007.php#2007-07-13-1', $php_version, 'http://members.semiologic.com/hosting/')
 				. '</p>' . "\n";
