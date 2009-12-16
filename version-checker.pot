@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.2\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-12-16 22:06+0100\n"
+"POT-Creation-Date: 2009-12-16 22:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -216,8 +216,8 @@ msgstr ""
 msgid "http://codex.wordpress.org/WordPress_Backups"
 msgstr ""
 
-#: plugins.php:18 themes.php:18 version-checker.php:391
-#: version-checker.php:888 version-checker.php:889
+#: plugins.php:18 themes.php:18 version-checker.php:394
+#: version-checker.php:891 version-checker.php:892
 msgid "Semiologic"
 msgstr ""
 
@@ -299,7 +299,7 @@ msgid "Settings saved."
 msgstr ""
 
 #: sem-api-key.php:66 sem-api-key.php:144 sem-api-key.php:146
-#: version-checker.php:879 version-checker.php:880
+#: version-checker.php:882 version-checker.php:883
 msgid "Semiologic API Key"
 msgstr ""
 
@@ -579,37 +579,37 @@ msgid ""
 "<strong>Important Notice</strong>: The theme that you are using has been "
 "marked as deprecated in 2009, in favor of a <a href=\"%1$s\">new Semiologic "
 "theme</a>. Maintenance of the legacy theme will stop in 2010; it "
-"<strong>will</strong> break at some point. The new Semiologic theme has new "
-"layouts, <a href=\"%2$s\">over 60 skins</a>, and a custom CSS editor; it "
-"also has slightly narrower widths (750px vs 770px, and 950px vs 970px). So "
-"please update your header files if necessary, and <a href=\"%3$s\">switch to "
-"the new theme</a>."
+"<strong>will</strong> break at some point. The new Semiologic theme "
+"(\"Reloaded\") has new layouts, <a href=\"%2$s\">over 60 skins</a>, and a "
+"custom CSS editor; it also has slightly narrower widths (750px vs 770px, and "
+"950px vs 970px). Please resize your site's header image if necessary, and <a "
+"href=\"%3$s\">switch to the new theme</a>."
 msgstr ""
 
-#: version-checker.php:286
+#: version-checker.php:289
 #, php-format
 msgid ""
 "<a href=\"%1$s\" title=\"Semiologic Development News\">Dev News</a>: <a href="
 "\"%2$s\" title=\"%3$s\">%4$s</a>"
 msgstr ""
 
-#: version-checker.php:344 version-checker.php:350
+#: version-checker.php:347 version-checker.php:353
 msgid "Semiologic Development News"
 msgstr ""
 
-#: version-checker.php:358
+#: version-checker.php:361
 msgid ""
 "Keep me updated with Semiologic Development News when browsing the admin "
 "area."
 msgstr ""
 
-#: version-checker.php:440
+#: version-checker.php:443
 msgid ""
 "The Url you've tried to access is restricted. Please enter your Semiologic "
 "API key."
 msgstr ""
 
-#: version-checker.php:472
+#: version-checker.php:475
 msgid ""
 "An error occurred while trying to authenticate you on Semiologic.com in "
 "order to access a members-only package. More often than not, this will be "
@@ -617,11 +617,11 @@ msgid ""
 "API key."
 msgstr ""
 
-#: version-checker.php:907
+#: version-checker.php:910
 msgid "The Version Checker plugin requires WP 2.8 or later."
 msgstr ""
 
-#: version-checker.php:1039 version-checker.php:1049
+#: version-checker.php:1042 version-checker.php:1052
 #, php-format
 msgid ""
 "Cleaning up %1$s. Based on our testing, this step can readily take about 10 "
@@ -630,25 +630,25 @@ msgid ""
 "proceeding."
 msgstr ""
 
-#: version-checker.php:1056
+#: version-checker.php:1059
 msgid ""
 "Starting upgrade... Again, this can take several minutes without any "
 "feedback from WordPress."
 msgstr ""
 
-#: version-checker.php:1074
+#: version-checker.php:1077
 msgid ""
 "You do not have sufficient permissions to activate plugins for this blog."
 msgstr ""
 
-#: version-checker.php:1090
+#: version-checker.php:1093
 msgid "Bulk Plugin Activation"
 msgstr ""
 
-#: version-checker.php:1092
+#: version-checker.php:1095
 msgid "Plugins activated successfully."
 msgstr ""
 
-#: version-checker.php:1095
+#: version-checker.php:1098
 msgid "Plugins failed to reactivate due to a fatal error."
 msgstr ""
