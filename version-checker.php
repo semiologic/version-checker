@@ -1149,6 +1149,7 @@ function sem_update_plugins() {
 		include dirname(__FILE__) . '/plugins.php';
 }
 
+add_action('load-update-core.php', 'sem_update_plugins');
 add_action('load-plugin-install.php', 'sem_update_plugins');
 add_action('load-update.php', 'sem_update_plugins');
 add_action('load-tools_page_sem-tools', 'sem_update_plugins');
