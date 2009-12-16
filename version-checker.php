@@ -183,6 +183,12 @@ class version_checker {
 				. '</p>' . "\n";
 		}
 		
+		if ( $template == 'semiologic' || $stylesheet == 'semiologic' ) {
+			$msg[] = '<p>'
+				. sprintf(__('<strong>Important Notice</strong>: The theme that you are using has been marked as deprecated in 2009, in favor of a <a href="%1$s">new Semiologic theme</a>. Maintenance of the legacy theme will stop in 2010; it <strong>will</strong> break at some point. The new Semiologic theme has new layouts, <a href="%2$s">over 60 skins</a>, and a custom CSS editor; it also has slightly narrower widths (750px vs 770px, and 950px vs 970px). So please update your header files if necessary, and <a href="%3$s">switch to the new theme</a>.', 'version-checker'), 'http://www.semiologic.com/software/sem-reloaded/', 'http://skins.semiologic.com', 'themes.php')
+				. '</p>' . "\n";
+		}
+		
 		if ( $msg ) {
 			echo '<div id="update-nag">' . "\n"
 				. implode('', $msg)
