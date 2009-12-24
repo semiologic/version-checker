@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.0.3 =
+
+- Fix the broken theme update link
+
 = 2.0.2 =
 
 - Disable nagging for new (i.e. not bug fixed) major versions of WP
