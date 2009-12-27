@@ -224,12 +224,18 @@ EOS;
 			return;
 		
 		$position = ( 'rtl' == get_bloginfo( 'text_direction' ) ) ? 'left' : 'right';
+		$top = 4.5;
+		
+		global $wp_ozh_adminmenu;
+		
+		if ( $wp_ozh_adminmenu )
+			$top += 2.3;
 		
 		echo <<<EOS
 <style type="text/css">
 #sem_news_feed {
 	position: absolute;
-	top: 4.5em;
+	top: ${top}em;
 	margin: 0;
 	padding: 0;
 	$position: 175px;

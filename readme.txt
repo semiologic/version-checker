@@ -30,6 +30,7 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 = 2.0.3 =
 
 - Fix the broken theme update link
+- Play well with Ozh's Admin Drop Down Menu plugin
 
 = 2.0.2 =
 
