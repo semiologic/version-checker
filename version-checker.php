@@ -133,7 +133,7 @@ class version_checker {
 			if ( $themes_todo ) {
 				$msg[] = '<p>'
 					. sprintf(
-						__('A <a href="%1$s">theme update</a> is available! (Upgrading the Semiologic theme <a href="%2$s">keeps your customizations</a>.)', 'version-checker'),
+						__('A <a href="%1$s">theme update</a> is available! (Upgrading the Semiologic theme will <a href="%2$s">retain your customizations</a>.)', 'version-checker'),
 						'themes.php',
 						'http://www.semiologic.com/software/sem-reloaded/')
 					. '</p>' . "\n";
