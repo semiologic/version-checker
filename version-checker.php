@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.0.3 RC
+Version: 2.0.3 RC2
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -510,7 +510,7 @@ EOS;
 		
 		$current_filter = current_filter();
 		
-		if ( $current_filter == 'load-settings_page_sem-api-key' && is_object($obj->response['sem-pro']) && $obj->response['sem-pro']->expires ) {
+		if ( $current_filter == 'settings_page_sem-api-key' && is_object($obj->response['sem-pro']) && $obj->response['sem-pro']->expires ) {
 			# user might decide to place an order here
 			if ( strtotime($obj->response['sem-pro']->expires) <= time() + 2678400 ) {
 				$timeout = 120;
@@ -523,7 +523,7 @@ EOS;
 			$timeout = 43200;
 		}
 		
-		if ( ( $obj->last_checked >= time() - $timeout ) || $_POST )
+		if ( ( $obj->last_checked >= time() - $timeout ) || $_POST && $current_filter != 'settings_page_sem-api-key' )
 			return $obj->response;
 		
 		global $wpdb;
