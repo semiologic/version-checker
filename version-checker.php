@@ -426,9 +426,9 @@ EOS;
 		
 		$args['cookies'] = array_merge((array) $args['cookies'], $cookies);
 		if ( preg_match("/^https?:\/\/members\.semiologic\.com\/media\/sem-pro\//i", $url) )
-			$args['timeout'] = 600;
+			$args['timeout'] = 1800;
 		else
-			$args['timeout'] = 300;
+			$args['timeout'] = 600;
 		
 		version_checker::force_flush();
 		
@@ -464,7 +464,7 @@ EOS;
 		}
 		
 		$options = array(
-			'timeout' => 3,
+			'timeout' => 15,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
 			);
 		
@@ -547,7 +547,7 @@ EOS;
 			);
 		
 		$options = array(
-			'timeout' => 3,
+			'timeout' => 15,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
 			);
@@ -655,7 +655,7 @@ EOS;
 			);
 		
 		$options = array(
-			'timeout' => 3,
+			'timeout' => 15,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
 			);
@@ -793,7 +793,7 @@ EOS;
 			);
 		
 		$options = array(
-			'timeout' => 3,
+			'timeout' => 15,
 			'body' => $body,
 			'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url'),
 			);
@@ -1113,6 +1113,32 @@ EOS;
 		}
 		iframe_footer();
 	} # bulk_activate_plugins()
+	
+	
+	/**
+	 * disable_transports()
+	 *
+	 * @return void
+	 **/
+
+	function disable_transports() {
+		if ( !version_compare(PHP_VERSION, '5.3', '>=') )
+			add_filter('use_streams_transport', array('version_checker', 'disable_transport'));
+		add_filter('use_fopen_transport', array('version_checker', 'disable_transport'));
+		add_filter('use_fsockopen_transport', array('version_checker', 'disable_transport'));
+	} # disable_transports()
+	
+	
+	/**
+	 * disable_transport()
+	 *
+	 * @param bool $use
+	 * @return bool false
+	 **/
+
+	function disable_transport($use) {
+		return false;
+	} # disable_transport()
 } # version_checker
 
 
@@ -1182,6 +1208,13 @@ function sem_update_themes() {
 add_action('load-theme-install.php', 'sem_update_themes');
 add_action('load-update.php', 'sem_update_themes');
 add_action('load-tools_page_sem-tools', 'sem_update_themes');
+
+add_action('load-update-core.php', array('version_checker', 'disable_transports'), -1000);
+add_action('load-plugin-install.php', array('version_checker', 'disable_transports'), -1000);
+add_action('load-theme-install.php', array('version_checker', 'disable_transports'), -1000);
+add_action('load-update.php', array('version_checker', 'disable_transports'), -1000);
+add_action('load-tools_page_sem-tools', array('version_checker', 'disable_transports'), -1000);
+add_action('load-settings_page_sem-api-key', array('version_checker', 'disable_transports'), -1000);
 
 add_option('sem_api_key', '');
 add_option('sem_packages', 'stable');

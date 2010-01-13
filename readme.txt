@@ -29,7 +29,8 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 = 2.0.4 =
 
-- WP 3.0 compat
+- Preemptive WP 3.0 fixes
+- Dodge WP transports API bugs
 
 = 2.0.3 =
 
