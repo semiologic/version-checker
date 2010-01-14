@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.0.4 alpha
+Version: 2.0.4 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -478,7 +478,7 @@ EOS;
 		if ( is_wp_error($raw_response) ) {
 			wp_die($raw_response);
 		} elseif ( 200 != $raw_response['response']['code'] ) {
-			wp_die(__('An error occurred while trying to authenticate you on Semiologic.com in order to access a members-only package. More often than not, this will be due to a network problem (e.g., semiologic.com is very busy) or an incorrect API key.', 'version_checker'));
+			wp_die(sprintf(__('An error occurred while trying to authenticate you on Semiologic.com in order to access a members-only package. It generally has one of three causes. The most common is, neither of cURL, nor fsocketopen, are available on your server. (The <a href="%1$s">Core Control</a> plugin will tell you.) The second is that your <a href="%2$s">API key</a> is incorrect, or your <a href="%3$s">membership</a> is expired. The third that there is a network problem (e.g., semiologic.com is very busy). Please double check the two first, and try again in a few minutes.', 'version_checker'), 'http://wordpress.org/extend/plugins/core-control/', 'http://members.semiologic.com', 'http://members.semiologic.com/memberships.php'));
 		} else {
 			$cookies = $raw_response['cookies'];
 			set_transient('sem_cookies', $cookies, 1800); // half hour
@@ -1125,7 +1125,6 @@ EOS;
 		if ( !version_compare(PHP_VERSION, '5.3', '>=') )
 			add_filter('use_streams_transport', array('version_checker', 'disable_transport'));
 		add_filter('use_fopen_transport', array('version_checker', 'disable_transport'));
-		add_filter('use_fsockopen_transport', array('version_checker', 'disable_transport'));
 	} # disable_transports()
 	
 	
