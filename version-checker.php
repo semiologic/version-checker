@@ -124,6 +124,8 @@ class version_checker {
 			}
 			
 			if ( $themes_todo ) {
+				if ( !function_exists('get_themes') )
+					require_once ABSPATH . 'wp-includes/theme.php';
 				$themes = get_themes();
 				foreach ( $themes as $theme ) {
 					if ( $theme['Template'] != 'sem-reloaded' )
