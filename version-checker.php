@@ -113,11 +113,25 @@ class version_checker {
 		
 		if ( $template == 'sem-reloaded' && $stylesheet && $pagenow != 'themes.php' ) {
 			$themes_response = get_transient('update_themes');
+			
 			if ( $themes_response && !empty($themes_response->response) ) {
 				foreach ( array('template', 'stylesheet') as $theme ) {
 					if ( !empty($themes_response->response[$$theme]) ) {
 						$themes_todo = true;
 						break;
+					}
+				}
+			}
+			
+			if ( $themes_todo ) {
+				$themes = get_themes();
+				foreach ( $themes as $theme ) {
+					if ( $theme['Template'] != 'sem-reloaded' )
+						continue;
+					if ( version_compare($theme['Version'], $themes_response->response[$template]->new_version, '>=') ) {
+						$themes_todo = false;
+						delete_transient('update_themes');
+						delete_transient('sem_update_themes');
 					}
 				}
 			}
