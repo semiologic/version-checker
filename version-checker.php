@@ -105,6 +105,24 @@ class version_checker {
 					}
 				}
 			}
+			
+			if ( $plugins_todo ) {
+				if ( !function_exists('get_plugins') )
+					require_once ABSPATH . 'wp-admin/includes/plugin.php';
+				$plugins = get_plugins();
+				foreach ( array_keys($plugins) as $plugin ) {
+					if ( !isset($plugins_response->response[$plugin]) )
+						continue;
+					if ( version_compare($plugins[$plugin]['Version'], $plugins_response->response[$plugin]->new_version, '>=') ) {
+						$plugins_count--;
+						$plugins_todo &= $plugins_count;
+						delete_transient('update_plugins');
+						delete_transient('sem_update_plugins');
+						if ( !$plugins_todo )
+							break;
+					}
+				}
+			}
 		}
 		
 		$themes_todo = false;
