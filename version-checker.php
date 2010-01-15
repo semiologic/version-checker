@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.0.4 RC
+Version: 2.0.4 RC2
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -432,6 +432,44 @@ EOS;
 		
 		version_checker::force_flush();
 		
+		$transport = _wp_http_get_object();
+		$transport = $transport->_getTransport();
+		if ( !$transport )
+			wp_die(__('No valid HTTP transport seems to be available to complete your request', 'health-check'));
+		$transport = current($transport);
+		$transport = get_class($transport);
+		
+		if ( $transport == 'WP_Http_Fopen' ) {
+			if ( is_null( $args['headers'] ) )
+				$args['headers'] = array();
+
+			if ( isset($args['headers']['User-Agent']) ) {
+				$args['user-agent'] = $args['headers']['User-Agent'];
+				unset($args['headers']['User-Agent']);
+			}
+
+			if ( isset($args['headers']['user-agent']) ) {
+				$args['user-agent'] = $args['headers']['user-agent'];
+				unset($args['headers']['user-agent']);
+			}
+
+			WP_Http::buildCookieHeader($args);
+			
+			if ( ! is_array($args['headers']) ) {
+				$processedHeaders = WP_Http::processHeaders($args['headers']);
+				$args['headers'] = $processedHeaders['headers'];
+			}
+
+			if ( !empty($args['headers']) ) {
+				$user_agent_extra_headers = '';
+				foreach ( $args['headers'] as $header => $value )
+					$user_agent_extra_headers .= "\r\n$header: $value";
+				ini_set('user_agent', $args['user-agent'] . $user_agent_extra_headers);
+			} else {
+				ini_set('user_agent', $args['user-agent']);
+			}
+		}
+
 		return $args;
 	} # http_request_args()
 	
@@ -478,7 +516,7 @@ EOS;
 		if ( is_wp_error($raw_response) ) {
 			wp_die($raw_response);
 		} elseif ( 200 != $raw_response['response']['code'] ) {
-			wp_die(sprintf(__('An error occurred while trying to authenticate you on Semiologic.com in order to access a members-only package. It generally has one of three causes. The most common is, neither of cURL, nor fsocketopen, are available on your server. (The <a href="%1$s">Core Control</a> plugin will tell you.) The second is that your <a href="%2$s">API key</a> is incorrect, or your <a href="%3$s">membership</a> is expired. The third that there is a network problem (e.g., semiologic.com is very busy). Please double check the two first, and try again in a few minutes.', 'version_checker'), 'http://wordpress.org/extend/plugins/core-control/', 'http://members.semiologic.com', 'http://members.semiologic.com/memberships.php'));
+			wp_die(sprintf(__('An error occurred while trying to authenticate you on Semiologic.com in order to access a members-only package. It generally has one of three causes. The most common is, no transport is available to complete the request. (The <a href="%1$s">Core Control</a> plugin will tell you.) The second is that your <a href="%2$s">API key</a> is incorrect, or your <a href="%3$s">membership</a> is expired. The third that there is a network problem (e.g., semiologic.com is very busy). Please double check the two first, and try again in a few minutes.', 'version_checker'), 'http://wordpress.org/extend/plugins/core-control/', 'http://members.semiologic.com', 'http://members.semiologic.com/memberships.php'));
 		} else {
 			$cookies = $raw_response['cookies'];
 			set_transient('sem_cookies', $cookies, 1800); // half hour
@@ -1116,28 +1154,36 @@ EOS;
 	
 	
 	/**
-	 * disable_transports()
+	 * maybe_disable_streams()
 	 *
 	 * @return void
 	 **/
 
-	function disable_transports() {
-		if ( !version_compare(PHP_VERSION, '5.3', '>=') )
-			add_filter('use_streams_transport', array('version_checker', 'disable_transport'));
-		add_filter('use_fopen_transport', array('version_checker', 'disable_transport'));
-	} # disable_transports()
+	function maybe_disable_streams() {
+		add_filter('use_streams_transport', array('version_checker', 'use_streams_transport'));
+	} # maybe_disable_streams()
 	
 	
 	/**
-	 * disable_transport()
+	 * use_streams_transport()
 	 *
-	 * @param bool $use
-	 * @return bool false
+	 * @return void
 	 **/
 
-	function disable_transport($use) {
-		return false;
-	} # disable_transport()
+	function use_streams_transport($use) {
+		if ( !$use )
+			return false;
+		
+		// --with-curlwrappers is extremely buggy, see #11888
+		ob_start();
+		phpinfo(1);
+		$info = ob_get_contents();
+		ob_end_clean();
+		if ( strpos($info, '--with-curlwrappers') !== false )
+			return false;
+		
+		return $use;
+	} # use_streams_transport()
 } # version_checker
 
 
@@ -1208,13 +1254,6 @@ add_action('load-theme-install.php', 'sem_update_themes');
 add_action('load-update.php', 'sem_update_themes');
 add_action('load-tools_page_sem-tools', 'sem_update_themes');
 
-add_action('load-update-core.php', array('version_checker', 'disable_transports'), -1000);
-add_action('load-plugin-install.php', array('version_checker', 'disable_transports'), -1000);
-add_action('load-theme-install.php', array('version_checker', 'disable_transports'), -1000);
-add_action('load-update.php', array('version_checker', 'disable_transports'), -1000);
-add_action('load-tools_page_sem-tools', array('version_checker', 'disable_transports'), -1000);
-add_action('load-settings_page_sem-api-key', array('version_checker', 'disable_transports'), -1000);
-
 add_option('sem_api_key', '');
 add_option('sem_packages', 'stable');
 
@@ -1247,7 +1286,7 @@ if ( is_admin() && function_exists('get_transient') ) {
 		) as $hook )
 		add_action($hook, array('version_checker', 'get_plugins'), 12);
 	
-	add_filter('http_request_args', array('version_checker', 'http_request_args'), 10, 2);
+	add_filter('http_request_args', array('version_checker', 'http_request_args'), 1000, 2);
 	add_action('admin_init', array('version_checker', 'init'));
 	
 	add_action('admin_head', array('version_checker', 'sem_news_css'));
@@ -1260,6 +1299,14 @@ if ( is_admin() && function_exists('get_transient') ) {
 	
 	add_action('update-custom_bulk-activate-plugins', array('version_checker', 'bulk_activate_plugins'));
 	add_action('admin_footer', array('version_checker', 'sem_news_feed'));
+	
+	foreach ( array(
+		'load-update-core.php',
+		'load-update.php',
+		'load-tools_page_sem-tools',
+		) as $hook )
+		add_action($hook, array('version_checker', 'maybe_disable_streams'), -1000);
+	
 } elseif ( is_admin() ) {
 	add_action('admin_notices', array('version_checker', 'add_warning'));
 }
