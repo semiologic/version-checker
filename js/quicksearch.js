@@ -13,6 +13,9 @@
  * @author Tom Klingenberg
  */
 function sem_highlightLoad() {
+	if ( jQuery.fn.sem_highlight ) 
+		return; // plugin already loaded
+	
 	jQuery.fn.sem_highlight = function(action, paramA, paramB, paramC) {
 		var defaults = {
 			element: 'span',
@@ -292,6 +295,9 @@ function sem_qsMain(options) {
 		css    += "#adminmenu input.sem_quicksearch_menu {-moz-user-select:text; -webkit-user-select:text;}\n";
 		css    += "#adminmenu * {-moz-user-select:-moz-none;}\n";
 		css    += ".folded #adminmenu li.menusearch {display: none;}\n";
+		css    += "#wphead div.menusearch {float:left; margin:12px 9px 0 15px; width:normal; }\n";		
+		css    += "#wphead input.sem_quicksearch_menu {background-color:" + jQuery('#user_info').css('color') + "; }\m;"
+		
 		jQuery('head').append('<style type="text/css" id="sem_quicksearch_styles"><!--/*--><![CDATA[/*><!--*/' + "\n" + css + '/*]]>*/--></style>');
 	};
 	
@@ -313,7 +319,9 @@ function sem_qsMain(options) {
 	this.init = function() {
 		var options = self.options;
 		if (options.doesinsert) {
-			jQuery(options.insert.anchor).prepend(options.insert.html);			
+			jQuery(options.insert.anchor).prepend(options.insert.html);
+			if ( options.insert.afterInsert )
+				options.insert.afterInsert(self);
 		}
 		if ( 0 == jQuery(options.inputs).length )
 			return;
@@ -415,7 +423,7 @@ function sem_qsMain(options) {
 	}; // exists function
 
 	this.provider = this.providerFactory(this.options.provider, this.options.options);
-	sem_highlightLoad(); // @todo let that check if it's already loaded or not to prevent duplicate loading inside
+	sem_highlightLoad();
 	jQuery(document).ready(this.init);
 }; // function sem_quicksearchMain
 
@@ -435,15 +443,21 @@ jQuery(document).ready(function(){
 		new sem_qsMain({provider: 'Default'});
 		alone = false;
 	}
-	if ( jQuery('body.wp-admin').length ) {	
+	if ( jQuery('body.wp-admin').length ) {
+		// whitelist: index-php
+		// blacklist: post-new-php; post-php; edit-tags-php; categories-php; media-new-php; ...
+		if (jQuery('input:text').length)
+			alone = false;
+		if (jQuery('body.index-php').length)
+			alone = true;
 		new sem_qsMain({
 			inputs:   '.sem_quicksearch_menu',
 			provider: 'Menu',
 			doeshighlight: true,
 			doesfocus: alone,
 			insert: 	{							
-				anchor: 'ul#adminmenu',
-				html:   '<!-- quicksearch --><li class="menusearch"><div><label for="qsmenu" class="screen-reader-text">Quicksearch</label><input type="text" value="" name="qsmenu" class="sem_quicksearch_menu" title="Quicksearch" /></div></li>'
+				anchor: '#wphead',
+				html:   '<!-- quicksearch --><div class="menusearch"><label for="qsmenu" class="screen-reader-text">Quicksearch</label><input type="text" value="" name="qsmenu" class="sem_quicksearch_menu" title="Quicksearch" /></div>'
 			}
 		});
 	}
