@@ -107,8 +107,13 @@ function sem_qsProviderMenu(options) {
 	this.onSearch = function(term, qsobj) {
 		qsobj.provider.termlast = term;
 		if ( typeof(qsobj.openedElements) == 'undefined') {
-			qsobj.openedElements = new Array();							
+			qsobj.openedElements = new Array();
 		}
+		
+		// unfolded menu is needed to work properly
+		if ( jQuery('body').hasClass('folded') )
+			adminMenu.fold(1);
+		
 		if (term.length && 0 == qsobj.openedElements.length) {
 			// open all submenus to better search them on start
 			jQuery('ul#adminmenu li.wp-has-submenu .wp-submenu').each(function(i){
@@ -117,9 +122,8 @@ function sem_qsProviderMenu(options) {
 					jQuery(el).show().parent().toggleClass('wp-menu-open');
 					qsobj.openedElements.push(el);
 				}
-			});			
+			});
 			jQuery('ul#adminmenu .wp-menu-separator').hide();
-			
 		} else if (0 == term.length) {
 			// close them afterwards
 			var key = 0;
@@ -145,13 +149,13 @@ function sem_qsProviderMenu(options) {
 	}; // function index
 	
 	this.show = function(list) {
+		console.log('show');
 		jQuery(options.source).each(function(i) {
 			if ( typeof(list[i]) == 'undefined' ) {
 				list[i] = false;
 			}
 			jQuery(this).toggle( list[i] );
 		});
-		
 		
 		// first test that there is something to test right now (going in)
 		var term = this.termlast;
@@ -329,7 +333,7 @@ function sem_qsMain(options) {
 		jQuery(options.inputs).keyup( function(e) {
 			self.trigger(this.value);			
 		});
-		self.trigger();
+		// self.trigger();
 		if (options.doesfocus)
 			jQuery(options.inputs).get(0).focus();
 		
@@ -443,7 +447,7 @@ jQuery(document).ready(function(){
 		new sem_qsMain({provider: 'Default'});
 		alone = false;
 	}
-	if ( jQuery('body.wp-admin').length ) {
+	if ( jQuery('body.wp-admin').length ) {		
 		// whitelist: index-php
 		// blacklist: post-new-php; post-php; edit-tags-php; categories-php; media-new-php; ...
 		if (jQuery('input:text').length)
