@@ -1255,6 +1255,9 @@ function sem_tools() {
 	wp_enqueue_script('theme-install');
 	add_thickbox();
 	wp_enqueue_script('theme-preview');
+	
+	#$folder = plugin_dir_url(__FILE__);
+	#wp_enqueue_script('sem-quicksearch-js', $folder . 'js/quicksearch.js', array('jquery'), '20100121', true);
 } # sem_tools()
 
 add_action('load-tools_page_sem-tools', 'sem_tools');
@@ -1349,23 +1352,4 @@ add_filter('transient_update_themes', array('version_checker', 'update_themes'))
 add_filter('site_transient_update_themes', array('version_checker', 'update_themes'));
 add_filter('transient_update_plugins', array('version_checker', 'update_plugins'));
 add_filter('site_transient_update_plugins', array('version_checker', 'update_plugins'));
-
-/**
- * Semiologic Quicksearch
- * 
- * @author Tom Klingenberg
- */
-class semiologic_admin_quicksearch {
-	function enqueue_scripts($hook_suffix) {
-		switch($hook_suffix) {
-			case 'plugins.php':
-			case 'plugin-install.php':
-			case 'tools_page_sem-tools':
-			default:
-				wp_enqueue_script('sem-quicksearch-js',  plugins_url('', __FILE__).'/js/quicksearch.js');
-		}
-	}
-}
-
-add_action('admin_enqueue_scripts', array('semiologic_admin_quicksearch', 'enqueue_scripts'));
 ?>
