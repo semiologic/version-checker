@@ -380,7 +380,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		show_message(__('Renaming the default category...', 'version-checker'));
 		$wpdb->query("
 			UPDATE	$wpdb->terms
-			SET		name = '" . $wpdb->escape(__('News', 'sem-reloaded')) . "',
+			SET		name = '" . $wpdb->_real_escape(__('News', 'sem-reloaded')) . "',
 					slug = 'news'
 			WHERE	slug = 'uncategorized'
 			");

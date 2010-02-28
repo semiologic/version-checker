@@ -771,10 +771,10 @@ EOS;
 		if ( !is_object($ops) )
 			$ops = new stdClass;
 		
-		if ( !is_array($ops->checked) )
+		if ( empty($ops->checked) || !is_array($ops->checked) )
 			$ops->checked = array();
 		
-		if ( !is_array($ops->response) )
+		if ( empty($ops->response) || !is_array($ops->response) )
 			$ops->response = array();
 		
 		foreach ( $ops->checked as $plugin => $version ) {
@@ -908,10 +908,10 @@ EOS;
 		if ( !is_object($ops) )
 			$ops = new stdClass;
 		
-		if ( !is_array($ops->checked) )
+		if ( empty($ops->checked) || !is_array($ops->checked) )
 			$ops->checked = array();
 		
-		if ( !is_array($ops->response) )
+		if ( empty($ops->response) || !is_array($ops->response) )
 			$ops->response = array();
 		
 		foreach ( $ops->checked as $plugin => $version ) {
