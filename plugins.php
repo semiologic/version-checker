@@ -109,7 +109,8 @@ class sem_update_plugins {
 				$url = add_query_arg('s', $term, $url);
 			if ( ! empty($type) )
 				$url = add_query_arg('type', $type, $url);
-
+			
+			$totalpages = 1;
 			$page_links = paginate_links( array(
 				'base' => add_query_arg('paged', '%#%', $url),
 				'format' => '',
