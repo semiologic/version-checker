@@ -169,9 +169,9 @@ class sem_update_plugins {
 
 				$name = strip_tags($title . ' ' . $version);
 
-				$author = $plugin['author'];
+				$author = '';
 				if( ! empty($plugin['author']) )
-					$author = ' <cite>' . sprintf( __('By %s', 'version-checker'), $author ) . '.</cite>';
+					$author = ' <cite>' . sprintf( __('By %s', 'version-checker'), $plugin['author'] ) . '.</cite>';
 
 				$author = wp_kses($author, $plugins_allowedtags);
 
