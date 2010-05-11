@@ -30,6 +30,7 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 = 2.1 =
 
 - WP 3.0 compat
+- Dump WP 3.0.x update nags for WP 2.9.2 installs
 
 = 2.0.4 =
 
