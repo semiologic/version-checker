@@ -14,7 +14,7 @@ class sem_update_themes {
 	 **/
 
 	function install_themes_tabs($tabs) {
-		if ( get_option('sem_api_key') )
+		if ( get_site_option('sem_api_key') )
 			$tabs['semiologic'] = __('Semiologic', 'version-checker');
 		return $tabs;
 	} # install_themes_tabs()
@@ -44,7 +44,7 @@ class sem_update_themes {
 	 **/
 
 	function themes_api($res, $action, $args) {
-		if ( $res || !get_option('sem_api_key') )
+		if ( $res || !get_site_option('sem_api_key') )
 			return $res;
 		
 		switch ( $action ) {
@@ -129,12 +129,15 @@ class sem_update_themes {
 	 **/
 
 	function cache() {
-		$response = get_transient('sem_query_themes');
+		if ( function_exists('get_site_transient') )
+			$response = get_site_transient('sem_query_themes');
+		else
+			$response = get_transient('sem_query_themes');
 		if ( $response !== false )
 			return $response;
 		
 		global $wp_version;
-		$sem_api_key = get_option('sem_api_key');
+		$sem_api_key = get_site_option('sem_api_key');
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/info/0.1/themes/" . $sem_api_key;
@@ -146,7 +149,7 @@ class sem_update_themes {
 		
 		$body = array(
 			'action' => 'query',
-			'packages' => get_option('sem_packages'),
+			'packages' => get_site_option('sem_packages'),
 			);
 		
 		$options = array(
@@ -169,7 +172,10 @@ class sem_update_themes {
 		
 		if ( $response !== false ) {
 			$response = sem_update_themes::parse($response);
-			set_transient('sem_query_themes', $response, 7200);
+			if ( function_exists('get_site_transient') )
+				set_site_transient('sem_query_themes', $response, 7200);
+			else
+				set_transient('sem_query_themes', $response, 7200);
 		}
 		
 		return $response;

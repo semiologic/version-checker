@@ -13,7 +13,10 @@ class sem_update_core {
 	 **/
 
 	function ob_start() {
-		$update_core = get_transient('update_core');
+		if ( function_exists('get_site_transient') )
+			$update_core = get_site_transient('update_core');
+		else
+			$update_core = get_transient('update_core');
 		if ( !$update_core || empty($update_core->updates) )
 			return;
 		

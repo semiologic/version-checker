@@ -28,9 +28,18 @@ class sem_api_key {
 		if ( !in_array($sem_packages, array('stable', 'bleeding')) )
 			$sem_packages = 'stable';
 		
-		update_option('sem_api_key', $sem_api_key);
-		update_option('sem_packages', $sem_packages);
+		update_site_option('sem_api_key', $sem_api_key);
+		update_site_option('sem_packages', $sem_packages);
 		
+		if ( function_exists('get_site_transient') ) {
+			delete_site_transient('sem_api_error');
+			delete_site_transient('sem_memberships');
+			foreach ( array('themes', 'plugins') as $transient ) {
+				delete_site_transient('update_' . $transient);
+				delete_site_transient('sem_update_' . $transient);
+				delete_site_transient('sem_query_' . $transient);
+			}
+		}
 		delete_transient('sem_api_error');
 		delete_transient('sem_memberships');
 		foreach ( array('themes', 'plugins') as $transient ) {
@@ -65,10 +74,13 @@ class sem_api_key {
 		
 		echo '<h2>' . __('Semiologic API Key', 'version-checker') . '</h2>' . "\n";
 		
-		$sem_api_key = get_option('sem_api_key');
-		$sem_packages = get_option('sem_packages');
+		$sem_api_key = get_site_option('sem_api_key');
+		$sem_packages = get_site_option('sem_packages');
 		$memberships = version_checker::get_memberships();
-		$sem_api_error = get_transient('sem_api_error');
+		if ( function_exists('get_site_transient') )
+			$sem_api_error = get_site_transient('sem_api_error');
+		else
+			$sem_api_error = get_transient('sem_api_error');
 		
 		if ( $sem_api_error ) {
 			echo '<div class="error">' . "\n";

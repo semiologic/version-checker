@@ -14,7 +14,7 @@ class sem_update_plugins {
 	 **/
 
 	function install_plugins_tabs($tabs) {
-		if ( get_option('sem_api_key') )
+		if ( get_site_option('sem_api_key') )
 			$tabs['semiologic'] = __('Semiologic', 'version-checker');
 		return $tabs;
 	} # install_plugins_tabs()
@@ -60,7 +60,10 @@ class sem_update_plugins {
 		$to_upgrade = array();
 		
 		$installed = get_plugins();
-		$response = get_transient('update_plugins');
+		if ( function_exists('get_site_transient') )
+			$response = get_site_transient('update_plugins');
+		else
+			$response = get_transient('update_plugins');
 		$response = is_object($response) ? (array) $response->response : array();
 		
 		foreach ( array_keys($sem_plugins) as $slug ) {
@@ -261,7 +264,7 @@ class sem_update_plugins {
 	 **/
 
 	function plugins_api($res, $action, $args) {
-		if ( $res || !get_option('sem_api_key') )
+		if ( $res || !get_site_option('sem_api_key') )
 			return $res;
 		
 		switch ( $action ) {
@@ -346,12 +349,15 @@ class sem_update_plugins {
 	 **/
 
 	function cache() {
-		$response = get_transient('sem_query_plugins');
+		if ( function_exists('get_site_transient') )
+			$response = get_site_transient('sem_query_plugins');
+		else
+			$response = get_transient('sem_query_plugins');
 		if ( $response !== false )
 			return $response;
 		
 		global $wp_version;
-		$sem_api_key = get_option('sem_api_key');
+		$sem_api_key = get_site_option('sem_api_key');
 		
 		if ( !version_checker_debug ) {
 			$url = "https://api.semiologic.com/info/0.1/plugins/" . $sem_api_key;
@@ -363,7 +369,7 @@ class sem_update_plugins {
 		
 		$body = array(
 			'action' => 'query',
-			'packages' => get_option('sem_packages'),
+			'packages' => get_site_option('sem_packages'),
 			);
 		
 		$options = array(
@@ -386,7 +392,10 @@ class sem_update_plugins {
 		
 		if ( $response !== false ) {
 			$response = sem_update_plugins::parse($response);
-			set_transient('sem_query_plugins', $response, 7200);
+			if ( function_exists('get_site_transient') )
+				set_site_transient('sem_query_plugins', $response, 7200);
+			else
+				set_transient('sem_query_plugins', $response, 7200);
 		}
 		
 		return $response;

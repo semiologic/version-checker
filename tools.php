@@ -46,7 +46,10 @@ class sem_tools {
 				$to_upgrade = array();
 				
 				$installed = get_plugins();
-				$response = get_transient('update_plugins');
+				if ( function_exists('get_site_transient') )
+					$response = get_site_transient('update_plugins');
+				else
+					$response = get_transient('update_plugins');
 				$response = is_object($response) ? (array) $response->response : array();
 				
 				foreach ( $response as $file => $resp ) {
@@ -55,8 +58,13 @@ class sem_tools {
 				}
 				
 				if ( !$to_upgrade ) {
-					delete_transient('update_plugins');
-					delete_transient('sem_update_plugins');
+					if ( function_exists('get_site_transient') ) {
+						delete_site_transient('update_plugins');
+						delete_site_transient('sem_update_plugins');
+					} else {
+						delete_transient('update_plugins');
+						delete_transient('sem_update_plugins');
+					}
 					
 					echo '<div class="error">'
 						. '<p>'

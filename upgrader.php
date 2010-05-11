@@ -119,7 +119,10 @@ class sem_upgrader extends Plugin_Upgrader {
 	function bulk_upgrade($plugins) {
 		$this->init();
 		$this->upgrade_strings();
-		$current = get_transient('update_plugins');
+		if ( function_exists('get_site_transient') )
+			$current = get_site_transient('update_plugins');
+		else
+			$current = get_transient('update_plugins');
 		
 		add_filter('upgrader_clear_destination', array(&$this, 'delete_old_plugin'), 10, 4);
 		
@@ -184,8 +187,13 @@ class sem_upgrader extends Plugin_Upgrader {
 		remove_filter('upgrader_clear_destination', array(&$this, 'delete_old_plugin'));
 		
 		// Force refresh of plugin update information
-		delete_transient('update_plugins');
-		delete_transient('sem_update_plugins');
+		if ( function_exists('get_site_transient') ) {
+			delete_site_transient('update_plugins');
+			delete_site_transient('sem_update_plugins');
+		} else {
+			delete_transient('update_plugins');
+			delete_transient('sem_update_plugins');
+		}
 		
 		# force flush everything
 		update_option('db_upgraded', true);
@@ -282,8 +290,13 @@ class sem_upgrader extends Plugin_Upgrader {
 		$this->skin->footer();
 		
 		// Force refresh of plugin update information
-		delete_transient('update_plugins');
-		delete_transient('sem_update_plugins');
+		if ( function_exists('get_site_transient') ) {
+			delete_site_transient('update_plugins');
+			delete_site_transient('sem_update_plugins');
+		} else {
+			delete_transient('update_plugins');
+			delete_transient('sem_update_plugins');
+		}
 		
 		# force flush everything
 		update_option('db_upgraded', true);
