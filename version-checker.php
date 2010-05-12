@@ -28,6 +28,17 @@ if ( !defined('version_checker_debug') )
 if ( !defined('FS_TIMEOUT') )
 	define('FS_TIMEOUT', 900); // 15 minutes
 
+if ( !defined('sem_api_memberships') )
+	define('sem_api_memberships', 'https://api.semiologic.com/memberships/0.2');
+
+if ( !defined('sem_api_auth') )
+	define('sem_api_auth', 'https://api.semiologic.com/auth/0.1');
+
+if ( !defined('sem_api_info') )
+	define('sem_api_info', 'https://api.semiologic.com/info/0.1');
+
+if ( !defined('sem_api_version') )
+	define('sem_api_version', 'https://api.semiologic.com/version/0.2');
 
 /**
  * version_checker
@@ -568,13 +579,7 @@ EOS;
 		
 		global $wp_version;
 		
-		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/auth/0.1/" . $sem_api_key;
-		} elseif ( version_checker_debug === 'localhost' ) {
-			$url = "http://localhost/~denis/api/auth/" . $sem_api_key;
-		} else {
-			$url = "https://api.semiologic.com/auth/trunk/" . $sem_api_key;
-		}
+		$url = sem_api_auth . '/' . $sem_api_key;
 		
 		$options = array(
 			'timeout' => 15,
@@ -654,13 +659,7 @@ EOS;
 		else
 			set_transient('sem_memberships', $obj);
 		
-		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/memberships/0.2/" . $sem_api_key;
-		} elseif ( version_checker_debug === 'localhost' ) {
-			$url = "http://localhost/~denis/api/memberships/" . $sem_api_key;
-		} else {
-			$url = "https://api.semiologic.com/memberships/trunk/" . $sem_api_key;
-		}
+		$url = sem_api_memberships . '/' . $sem_api_key;
 		
 		$body = array(
 			'php_version' => phpversion(),
@@ -782,13 +781,7 @@ EOS;
 		else
 			set_transient('sem_update_themes', $obj);
 		
-		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/version/0.2/themes/" . $sem_api_key;
-		} elseif ( version_checker_debug === 'localhost' ) {
-			$url = "http://localhost/~denis/api/version/themes/" . $sem_api_key;
-		} else {
-			$url = "https://api.semiologic.com/version/trunk/themes/" . $sem_api_key;
-		}
+		$url = sem_api_version . '/themes/' . $sem_api_key;
 		
 		$to_check = get_themes();
 		$check = array();
@@ -944,13 +937,7 @@ EOS;
 		else
 			set_transient('sem_update_plugins', $obj);
 		
-		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/version/0.2/plugins/" . $sem_api_key;
-		} elseif ( version_checker_debug === 'localhost' ) {
-			$url = "http://localhost/~denis/api/version/plugins/" . $sem_api_key;
-		} else {
-			$url = "https://api.semiologic.com/version/trunk/plugins/" . $sem_api_key;
-		}
+		$url = sem_api_version . '/plugins/' . $sem_api_key;
 		
 		$to_check = get_plugins();
 		$check = array();

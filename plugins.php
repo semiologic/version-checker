@@ -359,13 +359,7 @@ class sem_update_plugins {
 		global $wp_version;
 		$sem_api_key = get_site_option('sem_api_key');
 		
-		if ( !version_checker_debug ) {
-			$url = "https://api.semiologic.com/info/0.1/plugins/" . $sem_api_key;
-		} elseif ( version_checker_debug === 'localhost' ) {
-			$url = "http://localhost/~denis/api/info/plugins/" . $sem_api_key;
-		} else {
-			$url = "https://api.semiologic.com/info/trunk/plugins/" . $sem_api_key;
-		}
+		$url = sem_api_info . '/plugins/' . $sem_api_key;
 		
 		$body = array(
 			'action' => 'query',
