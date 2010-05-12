@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.1 RC
+Version: 2.1 RC2
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -1397,10 +1397,7 @@ add_action('load-theme-install.php', 'sem_update_themes');
 add_action('load-update.php', 'sem_update_themes');
 add_action('load-tools_page_sem-tools', 'sem_update_themes');
 
-add_site_option('sem_api_key', '');
-add_site_option('sem_packages', '');
-
-# WP 3.0 upgrade
+# WP 3.0 upgrade + work around broken add_site_option
 if ( !get_site_option('sem_packages') ) {
 	if ( get_option('sem_api_key') ) {
 		update_site_option('sem_api_key', get_option('sem_api_key'));
@@ -1408,6 +1405,7 @@ if ( !get_site_option('sem_packages') ) {
 		delete_option('sem_api_key');
 		delete_option('sem_packages');
 	} else {
+		update_site_option('sem_api_key', '');
 		update_site_option('sem_packages', 'stable');
 	}
 }
