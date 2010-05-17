@@ -201,7 +201,12 @@ class version_checker {
 			$core_todo = $cur->current;
 		}
 		
+		if ( get_site_option( 'wpmu_upgrade_site' ) != $wp_db_version )
+			remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
+		
 		if ( $core_todo || $plugins_todo || $themes_todo ) {
+			remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
+			
 			if ( $themes_todo ) {
 				$msg[] = '<p>'
 					. sprintf(
@@ -279,19 +284,6 @@ class version_checker {
 	 **/
 
 	function sem_news_css() {
-		echo <<<EOS
-<style type="text/css">
-#update-nag {
-	margin: 40px 0px 0px;
-	padding: 0px 20px;
-}
-
-#update-nag a {
-	font-weight: bold;
-}
-</style>
-EOS;
-		
 		if ( version_checker::get_news_pref() == 'false' )
 			return;
 		
