@@ -174,6 +174,12 @@ class version_checker {
 				foreach ( $themes as $theme ) {
 					if ( $theme['Template'] != 'sem-reloaded' )
 						continue;
+					
+					# type-transposition: convert from array to object if applicable
+					if ( is_array($themes_response->response[$template]) ) {
+						$themes_response->response[$template] = (object) $themes_response->response[$template];
+					}
+					
 					if ( version_compare($theme['Version'], $themes_response->response[$template]->new_version, '>=') ) {
 						$themes_todo = false;
 						if ( function_exists('get_site_transient') ) {
@@ -626,7 +632,14 @@ EOS;
 		
 		$current_filter = current_filter();
 		
-		if ( $current_filter == 'settings_page_sem-api-key' && is_object($obj->response['sem-pro']) && $obj->response['sem-pro']->expires ) {
+		$precondition = (bool) ('settings_page_sem-api-key' == $current_filter && isset($obj->response['sem-pro'])); 
+		
+		# type-transposition: convert from array to object if applicable
+		if ($precondition && is_array($obj->response['sem-pro'])) {
+			$obj->response['sem-pro'] = (object) $obj->response['sem-pro']; 
+		}
+		
+		if ( $precondition && $obj->response['sem-pro']->expires ) {
 			# user might decide to place an order here
 			if ( strtotime($obj->response['sem-pro']->expires) <= time() + 2678400 ) {
 				$timeout = 120;
