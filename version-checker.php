@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.1
+Version: 2.1.1
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -88,16 +88,19 @@ class version_checker {
 		
 		if ( $page_hook != 'settings_page_sem-api-key' ) {
 			if ( !$sem_api_key ) {
+				remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
 				$msg[] = '<p>'
 					. sprintf(__('The Version Checker plugin is almost ready. Please enter your <a href="%s">Semiologic API key</a> to manage your Semiologic packages.', 'version-checker'), 'options-general.php?page=sem-api-key')
 					. '</p>' . "\n";
 			}
 		} elseif ( $page_hook == 'settings_page_sem-api-key' ) {
 			if ( $sem_api_key || $_POST && !empty($_POST['sem_api_key']) ) {
+				remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
 				$msg[] = '<p>'
 					. sprintf(__('Browse <a href="%s">Tools / Semiologic</a> to manage Semiologic packages on your site.', 'version-checker'), 'tools.php?page=sem-tools')
 					. '</p>' . "\n";
 			} else {
+				remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
 				$msg[] = '<p>'
 					. __('Tools / Semiologic becomes available once this screen is configured. Browsing it will allows you to manage Semiologic packages on your site.', 'version-checker')
 					. '</p>' . "\n";
