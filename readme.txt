@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.1.2 =
+
+- Fix php notice
+
 = 2.1.1 =
 
 - Prevent news feed from hiding instructions during installs
