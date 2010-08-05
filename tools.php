@@ -46,7 +46,7 @@ class sem_tools {
 				$to_upgrade = array();
 				
 				$installed = get_plugins();
-				if ( function_exists('get_site_transient') )
+				if ( class_exists('WP_Nav_Menu_Widget') )
 					$response = get_site_transient('update_plugins');
 				else
 					$response = get_transient('update_plugins');
@@ -58,7 +58,7 @@ class sem_tools {
 				}
 				
 				if ( !$to_upgrade ) {
-					if ( function_exists('get_site_transient') ) {
+					if ( class_exists('WP_Nav_Menu_Widget') ) {
 						delete_site_transient('update_plugins');
 						delete_site_transient('sem_update_plugins');
 					} else {

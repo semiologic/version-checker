@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.1.2
+Version: 2.1.3 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -112,7 +112,7 @@ class version_checker {
 		$active_plugins = get_option('active_plugins');
 		
 		if ( $active_plugins && $pagenow != 'plugins.php' || $pagenow == 'plugins.php' ) {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				$plugins_response = get_site_transient('update_plugins');
 			else
 				$plugins_response = get_transient('update_plugins');
@@ -137,7 +137,7 @@ class version_checker {
 					if ( version_compare($plugins[$plugin]['Version'], $plugins_response->response[$plugin]->new_version, '>=') ) {
 						$plugins_count--;
 						$plugins_todo &= $plugins_count;
-						if ( function_exists('get_site_transient') ) {
+						if ( class_exists('WP_Nav_Menu_Widget') ) {
 							delete_site_transient('update_plugins');
 							delete_site_transient('sem_update_plugins');
 						} else {
@@ -156,7 +156,7 @@ class version_checker {
 		$stylesheet = get_option('stylesheet');
 		
 		if ( $template == 'sem-reloaded' && $stylesheet && $pagenow != 'themes.php' ) {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				$themes_response = get_site_transient('update_themes');
 			else
 				$themes_response = get_transient('update_themes');
@@ -185,7 +185,7 @@ class version_checker {
 					
 					if ( version_compare($theme['Version'], $themes_response->response[$template]->new_version, '>=') ) {
 						$themes_todo = false;
-						if ( function_exists('get_site_transient') ) {
+						if ( class_exists('WP_Nav_Menu_Widget') ) {
 							delete_site_transient('update_themes');
 							delete_site_transient('sem_update_themes');
 						} else {
@@ -336,13 +336,13 @@ EOS;
 		if ( !empty($upgrading) || version_checker::get_news_pref() == 'false' )
 			return;
 		
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$sem_news_error = get_site_transient('sem_news_error');
 		else
 			$sem_news_error = get_transient('sem_news_error');
 		
 		if ( !$sem_news_error ) {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_news_error', time() - 3600);
 			else
 				set_transient('sem_news_error', time() - 3600);
@@ -355,7 +355,7 @@ EOS;
 		remove_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'sem_news_timeout'));
 
 		if ( is_wp_error($feed) || !$feed->get_item_quantity() ) {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_news_error', time() + 3600);
 			else
 				set_transient('sem_news_error', time() + 3600);
@@ -570,7 +570,7 @@ EOS;
 		if ( !$sem_api_key )
 			wp_die(__('The Url you\'ve tried to access is restricted. Please enter your Semiologic API key.', 'version_checker'));
 		
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$cookies = get_site_transient('sem_cookies');
 		else
 			$cookies = get_transient('sem_cookies');
@@ -600,7 +600,7 @@ EOS;
 			wp_die(sprintf(__('An error occurred while trying to authenticate you on Semiologic.com in order to access a members-only package. It generally has one of three causes. The most common is, no transport is available to complete the request. (The <a href="%1$s">Core Control</a> plugin will tell you.) The second is that your <a href="%2$s">API key</a> is incorrect, or your <a href="%3$s">membership</a> is expired. The third that there is a network problem (e.g., semiologic.com is very busy). Please double check the two first, and try again in a few minutes.', 'version_checker'), 'http://wordpress.org/extend/plugins/core-control/', 'http://members.semiologic.com', 'http://members.semiologic.com/memberships.php'));
 		} else {
 			$cookies = $raw_response['cookies'];
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_cookies', $cookies, 1800); // half hour
 			else
 				set_transient('sem_cookies', $cookies, 1800); // half hour
@@ -622,7 +622,7 @@ EOS;
 		if ( !$sem_api_key )
 			return array();
 		
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$obj = get_site_transient('sem_memberships');
 		else
 			$obj = get_transient('sem_memberships');
@@ -662,7 +662,7 @@ EOS;
 		global $wp_version;
 		
 		$obj->last_checked = time();
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			set_site_transient('sem_memberships', $obj);
 		else
 			set_transient('sem_memberships', $obj);
@@ -689,12 +689,12 @@ EOS;
 		}
 		
 		if ( is_wp_error($raw_response) ) {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_api_error', $raw_response->get_error_messages());
 			else
 				set_transient('sem_api_error', $raw_response->get_error_messages());
 		} else {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				delete_site_transient('sem_api_error');
 			else
 				delete_transient('sem_api_error');
@@ -707,7 +707,7 @@ EOS;
 		
 		if ( $response !== false ) { // keep old response in case of error
 			if ( $obj->response != $response ) {
-				if ( function_exists('get_site_transient') ) {
+				if ( class_exists('WP_Nav_Menu_Widget') ) {
 					delete_site_transient('sem_update_core');
 					delete_site_transient('sem_update_themes');
 					delete_site_transient('sem_update_plugins');
@@ -723,7 +723,7 @@ EOS;
 			}
 			
 			$obj->response = $response;
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_memberships', $obj);
 			else
 				set_transient('sem_memberships', $obj);
@@ -746,7 +746,7 @@ EOS;
 		if ( !$sem_api_key )
 			return array();
 		
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$obj = get_site_transient('sem_update_themes');
 		else
 			$obj = get_transient('sem_update_themes');
@@ -765,7 +765,7 @@ EOS;
 		}
 		
 		if ( is_array($checked) && $checked && $obj->checked && $obj->checked != $checked ) {
-			if ( function_exists('get_site_transient') ) {
+			if ( class_exists('WP_Nav_Menu_Widget') ) {
 				delete_site_transient('sem_update_themes');
 				delete_site_transient('update_themes');
 			} else {
@@ -784,7 +784,7 @@ EOS;
 			require_once ABSPATH . 'wp-includes/theme.php';
 		
 		$obj->last_checked = time();
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			set_site_transient('sem_update_themes', $obj);
 		else
 			set_transient('sem_update_themes', $obj);
@@ -798,7 +798,7 @@ EOS;
 			$check[$themes['Stylesheet']] = $themes['Version'];
 		
 		$obj->checked = $check;
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			set_site_transient('sem_update_themes', $obj);
 		else
 			set_transient('sem_update_themes', $obj);
@@ -823,12 +823,12 @@ EOS;
 		}
 		
 		if ( is_wp_error($raw_response) ) {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_api_error', $raw_response->get_error_messages());
 			else
 				set_transient('sem_api_error', $raw_response->get_error_messages());
 		} else {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				delete_site_transient('sem_api_error');
 			else
 				delete_transient('sem_api_error');
@@ -843,7 +843,7 @@ EOS;
 			foreach ( $response as $key => $package )
 				$response[$key] = (array) $package;
 			$obj->response = $response;
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_update_themes', $obj);
 			else
 				set_transient('sem_update_themes', $obj);
@@ -902,7 +902,7 @@ EOS;
 		if ( !$sem_api_key )
 			return array();
 		
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$obj = get_site_transient('sem_update_plugins');
 		else
 			$obj = get_transient('sem_update_plugins');
@@ -921,7 +921,7 @@ EOS;
 		}
 		
 		if ( is_array($checked) && $checked && $obj->checked && $obj->checked != $checked ) {
-			if ( function_exists('get_site_transient') ) {
+			if ( class_exists('WP_Nav_Menu_Widget') ) {
 				delete_site_transient('sem_update_plugins');
 				delete_site_transient('update_plugins');
 			} else {
@@ -940,7 +940,7 @@ EOS;
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		
 		$obj->last_checked = time();
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			set_site_transient('sem_update_plugins', $obj);
 		else
 			set_transient('sem_update_plugins', $obj);
@@ -954,7 +954,7 @@ EOS;
 			$check[$file] = $plugin['Version'];
 		
 		$obj->checked = $check;
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			set_site_transient('sem_update_plugins', $obj);
 		else
 			set_transient('sem_update_plugins', $obj);
@@ -980,12 +980,12 @@ EOS;
 		}
 		
 		if ( is_wp_error($raw_response) ) {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_api_error', $raw_response->get_error_messages());
 			else
 				set_transient('sem_api_error', $raw_response->get_error_messages());
 		} else {
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				delete_site_transient('sem_api_error');
 			else
 				delete_transient('sem_api_error');
@@ -998,7 +998,7 @@ EOS;
 		
 		if ( $response !== false ) { // keep old response in case of error
 			$obj->response = $response;
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_update_plugins', $obj);
 			else
 				set_transient('sem_update_plugins', $obj);

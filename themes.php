@@ -129,7 +129,7 @@ class sem_update_themes {
 	 **/
 
 	function cache() {
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$response = get_site_transient('sem_query_themes');
 		else
 			$response = get_transient('sem_query_themes');
@@ -166,7 +166,7 @@ class sem_update_themes {
 		
 		if ( $response !== false ) {
 			$response = sem_update_themes::parse($response);
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_query_themes', $response, 7200);
 			else
 				set_transient('sem_query_themes', $response, 7200);

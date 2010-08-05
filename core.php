@@ -13,7 +13,7 @@ class sem_update_core {
 	 **/
 
 	function ob_start() {
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$update_core = get_site_transient('update_core');
 		else
 			$update_core = get_transient('update_core');

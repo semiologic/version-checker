@@ -60,7 +60,7 @@ class sem_update_plugins {
 		$to_upgrade = array();
 		
 		$installed = get_plugins();
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$response = get_site_transient('update_plugins');
 		else
 			$response = get_transient('update_plugins');
@@ -349,7 +349,7 @@ class sem_update_plugins {
 	 **/
 
 	function cache() {
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$response = get_site_transient('sem_query_plugins');
 		else
 			$response = get_transient('sem_query_plugins');
@@ -386,7 +386,7 @@ class sem_update_plugins {
 		
 		if ( $response !== false ) {
 			$response = sem_update_plugins::parse($response);
-			if ( function_exists('get_site_transient') )
+			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_query_plugins', $response, 7200);
 			else
 				set_transient('sem_query_plugins', $response, 7200);

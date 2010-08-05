@@ -119,7 +119,7 @@ class sem_upgrader extends Plugin_Upgrader {
 	function bulk_upgrade($plugins) {
 		$this->init();
 		$this->upgrade_strings();
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$current = get_site_transient('update_plugins');
 		else
 			$current = get_transient('update_plugins');
@@ -187,7 +187,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		remove_filter('upgrader_clear_destination', array(&$this, 'delete_old_plugin'));
 		
 		// Force refresh of plugin update information
-		if ( function_exists('get_site_transient') ) {
+		if ( class_exists('WP_Nav_Menu_Widget') ) {
 			delete_site_transient('update_plugins');
 			delete_site_transient('sem_update_plugins');
 		} else {
@@ -290,7 +290,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		$this->skin->footer();
 		
 		// Force refresh of plugin update information
-		if ( function_exists('get_site_transient') ) {
+		if ( class_exists('WP_Nav_Menu_Widget') ) {
 			delete_site_transient('update_plugins');
 			delete_site_transient('sem_update_plugins');
 		} else {

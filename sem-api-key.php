@@ -31,7 +31,7 @@ class sem_api_key {
 		update_site_option('sem_api_key', $sem_api_key);
 		update_site_option('sem_packages', $sem_packages);
 		
-		if ( function_exists('get_site_transient') ) {
+		if ( class_exists('WP_Nav_Menu_Widget') ) {
 			delete_site_transient('sem_api_error');
 			delete_site_transient('sem_memberships');
 			foreach ( array('themes', 'plugins') as $transient ) {
@@ -77,7 +77,7 @@ class sem_api_key {
 		$sem_api_key = get_site_option('sem_api_key');
 		$sem_packages = get_site_option('sem_packages');
 		$memberships = version_checker::get_memberships();
-		if ( function_exists('get_site_transient') )
+		if ( class_exists('WP_Nav_Menu_Widget') )
 			$sem_api_error = get_site_transient('sem_api_error');
 		else
 			$sem_api_error = get_transient('sem_api_error');
