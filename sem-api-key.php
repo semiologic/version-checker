@@ -207,6 +207,7 @@ class sem_api_key {
 				. '<table style="width: 100%; margin: 0px; padding: 0px;">' . "\n";
 			
 			foreach ( $memberships as $slug => $membership ) {
+				$membership = (array) $membership;
 				echo '<tr>'
 					. '<td>'
 					. strip_tags($membership['name'])
