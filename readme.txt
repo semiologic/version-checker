@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.1.5 =
+
+- Finish fixing minor crash (affects PHP 5.3 platforms)
+
 = 2.1.4 =
 
 - Fix minor crash

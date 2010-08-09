@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.1.4
+Version: 2.1.5
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -1050,7 +1050,7 @@ EOS;
 
 	function check($membership) {
 		$memberships = version_checker::get_memberships();
-		
+		$memberships[$membership] = (array) $memberships[$membership];
 		if ( !isset($memberships[$membership]['expires']) )
 			return false;
 		elseif ( !$memberships[$membership]['expires'] )
