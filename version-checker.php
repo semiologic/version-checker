@@ -1140,7 +1140,6 @@ EOS;
 		while ( ob_get_level() )
 			ob_end_flush();
 		
-		@ob_flush();
 		@flush();
 		@set_time_limit(FS_TIMEOUT);
 	} # force_flush()
