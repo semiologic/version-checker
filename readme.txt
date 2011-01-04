@@ -30,6 +30,7 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 = 2.1.6 =
 
 - Fix curl w/ ssl
+- WP 3.1 ready
 
 = 2.1.5 =
 

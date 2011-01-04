@@ -34,9 +34,9 @@ class sem_update_core {
 			'http://www.semiologic.com/software/version-checker/')
 			. '</p>';
 		
-		echo '<p>'
-			. sprintf(__('Lastly, please note that it\'s <strong>much</strong> faster (and much safer) to upgrade WordPress from your hosting account\'s control panel than from this screen. Note that <strong><a href="%1$s">Hub users</a></strong> get to upgrade Semiologic packages as a bonus when they do so.', 'version-checker'), 'http://members.semiologic.com/hosting/')
-			. '</p>' . "\n";
+		// echo '<p>'
+		// 	. sprintf(__('Lastly, please note that it\'s <strong>much</strong> faster (and much safer) to upgrade WordPress from your hosting account\'s control panel than from this screen. Note that <strong><a href="%1$s">Hub users</a></strong> get to upgrade Semiologic packages as a bonus when they do so.', 'version-checker'), 'http://members.semiologic.com/hosting/')
+		// 	. '</p>' . "\n";
 
 		echo '</div>' . "\n";
 		

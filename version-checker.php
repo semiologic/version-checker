@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.1.6 alpha
+Version: 2.1.6
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -201,11 +201,12 @@ class version_checker {
 		$core_todo = false;
 		$cur = get_preferred_from_update_core();
 		if ( !empty($cur->response) && !empty($cur->package) &&
-			$cur->response == 'upgrade' &&
+			$cur->response == 'upgrade'
+			#&&
 			# dump new version nags
-			!preg_match("/^\d+\.\d+$/", $cur->current) &&
+			#!preg_match("/^\d+\.\d+$/", $cur->current) &&
 			# dump 3.0 nags for WP 2.9.2 users
-			!( $wp_version == '2.9.2' && preg_match("/^3\.0/", $cur->current) )
+			#!( $wp_version == '2.9.2' && preg_match("/^3\.0/", $cur->current) )
 			) {
 			$core_todo = $cur->current;
 		}
@@ -1230,7 +1231,7 @@ EOS;
 			if ( $folders = glob(WP_CONTENT_DIR . '/upgrade/sem-pro*/') ) {
 				foreach ( $folders as $folder ) {
 					$folder = $wp_filesystem->find_folder($folder);
-					show_message(sprintf(__('Cleaning up %1$s. Based on our testing, this step can readily take about 10 minutes without the slightest amount of feedback from WordPress. You can avoid it by deleting your %2$s folder using your FTP software before proceeding.', 'version-checker'), $folder, basename($folder)));
+					show_message(sprintf(__('Cleaning up %1$s. This step can readily take about 10 minutes without the slightest amount of feedback from WordPress. You can avoid it by deleting your %2$s folder using your FTP software before proceeding.', 'version-checker'), $folder, basename($folder)));
 					version_checker::force_flush();
 					$wp_filesystem->delete($folder, true);
 					version_checker::reconnect_ftp();
@@ -1240,14 +1241,14 @@ EOS;
 			if ( $folders = glob(WP_CONTENT_DIR . '/upgrade/wordpress*/') ) {
 				foreach ( $folders as $folder ) {
 					$folder = $wp_filesystem->find_folder($folder);
-					show_message(sprintf(__('Cleaning up %1$s. Based on our testing, this step can readily take about 10 minutes without the slightest amount of feedback from WordPress. You can avoid it by deleting your %2$s folder using your FTP software before proceeding.', 'version-checker'), $folder, basename($folder)));
+					show_message(sprintf(__('Cleaning up %1$s. This step can readily take about 10 minutes without the slightest amount of feedback from WordPress. You can avoid it by deleting your %2$s folder using your FTP software before proceeding.', 'version-checker'), $folder, basename($folder)));
 					version_checker::force_flush();
 					$wp_filesystem->delete($folder, true);
 					version_checker::reconnect_ftp();
 				}
 			}
 			
-			show_message(__('Starting upgrade... Again, this can take several minutes without any feedback from WordPress.', 'version-checker'));
+			show_message(__('Starting upgrade... Please note that this can take several minutes without any feedback from WordPress.', 'version-checker'));
 			version_checker::force_flush();
 			
 			add_action('http_api_debug', array('version_checker', 'maybe_flush'), 100, 2);
