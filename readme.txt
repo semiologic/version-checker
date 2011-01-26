@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.1.7 =
+
+- Improve disabling curl ssl verification.
+
 = 2.1.6 =
 
 - Fix curl w/ ssl
