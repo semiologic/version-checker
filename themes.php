@@ -30,6 +30,13 @@ class sem_update_themes {
 	function install_themes_semiologic($page = 1) {
 		$args = array('browse' => 'semiologic', 'page' => $page);
 		$api = themes_api('query_themes', $args);
+		
+		// wp 3.1/3.2 compat (see #520):
+		if (function_exists('_get_list_table')) {
+			global $wp_list_table;
+			$wp_list_table = _get_list_table('WP_Theme_Install_List_Table');
+		}
+		
 		display_themes($api->themes, $api->info['page'], $api->info['pages']);
 	} # install_themes_semiologic()
 	
