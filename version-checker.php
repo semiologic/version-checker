@@ -22,9 +22,6 @@ http://www.mesoconcepts.com/license/
 
 load_plugin_textdomain('version-checker', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
-if ( !defined('version_checker_debug') )
-	define('version_checker_debug', false);
-
 if ( !defined('FS_TIMEOUT') )
 	define('FS_TIMEOUT', 900); // 15 minutes
 
