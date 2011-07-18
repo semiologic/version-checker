@@ -376,8 +376,10 @@ EOS;
 				array_push($words, '[...]');
 				$content = implode(' ', $words);
 			}
+			$func = function_exists('esc_url') ? 'esc_url' : 'clean_url';
+			
 			echo '<div id="sem_news_feed">' . "\n"
-				. sprintf(__('<a href="%1$s" title="Semiologic Development News">Dev News</a>: <a href="%2$s" title="%3$s">%4$s</a>', 'version-checker'),  clean_url($dev_news_url), clean_url($link), $content, $title)
+				. sprintf(__('<a href="%1$s" title="Semiologic Development News">Dev News</a>: <a href="%2$s" title="%3$s">%4$s</a>', 'version-checker'),  call_user_func($func, $dev_news_url), clean_url($link), $content, $title)
 				. '</div>' . "\n";
 			break;
 		}
