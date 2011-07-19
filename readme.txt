@@ -30,6 +30,7 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 = 2.1.7 =
 
 - Improve disabling curl ssl verification.
+- WP 3.1/3.2 fixes for the theme installer.
 
 = 2.1.6 =
 
