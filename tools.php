@@ -86,10 +86,9 @@ class sem_tools {
 			
 			sem_update_plugins::install_plugins_semiologic();
 			
-			if ( get_option('template') != 'sem-reloaded' ) {
-				echo '<h3>' . __('Themes', 'version-checker') . '</h3>' . "\n";
-				sem_update_themes::install_themes_semiologic();
-			}
+			echo '<h3>' . __('Themes', 'version-checker') . '</h3>' . "\n";
+			
+			sem_update_themes::install_themes_semiologic();
 			
 			echo '</div>' . "\n";
 		}
