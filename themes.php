@@ -35,6 +35,11 @@ class sem_update_themes {
 		if (function_exists('_get_list_table')) {
 			global $wp_list_table;
 			$wp_list_table = _get_list_table('WP_Theme_Install_List_Table');
+			$wp_list_table->items = $api->themes;
+			$wp_list_table->set_pagination_args( array(
+				'total_items' => $api->info['results'],
+				'per_page' => 30,
+			) );
 		}
 		
 		display_themes($api->themes, $api->info['page'], $api->info['pages']);
