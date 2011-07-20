@@ -516,11 +516,22 @@ EOS;
 		version_checker::force_flush();
 		
 		$transport = _wp_http_get_object();
-		$transport = $transport->_getTransport();
+		
+		// wp 3.2 compat
+		if (method_exists($transport, '_getTransport')) {
+			// before 3.2:	
+			$transport = $transport->_getTransport();
+			if ($transport) {
+				$transport = current($transport);
+				$transport = get_class($transport);
+			}			
+		} else {
+			// with 3.2:
+			$transport = $transport->_get_first_available_transport();
+		}
+		
 		if ( !$transport )
 			wp_die(__('No valid HTTP transport seems to be available to complete your request', 'health-check'));
-		$transport = current($transport);
-		$transport = get_class($transport);
 		
 		if ( $transport == 'WP_Http_Fopen' ) {
 			if ( is_null( $args['headers'] ) )
