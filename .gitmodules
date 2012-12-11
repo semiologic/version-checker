@@ -1,0 +1,3 @@
+[submodule "markdown"]
+	path = markdown
+	url = ssh://git@roundtopsolutions.com/home/git/semiologic/lib/markdown
