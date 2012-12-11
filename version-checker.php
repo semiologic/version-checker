@@ -3,8 +3,8 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.1.7
-Author: Denis de Bernardy
+Version: 2.1.8
+Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
 Domain Path: /lang
@@ -375,7 +375,7 @@ EOS;
 			$func = function_exists('esc_url') ? 'esc_url' : 'clean_url';
 			
 			echo '<div id="sem_news_feed">' . "\n"
-				. sprintf(__('<a href="%1$s" title="Semiologic Development News">Dev News</a>: <a href="%2$s" title="%3$s">%4$s</a>', 'version-checker'),  call_user_func($func, $dev_news_url), clean_url($link), $content, $title)
+				. sprintf(__('<a href="%1$s" title="Semiologic Development News">Dev News</a>: <a href="%2$s" title="%3$s">%4$s</a>', 'version-checker'),  call_user_func($func, $dev_news_url), call_user_func($func, $link), $content, $title)
 				. '</div>' . "\n";
 			break;
 		}
@@ -408,7 +408,7 @@ EOS;
 			$user_id = $user->ID;
 		}
 		
-		$pref = get_usermeta($user_id, 'sem_news');
+		$pref = get_user_meta($user_id, 'sem_news', true);
 		
 		if ( $pref === '' ) {
 			$user = new WP_User($user_id);
@@ -527,7 +527,7 @@ EOS;
 			}			
 		} else {
 			// with 3.2:
-			$transport = $transport->_get_first_available_transport();
+			$transport = $transport->_get_first_available_transport($args, $url);
 		}
 		
 		if ( !$transport )
@@ -801,7 +801,8 @@ EOS;
 		
 		$url = sem_api_version . '/themes/' . $sem_api_key;
 		
-		$to_check = get_themes();
+                $to_check = (version_compare($wp_version, '3.4', '>=')) ? wp_get_themes() :
+                    get_themes();
 		$check = array();
 		
 		foreach ( $to_check as $themes )

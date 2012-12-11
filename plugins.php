@@ -348,8 +348,8 @@ class sem_update_plugins {
 	 * @return array $plugins
 	 **/
 
-	function cache() {
-		if ( class_exists('WP_Nav_Menu_Widget') )
+	function cache() {         
+            if ( class_exists('WP_Nav_Menu_Widget') )
 			$response = get_site_transient('sem_query_plugins');
 		else
 			$response = get_transient('sem_query_plugins');
@@ -360,22 +360,21 @@ class sem_update_plugins {
 		$sem_api_key = get_site_option('sem_api_key');
 		
 		$url = sem_api_info . '/plugins/' . $sem_api_key;
-		
+                
 		$body = array(
 			'action' => 'query',
 			'packages' => get_site_option('sem_packages'),
 			);
-		
+	
 		$options = array(
 			'timeout' => 15,
 			'body' => $body,
-			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
-			);
-		
+			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', "3.2.1") . '; ' . get_bloginfo('url'),
+			);		
 		$cache_id = md5(serialize(array($url, $options)));
-		$raw_response = wp_cache_get($cache_id, 'sem_api');
-		if ( $raw_response === false ) {
-			$raw_response = wp_remote_post($url, $options);
+		$raw_response = wp_cache_get($cache_id, 'sem_api', false, $found);
+		if ( $found === false ) {
+			$raw_response = wp_remote_post($url, $options);     
 			wp_cache_set($cache_id, $raw_response, 'sem_api');
 		}
 		
@@ -491,11 +490,11 @@ class sem_update_plugins {
 			
 			case 'homepage':
 			case 'download_link':
-				$obj->$key = clean_url($val);
+				$obj->$key = esc_url($val);
 				break;
 			
 			case 'author':
-				$url = clean_url($obj->homepage);
+				$url = esc_url($obj->homepage);
 				if ( preg_match("!^https?://[^/]+.semiologic.com!", $url) )
 					$url = 'http://www.semiologic.com';
 				$obj->$key = '<a href="' . $url . '">'

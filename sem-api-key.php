@@ -160,7 +160,7 @@ class sem_api_key {
 			. '</th>' . "\n"
 			. '<td>'
 			. '<input type="text" name="sem_api_key" class="widefat code"'
-				. ' value="' . attribute_escape($sem_api_key) . '"'
+				. ' value="' . esc_attr($sem_api_key) . '"'
 				. ' />'
 			. '</td>' . "\n"
 			. '</tr>' . "\n";
@@ -262,7 +262,7 @@ class sem_api_key {
 
 		echo '<p class="submit">'
 			. '<input type="submit"'
-				. ' value="' . attribute_escape(__('Save Changes', 'version-checker')) . '"'
+				. ' value="' . esc_attr(__('Save Changes', 'version-checker')) . '"'
 				. ' />'
 			. '</p>' . "\n";
 		

@@ -1,9 +1,9 @@
 === Version Checker ===
-Contributors: Denis-de-Bernardy
+Contributors: Denis-de-Bernardy & Mike Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 2.8
-Tested up to: 3.1.1
+Tested up to: 3.4.2
 Stable tag: trunk
 
 Lets you update plugins, themes, and Semiologic Pro using packages from semiologic.com.
@@ -26,6 +26,11 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.1.8 =
+
+- Hard code WordPress version to 3.2.1 in call to semiologic API to get plugin and themes lists populated.
+- Added fix for WP3.2+ to pass args parameter in call to _get_first_available_transport.
 
 = 2.1.7 =
 

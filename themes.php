@@ -161,7 +161,7 @@ class sem_update_themes {
 		$options = array(
 			'timeout' => 15,
 			'body' => $body,
-			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
+			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', "3.2.1") . '; ' . get_bloginfo('url'),
 			);
 		
 		$cache_id = md5(serialize(array($url, $options)));
@@ -285,11 +285,11 @@ class sem_update_themes {
 			case 'download_link':
 			case 'preview_url':
 			case 'screenshot_url':
-				$obj->$key = clean_url($val);
+				$obj->$key = esc_url($val);
 				break;
 			
 			case 'author':
-				$url = clean_url($obj->homepage);
+				$url = esc_url($obj->homepage);
 				if ( preg_match("!^https?://[^/]+.semiologic.com!", $url) )
 					$url = 'http://www.semiologic.com';
 				$obj->$key = '<a href="' . $url . '">'
