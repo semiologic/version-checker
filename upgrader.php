@@ -38,7 +38,7 @@ class sem_upgrader extends Plugin_Upgrader {
 	 * run()
 	 *
 	 * @param array $options
-	 * @return void
+	 * @return object
 	 **/
 
 	function run($options) {
@@ -113,7 +113,7 @@ class sem_upgrader extends Plugin_Upgrader {
 	 * bulk_upgrade()
 	 *
 	 * @param array $plugins
-	 * @return void
+	 * @return bool|array
 	 **/
 
 	function bulk_upgrade($plugins) {
@@ -139,6 +139,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		
 		$all = count($plugins);
 		$i = 1;
+        $results = array();
 		foreach ( $plugins as $plugin ) {
 			$this->show_before = sprintf( '<h4>' . __('Updating plugin %1$d of %2$d...', 'version-checker') . '</h4>', $i, $all );
 			$i++;
@@ -207,7 +208,7 @@ class sem_upgrader extends Plugin_Upgrader {
 	 * bulk_install()
 	 *
 	 * @param array $plugins
-	 * @return void
+	 * @return bool|array
 	 **/
 
 	function bulk_install($plugins) {
@@ -229,6 +230,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		
 		$all = count($plugins);
 		$i = 1;
+        $results = array();
 		foreach ( $plugins as $plugin ) {
 			$this->show_before = sprintf( '<h4>' . __('Installing plugin %1$d of %2$d...', 'version-checker') . '</h4>', $i, $all );
 			$i++;
@@ -420,7 +422,8 @@ class sem_upgrader extends Plugin_Upgrader {
 	 * sem_activate()
 	 *
 	 * @param string $plugin
-	 * @return void
+	 * @return bool
+     *
 	 **/
 
 	function sem_activate($plugin) {

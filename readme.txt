@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy & Mike Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 2.8
-Tested up to: 3.4.2
+Tested up to: 3.5.1
 Stable tag: trunk
 
 Lets you update plugins, themes, and Semiologic Pro using packages from semiologic.com.
@@ -22,14 +22,23 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 == Installation ==
 
 1. Upload the plugin folder to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
+2. Activate the plugin through the 'Plugins' menu in WordPress
 
 
 == Change Log ==
 
+= 2.2.1 =
+
+- Fix condition were future updates can fail if previous api call returned empty results
+
+= 2.2 =
+
+- Fix unknown index warnings
+- Remove hardcoded WP version from API call as decoded logic fixed on server
+
 = 2.1.8 =
 
-- Hard code WordPress version to 3.2.1 in call to semiologic API to get plugin and themes lists populated.
+- Hard code WordPress version to 3.2.1 in call to Semiologic API to get plugin and themes lists populated.
 - Added fix for WP3.2+ to pass args parameter in call to _get_first_available_transport.
 
 = 2.1.7 =

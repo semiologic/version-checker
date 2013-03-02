@@ -27,7 +27,7 @@ class sem_update_plugins {
 	 * @return void
 	 **/
 
-	function install_plugins_semiologic($page = 1) {
+	static function install_plugins_semiologic($page = 1) {
 		if ( $_POST )
 			return;
 		
@@ -216,16 +216,17 @@ class sem_update_plugins {
 
 <?php
 	} # display_plugins_table()
-	
-	
-	/**
-	 * mass_install()
-	 *
-	 * @param array $todo
-	 * @return void
-	 **/
 
-	function mass_install($plugins) {
+
+    /**
+     * mass_install()
+     *
+     * @param $plugins
+     * @internal param array $todo
+     * @return void
+     */
+
+	static function mass_install($plugins) {
 		include_once dirname(__FILE__) . '/upgrader.php';
 		
 		$url = 'tools.php?page=sem-tools&amp;action=' . urlencode($_REQUEST['action']);
@@ -234,16 +235,17 @@ class sem_update_plugins {
 		$upgrader = new sem_upgrader( new sem_installer_skin( compact('title', 'nonce', 'url', 'plugin') ) );
 		$upgrader->bulk_install($plugins);
 	} # mass_install()
-	
-	
-	/**
-	 * mass_upgrade()
-	 *
-	 * @param array $todo
-	 * @return void
-	 **/
 
-	function mass_upgrade($plugins) {
+
+    /**
+     * mass_upgrade()
+     *
+     * @param $plugins
+     * @internal param array $todo
+     * @return void
+     */
+
+	static function mass_upgrade($plugins) {
 		include_once dirname(__FILE__) . '/upgrader.php';
 		
 		$url = 'tools.php?page=sem-tools&amp;action=' . urlencode($_REQUEST['action']);
@@ -252,16 +254,16 @@ class sem_update_plugins {
 		$upgrader = new sem_upgrader( new sem_upgrader_skin( compact('title', 'nonce', 'url', 'plugin') ) );
 		$upgrader->bulk_upgrade($plugins);
 	} # mass_upgrade()
-	
-	
-	/**
-	 * plugins_api()
-	 *
-	 * @param false $res
-	 * @param string $action
-	 * @param array $args
-	 * @return $res
-	 **/
+
+
+    /**
+     * plugins_api()
+     *
+     * @param object $res
+     * @param string $action
+     * @param array $args
+     * @return object $res
+     */
 
 	function plugins_api($res, $action, $args) {
 		if ( $res || !get_site_option('sem_api_key') )
@@ -272,8 +274,8 @@ class sem_update_plugins {
 			return sem_update_plugins::info($res, $action, $args);
 		
 		case 'query_plugins':
-		if ( !empty($args->browse) && $args->browse == 'semiologic' )
-			return sem_update_plugins::query($res, $action, $args);
+            if ( !empty($args->browse) && $args->browse == 'semiologic' )
+                return sem_update_plugins::query($res, $action, $args);
 		
 		default:
 			return $res;
@@ -284,10 +286,10 @@ class sem_update_plugins {
 	/**
 	 * query()
 	 *
-	 * @param false $res
+	 * @param object $res
 	 * @param string $action
 	 * @param array $args
-	 * @return mixed $res
+	 * @return object $res
 	 **/
 
 	function query($res, $action, $args) {
@@ -310,10 +312,10 @@ class sem_update_plugins {
 	/**
 	 * info()
 	 *
-	 * @param false $res
+	 * @param object $res
 	 * @param string $action
 	 * @param array $args
-	 * @return mixed $res
+	 * @return object $res
 	 **/
 
 	function info($res, $action, $args) {
@@ -339,21 +341,21 @@ class sem_update_plugins {
 	function sort($a, $b) {
 		return strnatcmp($a->name, $b->name);
 	} # sort()
-	
-	
-	/**
-	 * cache()
-	 *
-	 * @param string $type
-	 * @return array $plugins
-	 **/
 
-	function cache() {         
-            if ( class_exists('WP_Nav_Menu_Widget') )
+
+    /**
+     * cache()
+     *
+     * @internal param string $type
+     * @return array $plugins
+     */
+
+	static function cache() {
+        if ( class_exists('WP_Nav_Menu_Widget') )
 			$response = get_site_transient('sem_query_plugins');
 		else
 			$response = get_transient('sem_query_plugins');
-		if ( $response !== false )
+		if ( $response !== false && !empty($response) )
 			return $response;
 		
 		global $wp_version;
@@ -369,7 +371,8 @@ class sem_update_plugins {
 		$options = array(
 			'timeout' => 15,
 			'body' => $body,
-			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', "3.2.1") . '; ' . get_bloginfo('url'),
+            'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
+//			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', "3.2.1") . '; ' . get_bloginfo('url'),
 			);		
 		$cache_id = md5(serialize(array($url, $options)));
 		$raw_response = wp_cache_get($cache_id, 'sem_api', false, $found);
@@ -378,12 +381,12 @@ class sem_update_plugins {
 			wp_cache_set($cache_id, $raw_response, 'sem_api');
 		}
 		
-		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
+ 		if ( is_wp_error($raw_response) || 200 != $raw_response['response']['code'] )
 			$response = false;
 		else
 			$response = @unserialize($raw_response['body']);
 		
-		if ( $response !== false ) {
+		if ( $response !== false && !empty($response) ) {
 			$response = sem_update_plugins::parse($response);
 			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_query_plugins', $response, 7200);
@@ -430,8 +433,7 @@ class sem_update_plugins {
 		
 		$header = array_shift($readme);
 		$header = explode("\n", $header);
-		
-		$name = false;
+
 		do {
 			$name = array_shift($header);
 			if ( preg_match("/^===\s*(.+?)\s*(?:===)?$/", $name, $name) )

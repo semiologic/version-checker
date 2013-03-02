@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.1.8
+Version: 2.2.1
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -69,7 +69,7 @@ class version_checker {
 	 **/
 
 	function update_nag() {
-		global $pagenow, $page_hook;
+		global $pagenow, $page_hook, $wp_version;
 		
 		if ( !current_user_can('manage_options') )
 			return;
@@ -170,7 +170,7 @@ class version_checker {
 			if ( $themes_todo ) {
 				if ( !function_exists('get_themes') )
 					require_once ABSPATH . 'wp-includes/theme.php';
-				$themes = get_themes();
+				$themes = (version_compare($wp_version, '3.4', '>=')) ? wp_get_themes() : get_themes();
 				foreach ( $themes as $theme ) {
 					if ( $theme['Template'] != 'sem-reloaded' )
 						continue;
@@ -194,7 +194,7 @@ class version_checker {
 			}
 		}
 		
-		global $wp_version, $wp_db_version;
+		global $wp_db_version;
 		$core_todo = false;
 		$cur = get_preferred_from_update_core();
 		if ( !empty($cur->response) && !empty($cur->package) &&
@@ -382,13 +382,14 @@ EOS;
 		
 		return;
 	} # sem_news_feed()
-	
-	
-	/**
-	 * sem_news_timeout()
-	 *
-	 * @return void
-	 **/
+
+
+    /**
+     * sem_news_timeout()
+     *
+     * @param $timeout
+     * @return int
+     */
 
 	function sem_news_timeout($timeout) {
 		return 3600;
@@ -415,7 +416,7 @@ EOS;
 			$pref = $user->has_cap('edit_posts') || $user->has_cap('edit_pages')
 				? 'true'
 				: 'false';
-			update_usermeta($user_id, 'sem_news', $pref);
+			update_user_meta($user_id, 'sem_news', $pref);
 		}
 		
 		return $pref;
@@ -466,7 +467,7 @@ EOS;
 		if ( !$_POST )
 			return;
 		
-		update_usermeta($user_ID, 'sem_news', isset($_POST['sem_news']) ? 'true' : 'false');
+		update_user_meta($user_ID, 'sem_news', isset($_POST['sem_news']) ? 'true' : 'false');
 	} # save_news_pref()
 	
 	
@@ -617,16 +618,16 @@ EOS;
 			return $cookies;
 		}
 	} # get_auth()
-	
-	
-	/**
-	 * get_memberships()
-	 *
-	 * @param bool $force
-	 * @return array $memberships, false on failure
-	 **/
 
-	function get_memberships() {
+
+    /**
+     * get_memberships()
+     *
+     * @internal param bool $force
+     * @return array $memberships, false on failure
+     */
+
+	static function get_memberships() {
 		$sem_api_key = get_site_option('sem_api_key');
 		
 		if ( !$sem_api_key )
@@ -801,8 +802,7 @@ EOS;
 		
 		$url = sem_api_version . '/themes/' . $sem_api_key;
 		
-                $to_check = (version_compare($wp_version, '3.4', '>=')) ? wp_get_themes() :
-                    get_themes();
+        $to_check = (version_compare($wp_version, '3.4', '>=')) ? wp_get_themes() : get_themes();
 		$check = array();
 		
 		foreach ( $to_check as $themes )
@@ -1059,7 +1059,7 @@ EOS;
 	 * @return bool $running
 	 **/
 
-	function check($membership) {
+	static function check($membership) {
 		$memberships = version_checker::get_memberships();
 		$memberships[$membership] = (array) $memberships[$membership];
 		if ( !isset($memberships[$membership]['expires']) )
@@ -1142,7 +1142,7 @@ EOS;
 	 * @return void
 	 **/
 
-	function force_flush() {
+	static function force_flush() {
 		echo "\n\n<!-- Deal with browser-related buffering by sending some incompressible strings -->\n\n";
 		
 		for ( $i = 0; $i < 5; $i++ )
@@ -1162,7 +1162,7 @@ EOS;
 	 * @return void
 	 **/
 
-	function reconnect_ftp() {
+	static function reconnect_ftp() {
 		global $wp_filesystem;
 		
 		if ( !$wp_filesystem || !is_object($wp_filesystem) )
@@ -1201,13 +1201,14 @@ EOS;
 		
 		return $response;
 	} # maybe_flush()
-	
-	
-	/**
-	 * option_ftp_credentials()
-	 *
-	 * @return void
-	 **/
+
+
+    /**
+     * option_ftp_credentials()
+     *
+     * @param mixed
+     * @return mixed
+     */
 
 	function option_ftp_credentials($in) {
 		global $wp_filesystem;
@@ -1279,7 +1280,8 @@ EOS;
 			wp_die(__('You do not have sufficient permissions to activate plugins for this blog.', 'version-checker'));
 		
 		check_admin_referer('bulk-activate-plugins');
-		
+
+        $plugins = array ();
 		if ( !empty($_GET['plugins']) ) {
 			$plugins = (array) $_GET['plugins'];
 			$plugins = array_filter($plugins, create_function('$plugin', 'return !is_plugin_active($plugin);') ); //Only activate plugins which are not already active.
@@ -1320,13 +1322,14 @@ EOS;
 	function maybe_disable_streams() {
 		add_filter('use_streams_transport', array('version_checker', 'use_streams_transport'));
 	} # maybe_disable_streams()
-	
-	
-	/**
-	 * use_streams_transport()
-	 *
-	 * @return void
-	 **/
+
+
+    /**
+     * use_streams_transport()
+     *
+     * @param $use
+     * @return bool
+     */
 
 	function use_streams_transport($use) {
 		if ( !$use )

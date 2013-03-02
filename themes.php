@@ -27,7 +27,7 @@ class sem_update_themes {
 	 * @return void
 	 **/
 
-	function install_themes_semiologic($page = 1) {
+	static function install_themes_semiologic($page = 1) {
 		$args = array('browse' => 'semiologic', 'page' => $page);
 		$api = themes_api('query_themes', $args);
 		
@@ -44,16 +44,16 @@ class sem_update_themes {
 		
 		display_themes($api->themes, $api->info['page'], $api->info['pages']);
 	} # install_themes_semiologic()
-	
-	
-	/**
-	 * themes_api()
-	 *
-	 * @param false $res
-	 * @param string $action
-	 * @param array $args
-	 * @return $res
-	 **/
+
+
+    /**
+     * themes_api()
+     *
+     * @param object $res
+     * @param string $action
+     * @param array $args
+     * @return object $res
+     */
 
 	function themes_api($res, $action, $args) {
 		if ( $res || !get_site_option('sem_api_key') )
@@ -76,7 +76,7 @@ class sem_update_themes {
 	/**
 	 * query()
 	 *
-	 * @param false $res
+	 * @param object $res
 	 * @param string $action
 	 * @param array $args
 	 * @return mixed $res
@@ -102,7 +102,7 @@ class sem_update_themes {
 	/**
 	 * info()
 	 *
-	 * @param false $res
+	 * @param object $res
 	 * @param string $action
 	 * @param array $args
 	 * @return mixed $res
@@ -131,21 +131,21 @@ class sem_update_themes {
 	function sort($a, $b) {
 		return strnatcmp($a->name, $b->name);
 	} # sort()
-	
-	
-	/**
-	 * cache()
-	 *
-	 * @param string $type
-	 * @return array $themes
-	 **/
+
+
+    /**
+     * cache()
+     *
+     * @internal param string $type
+     * @return array $themes
+     */
 
 	function cache() {
 		if ( class_exists('WP_Nav_Menu_Widget') )
 			$response = get_site_transient('sem_query_themes');
 		else
 			$response = get_transient('sem_query_themes');
-		if ( $response !== false )
+		if ( $response !== false && !empty($response) )
 			return $response;
 		
 		global $wp_version;
@@ -161,7 +161,8 @@ class sem_update_themes {
 		$options = array(
 			'timeout' => 15,
 			'body' => $body,
-			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', "3.2.1") . '; ' . get_bloginfo('url'),
+            'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', $wp_version) . '; ' . get_bloginfo('url'),
+//			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', "3.2.1") . '; ' . get_bloginfo('url'),
 			);
 		
 		$cache_id = md5(serialize(array($url, $options)));
@@ -176,7 +177,7 @@ class sem_update_themes {
 		else
 			$response = @unserialize($raw_response['body']);
 		
-		if ( $response !== false ) {
+		if ( $response !== false && !empty($response)) {
 			$response = sem_update_themes::parse($response);
 			if ( class_exists('WP_Nav_Menu_Widget') )
 				set_site_transient('sem_query_themes', $response, 7200);
@@ -223,8 +224,7 @@ class sem_update_themes {
 		
 		$header = array_shift($readme);
 		$header = explode("\n", $header);
-		
-		$name = false;
+
 		do {
 			$name = array_shift($header);
 			if ( preg_match("/^===\s*(.+?)\s*(?:===)?$/", $name, $name) )
