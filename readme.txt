@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.2.2 =
+
+- Fix positioning of Semiologic Development News in WP 3.5
+
 = 2.2.1 =
 
 - Fix condition were future updates can fail if previous api call returned empty results
