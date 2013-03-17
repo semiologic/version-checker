@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.2.2
+Version: 2.2.3
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -297,7 +297,7 @@ class version_checker {
 		$top = 3.5;
 
         global $wp_version;
-        if ( version_compare( $wp_version, '3.5', '>=' ) )
+        if ( version_compare( $wp_version, '3.4', '>=' ) )
             $top = 1.2;
 
 		global $wp_ozh_adminmenu;
@@ -805,10 +805,13 @@ EOS;
 			set_transient('sem_update_themes', $obj);
 		
 		$url = sem_api_version . '/themes/' . $sem_api_key;
-		
-        $to_check = (version_compare($wp_version, '3.4', '>=')) ? wp_get_themes() : get_themes();
+
+        if ( function_exists( 'wp_get_themes') )
+            $to_check = wp_get_themes();
+        else
+            $to_check = get_themes();
+
 		$check = array();
-		
 		foreach ( $to_check as $themes )
 			$check[$themes['Stylesheet']] = $themes['Version'];
 		

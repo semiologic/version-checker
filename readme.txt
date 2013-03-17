@@ -1,5 +1,5 @@
 === Version Checker ===
-Contributors: Denis-de-Bernardy & Mike Koepke
+Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 2.8
@@ -26,6 +26,12 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.2.3 =
+
+- Fix positioning of Semiologic Development News for WP 3.4
+- Update contact information in API screen
+- Change WP version detection
 
 = 2.2.2 =
 
