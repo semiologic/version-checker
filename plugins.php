@@ -376,7 +376,7 @@ class sem_update_plugins {
 			);		
 		$cache_id = md5(serialize(array($url, $options)));
 		$raw_response = wp_cache_get($cache_id, 'sem_api', false, $found);
-		if ( $found === false ) {
+        if ( $found == false || $raw_response === false) {
 			$raw_response = wp_remote_post($url, $options);     
 			wp_cache_set($cache_id, $raw_response, 'sem_api');
 		}

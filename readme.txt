@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.2.4 =
+
+- Fixed bug that could cause the Tools->Semiologic screen to show empty plugin list
+
 = 2.2.3 =
 
 - Fix positioning of Semiologic Development News for WP 3.4
