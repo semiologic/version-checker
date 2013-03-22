@@ -355,7 +355,7 @@ class sem_update_plugins {
 			$response = get_site_transient('sem_query_plugins');
 		else
 			$response = get_transient('sem_query_plugins');
-		if ( $response !== false && !empty($response) )
+		if ( !empty($response) )
 			return $response;
 		
 		global $wp_version;
@@ -375,8 +375,8 @@ class sem_update_plugins {
 //			'user-agent' => 'WordPress/' . preg_replace("/\s.*/", '', "3.2.1") . '; ' . get_bloginfo('url'),
 			);		
 		$cache_id = md5(serialize(array($url, $options)));
-		$raw_response = wp_cache_get($cache_id, 'sem_api', false, $found);
-        if ( $found == false || $raw_response === false) {
+		$raw_response = wp_cache_get($cache_id, 'sem_api');
+        if ( $raw_response === false) {
 			$raw_response = wp_remote_post($url, $options);     
 			wp_cache_set($cache_id, $raw_response, 'sem_api');
 		}
