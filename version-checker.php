@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.3
+Version: 2.4
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -44,7 +44,72 @@ if ( !defined('sem_api_version') )
  **/
 
 class version_checker {
-	/**
+    /**
+     * version-checker()
+     */
+    function version_checker() {
+        if ( is_admin() && function_exists('get_transient') ) {
+        	add_action('admin_menu', array($this, 'admin_menu'));
+
+        	foreach ( array(
+        		'load-settings_page_sem-api-key',
+        		'load-update-core.php',
+        		'load-themes.php',
+        		'load-plugins.php',
+        		'wp_version_check',
+        		'load-tools_page_sem-tools',
+        		) as $hook )
+        		add_action($hook, array($this, 'get_memberships'), 11);
+
+        	foreach ( array(
+        		'load-themes.php',
+        		'wp_update_themes',
+        		'load-tools_page_sem-tools',
+        		) as $hook )
+        		add_action($hook, array($this, 'get_themes'), 12);
+
+        	foreach ( array(
+        		'load-plugins.php',
+        		'wp_update_plugins',
+        		'load-tools_page_sem-tools',
+        		) as $hook )
+        		add_action($hook, array($this, 'get_plugins'), 12);
+
+        	add_filter('http_request_args', array($this, 'http_request_args'), 1000, 2);
+        	add_action('admin_init', array($this, 'init'));
+
+        	add_action('admin_head', array($this, 'sem_news_css'));
+        	add_action('edit_user_profile', array($this, 'edit_news_pref'));
+        	add_action('show_user_profile', array($this, 'edit_news_pref'));
+        	add_action('profile_update', array($this, 'save_news_pref'));
+
+        	add_filter('update_feedback', array($this, 'update_feedback'), 100);
+        	add_action('option_ftp_credentials', array($this, 'option_ftp_credentials'));
+
+        	add_action('update-custom_bulk-activate-plugins', array($this, 'bulk_activate_plugins'));
+        	add_action('admin_footer', array($this, 'sem_news_feed'));
+
+        	foreach ( array(
+        		'load-update-core.php',
+        		'load-update.php',
+        		'load-tools_page_sem-tools',
+        		) as $hook )
+        		add_action($hook, array($this, 'maybe_disable_streams'), -1000);
+
+        } elseif ( is_admin() ) {
+        	add_action('admin_notices', array($this, 'add_warning'));
+        }
+
+        add_filter('transient_update_themes', array($this, 'update_themes'));
+        add_filter('site_transient_update_themes', array($this, 'update_themes'));
+        add_filter('transient_update_plugins', array($this, 'update_plugins'));
+        add_filter('site_transient_update_plugins', array($this, 'update_plugins'));
+
+        # Fix curl SSL
+        add_filter('http_api_curl', array($this, 'curl_ssl'));
+    }
+
+    /**
 	 * init()
 	 *
 	 * @return void
@@ -57,8 +122,8 @@ class version_checker {
 				update_site_option('sem_api_key', $api_key);
 		}
 		remove_action('admin_notices', 'update_nag', 3);
-		add_action('admin_notices', array('version_checker', 'update_nag'), 3);
-		add_filter('admin_footer_text', array('version_checker', 'admin_footer_text'), 20);
+		add_action('admin_notices', array($this, 'update_nag'), 3);
+		add_filter('admin_footer_text', array($this, 'admin_footer_text'), 20);
 	} # init()
 	
 	
@@ -85,19 +150,19 @@ class version_checker {
 		
 		if ( $page_hook != 'settings_page_sem-api-key' ) {
 			if ( !$sem_api_key ) {
-				remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
+				remove_action('admin_footer', array($this, 'sem_news_feed'));
 				$msg[] = '<p>'
 					. sprintf(__('The Version Checker plugin is almost ready. Please enter your <a href="%s">Semiologic API key</a> to manage your Semiologic packages.', 'version-checker'), 'options-general.php?page=sem-api-key')
 					. '</p>' . "\n";
 			}
 		} elseif ( $page_hook == 'settings_page_sem-api-key' ) {
 			if ( $sem_api_key || $_POST && !empty($_POST['sem_api_key']) ) {
-				remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
+				remove_action('admin_footer', array($this, 'sem_news_feed'));
 				$msg[] = '<p>'
 					. sprintf(__('Browse <a href="%s">Tools / Semiologic</a> to manage Semiologic packages on your site.', 'version-checker'), 'tools.php?page=sem-tools')
 					. '</p>' . "\n";
 			} else {
-				remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
+				remove_action('admin_footer', array($this, 'sem_news_feed'));
 				$msg[] = '<p>'
 					. __('Tools / Semiologic becomes available once this screen is configured. Browsing it will allows you to manage Semiologic packages on your site.', 'version-checker')
 					. '</p>' . "\n";
@@ -209,10 +274,10 @@ class version_checker {
 		}
 		
 		if ( get_site_option( 'wpmu_upgrade_site' ) != $wp_db_version )
-			remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
+			remove_action('admin_footer', array($this, 'sem_news_feed'));
 		
 		if ( $core_todo || $plugins_todo || $themes_todo ) {
-			remove_action('admin_footer', array('version_checker', 'sem_news_feed'));
+			remove_action('admin_footer', array($this, 'sem_news_feed'));
 			
 			if ( $themes_todo ) {
 				$msg[] = '<p>'
@@ -351,9 +416,9 @@ EOS;
 		if ( $sem_news_error + 3600 > time() )
 			return;
 		
-		add_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'sem_news_timeout'));
+		add_filter('wp_feed_cache_transient_lifetime', array($this, 'sem_news_timeout'));
 		$feed = fetch_feed('http://www.semiologic.com/news/wordpress/feed/');
-		remove_filter('wp_feed_cache_transient_lifetime', array('version_checker', 'sem_news_timeout'));
+		remove_filter('wp_feed_cache_transient_lifetime', array($this, 'sem_news_timeout'));
 
 		if ( is_wp_error($feed) || !$feed->get_item_quantity() ) {
 			if ( class_exists('WP_Nav_Menu_Widget') )
@@ -1066,7 +1131,7 @@ EOS;
 	 * @return bool $running
 	 **/
 
-	static function check($membership) {
+	function check($membership) {
 		$memberships = version_checker::get_memberships();
 		$memberships[$membership] = (array) $memberships[$membership];
 		if ( !isset($memberships[$membership]['expires']) )
@@ -1149,7 +1214,7 @@ EOS;
 	 * @return void
 	 **/
 
-	static function force_flush() {
+	function force_flush() {
 		echo "\n\n<!-- Deal with browser-related buffering by sending some incompressible strings -->\n\n";
 		
 		for ( $i = 0; $i < 5; $i++ )
@@ -1169,7 +1234,7 @@ EOS;
 	 * @return void
 	 **/
 
-	static function reconnect_ftp() {
+	function reconnect_ftp() {
 		global $wp_filesystem;
 		
 		if ( !$wp_filesystem || !is_object($wp_filesystem) )
@@ -1269,7 +1334,7 @@ EOS;
 			show_message(__('Starting upgrade... Please note that this can take several minutes without any feedback from WordPress.', 'version-checker'));
 			version_checker::force_flush();
 			
-			add_action('http_api_debug', array('version_checker', 'maybe_flush'), 100, 2);
+			add_action('http_api_debug', array($this, 'maybe_flush'), 100, 2);
 		}
 		
 		return $in;
@@ -1327,7 +1392,7 @@ EOS;
 	 **/
 
 	function maybe_disable_streams() {
-		add_filter('use_streams_transport', array('version_checker', 'use_streams_transport'));
+		add_filter('use_streams_transport', array($this, 'use_streams_transport'));
 	} # maybe_disable_streams()
 
 
@@ -1454,63 +1519,6 @@ if ( !get_site_option('sem_packages') ) {
 
 wp_cache_add_non_persistent_groups(array('sem_api'));
 
-if ( is_admin() && function_exists('get_transient') ) {
-	add_action('admin_menu', array('version_checker', 'admin_menu'));
-	
-	foreach ( array(
-		'load-settings_page_sem-api-key',
-		'load-update-core.php',
-		'load-themes.php',
-		'load-plugins.php',
-		'wp_version_check',
-		'load-tools_page_sem-tools',
-		) as $hook )
-		add_action($hook, array('version_checker', 'get_memberships'), 11);
-	
-	foreach ( array(
-		'load-themes.php',
-		'wp_update_themes',
-		'load-tools_page_sem-tools',
-		) as $hook )
-		add_action($hook, array('version_checker', 'get_themes'), 12);
-	
-	foreach ( array(
-		'load-plugins.php',
-		'wp_update_plugins',
-		'load-tools_page_sem-tools',
-		) as $hook )
-		add_action($hook, array('version_checker', 'get_plugins'), 12);
-	
-	add_filter('http_request_args', array('version_checker', 'http_request_args'), 1000, 2);
-	add_action('admin_init', array('version_checker', 'init'));
-	
-	add_action('admin_head', array('version_checker', 'sem_news_css'));
-	add_action('edit_user_profile', array('version_checker', 'edit_news_pref'));
-	add_action('show_user_profile', array('version_checker', 'edit_news_pref'));
-	add_action('profile_update', array('version_checker', 'save_news_pref'));
-	
-	add_filter('update_feedback', array('version_checker', 'update_feedback'), 100);
-	add_action('option_ftp_credentials', array('version_checker', 'option_ftp_credentials'));
-	
-	add_action('update-custom_bulk-activate-plugins', array('version_checker', 'bulk_activate_plugins'));
-	add_action('admin_footer', array('version_checker', 'sem_news_feed'));
-	
-	foreach ( array(
-		'load-update-core.php',
-		'load-update.php',
-		'load-tools_page_sem-tools',
-		) as $hook )
-		add_action($hook, array('version_checker', 'maybe_disable_streams'), -1000);
-	
-} elseif ( is_admin() ) {
-	add_action('admin_notices', array('version_checker', 'add_warning'));
-}
+$version_checker = new version_checker();
 
-add_filter('transient_update_themes', array('version_checker', 'update_themes'));
-add_filter('site_transient_update_themes', array('version_checker', 'update_themes'));
-add_filter('transient_update_plugins', array('version_checker', 'update_plugins'));
-add_filter('site_transient_update_plugins', array('version_checker', 'update_plugins'));
-
-# Fix curl SSL
-add_filter('http_api_curl', array('version_checker', 'curl_ssl'));
 ?>

@@ -6,13 +6,21 @@
  **/
 
 class sem_tools {
-	/**
+    /**
+     * sem_tools()
+     *
+     */
+    function sem_tools() {
+
+    }
+
+    /**
 	 * display()
 	 *
 	 * @return void
 	 **/
 
-	function display() {
+	static function display() {
 		if ( !current_user_can('manage_options') || !current_user_can('install_plugins') || !current_user_can('install_themes') )
 			return;
 		
@@ -94,4 +102,6 @@ class sem_tools {
 		}
 	} # display()
 } # sem_tools
+
+$sem_tools = new sem_tools();
 ?>

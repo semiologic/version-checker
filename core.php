@@ -6,7 +6,14 @@
  **/
 
 class sem_update_core {
-	/**
+    /**
+     * sem_update_core()
+     */
+    function sem_update_core() {
+        add_action('admin_notices', array($this, 'ob_start'), 1000);
+    }
+
+    /**
 	 * ob_start()
 	 *
 	 * @return void
@@ -45,8 +52,8 @@ class sem_update_core {
 			global $mywpdbbackup;
 			if ( $mywpdbbackup ) {
 				remove_action('load-update-core.php', array(&$mywpdbbackup, 'update_notice_action'));
-				ob_start(array('sem_update_core', 'update_notice_action'));
-				add_action('admin_footer', array('sem_update_core', 'ob_flush'));
+				ob_start(array($this, 'update_notice_action'));
+				add_action('admin_footer', array($this, 'ob_flush'));
 			}
 			return;
 		}
@@ -89,8 +96,8 @@ class sem_update_core {
 			echo '</div>' . "\n";
 			
 			version_checker::force_flush();
-			ob_start(array('sem_update_core', 'wp_2_8_ob_callback'));
-			add_action('in_footer', array('sem_update_core', 'ob_flush'), -1000);
+			ob_start(array($this, 'wp_2_8_ob_callback'));
+			add_action('in_footer', array($this, 'ob_flush'), -1000);
 			
 			return;
 		} elseif ( !version_checker::check('sem-pro') ) {
@@ -258,5 +265,6 @@ class sem_update_core {
 	} # update_notice_action()
 } # sem_update_core
 
-add_action('admin_notices', array('sem_update_core', 'ob_start'), 1000);
+
+$sem_update_core = new sem_update_core();
 ?>

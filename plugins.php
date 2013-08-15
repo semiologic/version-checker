@@ -6,7 +6,18 @@
  **/
 
 class sem_update_plugins {
-	/**
+    /**
+     * sem_update_plugins()
+     */
+    function sem_update_plugins() {
+        add_filter('install_plugins_tabs', array($this, 'install_plugins_tabs'));
+        add_action('install_plugins_semiologic', array($this, 'install_plugins_semiologic'));
+
+        add_filter('plugins_api', array($this, 'plugins_api'), 10, 3);
+    }
+
+
+    /**
 	 * install_plugins_tabs()
 	 *
 	 * @param array $tabs
@@ -46,7 +57,7 @@ class sem_update_plugins {
 	 * @return void
 	 **/
 
-	function display_plugins_table($plugins, $page = 1, $pages = 1) {
+    static function display_plugins_table($plugins, $page = 1, $pages = 1) {
 		$sem_plugins = sem_update_plugins::cache();
 		
 		if ( !$sem_plugins ) {
@@ -302,7 +313,7 @@ class sem_update_plugins {
 		if ( $response && is_array($response) ) {
 			$res->info['results'] = count($response);
 			$res->plugins = $response;
-			usort($res->plugins, array('sem_update_plugins', 'sort'));
+			usort($res->plugins, array($this, 'sort'));
 		}
 		
 		return $res;
@@ -405,7 +416,7 @@ class sem_update_plugins {
 	 * @return object $obj
 	 **/
 
-	function parse($obj) {
+    static function parse($obj) {
 		if ( is_array($obj) ) {
 			$res = array();
 			foreach ( $obj as $k => $v ) {
@@ -518,8 +529,6 @@ class sem_update_plugins {
 	} # parse()
 } # sem_update_plugins
 
-add_filter('install_plugins_tabs', array('sem_update_plugins', 'install_plugins_tabs'));
-add_action('install_plugins_semiologic', array('sem_update_plugins', 'install_plugins_semiologic'));
+$sem_update_plugins = new sem_update_plugins();
 
-add_filter('plugins_api', array('sem_update_plugins', 'plugins_api'), 10, 3);
 ?>

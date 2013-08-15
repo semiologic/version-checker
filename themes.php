@@ -6,7 +6,17 @@
  **/
 
 class sem_update_themes {
-	/**
+    /**
+     * sem_update_themes()
+     */
+    function sem_update_themes() {
+        add_filter('install_themes_tabs', array($this, 'install_themes_tabs'));
+        add_action('install_themes_semiologic', array($this, 'install_themes_semiologic'));
+
+        add_filter('themes_api', array($this, 'themes_api'), 10, 3);
+    }
+
+    /**
 	 * install_themes_tabs()
 	 *
 	 * @param array $tabs
@@ -92,7 +102,7 @@ class sem_update_themes {
 		if ( $response && is_array($response) ) {
 			$res->info['results'] = count($response);
 			$res->themes = $response;
-			usort($res->themes, array('sem_update_themes', 'sort'));
+			usort($res->themes, array($this, 'sort'));
 		}
 		
 		return $res;
@@ -196,7 +206,7 @@ class sem_update_themes {
 	 * @return object $obj
 	 **/
 
-	function parse($obj) {
+    static function parse($obj) {
 		if ( is_array($obj) ) {
 			$res = array();
 			foreach ( $obj as $k => $v ) {
@@ -311,8 +321,6 @@ class sem_update_themes {
 	} # parse()
 } # sem_update_themes
 
-add_filter('install_themes_tabs', array('sem_update_themes', 'install_themes_tabs'));
-add_action('install_themes_semiologic', array('sem_update_themes', 'install_themes_semiologic'));
+$sem_update_themes = new sem_update_themes();
 
-add_filter('themes_api', array('sem_update_themes', 'themes_api'), 10, 3);
 ?>

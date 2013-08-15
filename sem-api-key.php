@@ -6,7 +6,14 @@
  **/
 
 class sem_api_key {
-	/**
+    /**
+     * sem_api_key()
+     */
+    function sem_api_key() {
+        add_action('settings_page_sem-api-key', array($this, 'save_options'), 0);
+    }
+
+    /**
 	 * save_options()
 	 *
 	 * @return void
@@ -64,7 +71,7 @@ class sem_api_key {
 	 * @return void
 	 **/
 
-	function edit_options() {
+	static function edit_options() {
 		echo '<div class="wrap">' . "\n"
 			. '<form method="post" action="">';
 
@@ -271,5 +278,5 @@ class sem_api_key {
 	} # edit_options()
 } # sem_api_key
 
-add_action('settings_page_sem-api-key', array('sem_api_key', 'save_options'), 0);
+$sem_api_key = new sem_api_key();
 ?>

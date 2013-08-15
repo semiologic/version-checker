@@ -10,8 +10,15 @@ if ( !class_exists('WP_Upgrader') )
 
 class sem_upgrader extends Plugin_Upgrader {
 	var $bulk = true;
-	
-	/**
+
+    /**
+     * sem_upgrader()
+     */
+    function sem_upgrader() {
+
+    }
+
+    /**
 	 * maintenance_mode()
 	 *
 	 * @param bool $enable
@@ -514,4 +521,5 @@ class sem_installer_skin extends Plugin_Installer_Skin {
 		echo '</div>' . "\n";
 	} # footer()
 } # sem_installer_skin
+
 ?>
