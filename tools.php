@@ -10,7 +10,7 @@ class sem_tools {
      * sem_tools()
      *
      */
-    function sem_tools() {
+    function __construct() {
 
     }
 

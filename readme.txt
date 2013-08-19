@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.4.1 =
+
+- Fix Plugin Mass Installer that got broken in 2.4
+
 = 2.4 =
 
 - WP 3.6 compat

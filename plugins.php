@@ -9,7 +9,7 @@ class sem_update_plugins {
     /**
      * sem_update_plugins()
      */
-    function sem_update_plugins() {
+    function __construct() {
         add_filter('install_plugins_tabs', array($this, 'install_plugins_tabs'));
         add_action('install_plugins_semiologic', array($this, 'install_plugins_semiologic'));
 

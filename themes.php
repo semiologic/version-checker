@@ -9,7 +9,7 @@ class sem_update_themes {
     /**
      * sem_update_themes()
      */
-    function sem_update_themes() {
+    function __construct() {
         add_filter('install_themes_tabs', array($this, 'install_themes_tabs'));
         add_action('install_themes_semiologic', array($this, 'install_themes_semiologic'));
 

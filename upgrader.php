@@ -14,8 +14,8 @@ class sem_upgrader extends Plugin_Upgrader {
     /**
      * sem_upgrader()
      */
-    function sem_upgrader() {
-
+	function __construct($skin = null) {
+        parent::__construct($skin);
     }
 
     /**

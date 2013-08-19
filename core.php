@@ -9,7 +9,7 @@ class sem_update_core {
     /**
      * sem_update_core()
      */
-    function sem_update_core() {
+    function __construct() {
         add_action('admin_notices', array($this, 'ob_start'), 1000);
     }
 
