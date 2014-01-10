@@ -530,5 +530,3 @@ class sem_update_plugins {
 } # sem_update_plugins
 
 $sem_update_plugins = new sem_update_plugins();
-
-?>

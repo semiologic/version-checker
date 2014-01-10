@@ -322,5 +322,3 @@ class sem_update_themes {
 } # sem_update_themes
 
 $sem_update_themes = new sem_update_themes();
-
-?>

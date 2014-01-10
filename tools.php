@@ -86,8 +86,6 @@ class sem_tools {
 		} else {
 			echo '<div class="wrap">' . "\n";
 			
-			screen_icon();
-			
 			echo '<h2>' . __('Semiologic Packages', 'version-checker') . '</h2>' . "\n";
 			
 			echo '<h3>' . __('Plugins', 'version-checker') . '</h3>' . "\n";
@@ -104,4 +102,3 @@ class sem_tools {
 } # sem_tools
 
 $sem_tools = new sem_tools();
-?>

@@ -76,8 +76,6 @@ class sem_api_key {
 			. '<form method="post" action="">';
 
 		wp_nonce_field('sem_api_key');
-
-		screen_icon();
 		
 		echo '<h2>' . __('Semiologic API Key', 'version-checker') . '</h2>' . "\n";
 		
@@ -279,4 +277,3 @@ class sem_api_key {
 } # sem_api_key
 
 $sem_api_key = new sem_api_key();
-?>

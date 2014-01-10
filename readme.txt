@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 2.8
-Tested up to: 3.6
+Tested up to: 3.8
 Stable tag: trunk
 
 Lets you update plugins, themes, and Semiologic Pro using packages from semiologic.com.
@@ -26,6 +26,13 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.5 =
+
+- Call upgrader_process_complete filter when Mass update function completes
+- Upgrade notification suppressed when conflicting plugin names between wordpress.org and external plugin sources
+- Fix upgrade notification nag message with 3.8 dashboard
+- WP 3.8 compat
 
 = 2.4.1 =
 

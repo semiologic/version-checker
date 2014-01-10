@@ -59,22 +59,22 @@ class sem_upgrader extends Plugin_Upgrader {
 		
 		$options = wp_parse_args($options, $defaults);
 		extract($options);
-		
+
 		//Connect to the Filesystem first.
 		$res = $this->fs_connect( array(WP_CONTENT_DIR, $destination) );
 		if ( ! $res ) //Mainly for non-connected filesystem.
 			return false;
-		
+
 		if ( is_wp_error($res) ) {
 			$this->skin->error($res);
 			return $res;
 		}
-		
+
 		if ( !$is_multi ) // call $this->header separately if running multiple times
 			$this->skin->header();
 		
 		$this->skin->before();
-		
+
 		//Download the package (Note, This just returns the filename of the file if the package is a local file)
 		$download = $this->download_package( $package );
 		if ( is_wp_error($download) ) {
@@ -124,14 +124,17 @@ class sem_upgrader extends Plugin_Upgrader {
 	 **/
 
 	function bulk_upgrade($plugins) {
+
 		$this->init();
+		$this->bulk = true;
 		$this->upgrade_strings();
+
 		if ( class_exists('WP_Nav_Menu_Widget') )
 			$current = get_site_transient('update_plugins');
 		else
 			$current = get_transient('update_plugins');
 		
-		add_filter('upgrader_clear_destination', array(&$this, 'delete_old_plugin'), 10, 4);
+		add_filter('upgrader_clear_destination', array($this, 'delete_old_plugin'), 10, 4);
 		
 		$this->skin->header();
 		
@@ -141,7 +144,7 @@ class sem_upgrader extends Plugin_Upgrader {
 			$this->skin->footer();
 			return false;
 		}
-		
+
 		$this->maintenance_mode(true);
 		
 		$all = count($plugins);
@@ -174,7 +177,7 @@ class sem_upgrader extends Plugin_Upgrader {
 						'clear_working' => true,
 						'is_multi' => true,
 						'hook_extra' => array(
-									'plugin' => $plugin
+						'plugin' => $plugin
 						)
 					));
 			
@@ -188,11 +191,18 @@ class sem_upgrader extends Plugin_Upgrader {
 		$this->sem_permissions();
 		
 		$this->maintenance_mode(false);
-		
+
+		do_action( 'upgrader_process_complete', $this, array(
+			'action' => 'update',
+			'type' => 'plugin',
+			'bulk' => true,
+			'plugins' => $plugins,
+		) );
+
 		$this->skin->footer();
 		
 		// Cleanup our hooks, incase something else does a upgrade on this connection.
-		remove_filter('upgrader_clear_destination', array(&$this, 'delete_old_plugin'));
+		remove_filter('upgrader_clear_destination', array($this, 'delete_old_plugin'));
 		
 		// Force refresh of plugin update information
 		if ( class_exists('WP_Nav_Menu_Widget') ) {
@@ -202,8 +212,9 @@ class sem_upgrader extends Plugin_Upgrader {
 			delete_transient('update_plugins');
 			delete_transient('sem_update_plugins');
 		}
-		
+
 		# force flush everything
+		wp_clean_plugins_cache( true );
 		update_option('db_upgraded', true);
 		wp_cache_flush();
 		
@@ -232,7 +243,7 @@ class sem_upgrader extends Plugin_Upgrader {
 			$this->skin->footer();
 			return false;
 		}
-		
+
 		$this->maintenance_mode(true);
 		
 		$all = count($plugins);
@@ -295,7 +306,7 @@ class sem_upgrader extends Plugin_Upgrader {
 				echo '<iframe style="border:0;overflow:hidden" width="100%" height="170px" src="' . wp_nonce_url('update.php?action=bulk-activate-plugins&plugins[]=' . implode('&plugins[]=', array_keys($to_activate)), 'bulk-activate-plugins') .'"></iframe>';
 			}
 		}
-		
+
 		$this->skin->footer();
 		
 		// Force refresh of plugin update information
@@ -308,6 +319,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		}
 		
 		# force flush everything
+		wp_clean_plugins_cache( true );
 		update_option('db_upgraded', true);
 		wp_cache_flush();
 		
@@ -416,7 +428,7 @@ class sem_upgrader extends Plugin_Upgrader {
 			
 			update_option('permalink_structure', '/%year%/%monthnum%/%postname%/');
 			update_option('category_base', 'topics');
-			$wp_rewrite =& new WP_Rewrite;
+			$wp_rewrite = new WP_Rewrite;
 			$wp_rewrite->flush_rules();
 		}
 		
@@ -438,18 +450,18 @@ class sem_upgrader extends Plugin_Upgrader {
 			'ad-manager',
 			'auto-thickbox',
 			'contact-form',
-		 	'feedburner',
 			'fuzzy-widgets',
 			'google-analytics',
 			'inline-widgets',
-			'mediacaster',
-			'newsletter-manager',
 			'nav-menus',
 			'redirect-manager',
 			'related-widgets',
 			'script-manager',
 			'sem-admin-menu',
+			'sem-author-image',
 			'sem-bookmark-me',
+			'sem-cache',
+			'sem-external-links',
 			'sem-fancy-excerpt',
 			'sem-fixes',
 			'sem-frame-buster',
@@ -459,6 +471,7 @@ class sem_upgrader extends Plugin_Upgrader {
 			'version-checker',
 			'widget-contexts',
 			'wp-hashcash',
+			'xml-sitemaps',
 			);
 		
 		if ( get_option('blog_public') && get_option('permalink_structure') ) {
@@ -521,5 +534,3 @@ class sem_installer_skin extends Plugin_Installer_Skin {
 		echo '</div>' . "\n";
 	} # footer()
 } # sem_installer_skin
-
-?>

@@ -3,20 +3,19 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.4.1
+Version: 2.5 beta
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
 Domain Path: /lang
+License: Dual licensed under the MIT and GPLv2 licenses
 */
 
 /*
 Terms of use
 ------------
 
-This software is copyright Mesoconcepts and is distributed under the terms of the Mesoconcepts license. In a nutshell, you may freely use it for any purpose, but may not redistribute it without written permission.
-
-http://www.mesoconcepts.com/license/
+This software is copyright Denis de Bernardy & Mike Koepke, and is distributed under the terms of the MIT and GPLv2 licenses.
 **/
 
 
@@ -37,6 +36,10 @@ if ( !defined('sem_api_info') )
 if ( !defined('sem_api_version') )
 	define('sem_api_version', 'https://api.semiologic.com/version/0.2');
 
+if (!defined('STRICTER_PLUGIN_UPDATES'))
+	define('STRICTER_PLUGIN_UPDATES', true);
+
+
 /**
  * version_checker
  *
@@ -47,7 +50,7 @@ class version_checker {
     /**
      * version-checker()
      */
-    function __construct() {
+    public function __construct() {
         if ( is_admin() && function_exists('get_transient') ) {
         	add_action('admin_menu', array($this, 'admin_menu'));
 
@@ -105,8 +108,13 @@ class version_checker {
         add_filter('transient_update_plugins', array($this, 'update_plugins'));
         add_filter('site_transient_update_plugins', array($this, 'update_plugins'));
 
+	    # - Drop plugin upgrades when the slugs don't match
+	    if (STRICTER_PLUGIN_UPDATES)
+	        add_filter( 'site_transient_update_plugins', array($this,'disable_upgrades_plugin_name'), 1000 );
+
         # Fix curl SSL
         add_filter('http_api_curl', array($this, 'curl_ssl'));
+
     }
 
     /**
@@ -341,7 +349,7 @@ class version_checker {
 		}
 		
 		if ( $msg ) {
-			echo '<div id="update-nag">' . "\n"
+			echo '<div id="update-nag" style="display:block; margin-top:50px; text-align:center;">' . "\n"
 				. implode('', $msg)
 				. '</div>' . "\n";
 		}
@@ -1131,7 +1139,7 @@ EOS;
 	 * @return bool $running
 	 **/
 
-	function check($membership) {
+	static function check($membership) {
 		$memberships = version_checker::get_memberships();
 		$memberships[$membership] = (array) $memberships[$membership];
 		if ( !isset($memberships[$membership]['expires']) )
@@ -1214,7 +1222,7 @@ EOS;
 	 * @return void
 	 **/
 
-	function force_flush() {
+	static function force_flush() {
 		echo "\n\n<!-- Deal with browser-related buffering by sending some incompressible strings -->\n\n";
 		
 		for ( $i = 0; $i < 5; $i++ )
@@ -1234,7 +1242,7 @@ EOS;
 	 * @return void
 	 **/
 
-	function reconnect_ftp() {
+	static function reconnect_ftp() {
 		global $wp_filesystem;
 		
 		if ( !$wp_filesystem || !is_object($wp_filesystem) )
@@ -1431,6 +1439,21 @@ EOS;
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		return $ch;
 	}
+
+
+	function disable_upgrades_plugin_name($updates) {
+	    if (!$updates->response)
+		    return $updates;
+
+	    foreach ($updates->response as $key => $response) {
+	        $slug = strpos($key, '/') !== false ? dirname($key) : basename($key, '.php');
+	        if ($slug != $response->slug) {
+	            unset($updates->response[$key]);
+	        }
+	    }
+
+		    return $updates;
+	}
 } # version_checker
 
 
@@ -1519,6 +1542,4 @@ if ( !get_site_option('sem_packages') ) {
 
 wp_cache_add_non_persistent_groups(array('sem_api'));
 
-$version_checker = new version_checker();
-
-?>
+$sem_version_checker = new version_checker();

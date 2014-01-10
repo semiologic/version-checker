@@ -32,14 +32,6 @@ class sem_update_core {
 		echo '<p>'
 			. __('<strong>Important</strong>: Do not interrupt an upgrade once it\'s started. Doing so can potentially leave your site in a dysfunctional state. It can take several minutes to complete -- albeit seldom more than 15 minutes.', 'version-checker')
 			. '</p>' . "\n";
-
-		echo '<p>'
-			. sprintf(__('Also note that the Version Checker plugin proactively works around known issues in the WP Upgrade API. <a href="%1$s">There</a> <a href="%2$s">are</a> <a href="%3$s">some</a>, so please make sure you\'re using its latest version before proceeding (<a href="%4$s">change log</a>).', 'version-checker'),
-			'http://core.trac.wordpress.org/ticket/10140',
-			'http://core.trac.wordpress.org/ticket/10407',
-			'http://core.trac.wordpress.org/ticket/10541',
-			'http://www.semiologic.com/software/version-checker/')
-			. '</p>';
 		
 		// echo '<p>'
 		// 	. sprintf(__('Lastly, please note that it\'s <strong>much</strong> faster (and much safer) to upgrade WordPress from your hosting account\'s control panel than from this screen. Note that <strong><a href="%1$s">Hub users</a></strong> get to upgrade Semiologic packages as a bonus when they do so.', 'version-checker'), 'http://members.semiologic.com/hosting/')
@@ -107,7 +99,7 @@ class sem_update_core {
 		# give some extra resources to WP
 		@ini_set('memory_limit', '256M');
 
-		echo '<div class="updated fade">' . "\n";
+/*		echo '<div class="updated fade">' . "\n";
 
 		echo '<p>'
 			. __('As you await feedback from the WP upgrader, here are some preemptive troubleshooting tips in the event it fails...', 'version-checker')
@@ -220,7 +212,7 @@ class sem_update_core {
 			. '</p>' . "\n";
 		
 		echo '</div>' . "\n";
-		
+*/
 		version_checker::force_flush();
 	} # ob_start()
 	
@@ -267,4 +259,3 @@ class sem_update_core {
 
 
 $sem_update_core = new sem_update_core();
-?>
