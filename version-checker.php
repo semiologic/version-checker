@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.5
+Version: 2.6 dev
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -18,8 +18,6 @@ Terms of use
 This software is copyright Denis de Bernardy & Mike Koepke, and is distributed under the terms of the MIT and GPLv2 licenses.
 **/
 
-
-load_plugin_textdomain('version-checker', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
 if ( !defined('FS_TIMEOUT') )
 	define('FS_TIMEOUT', 900); // 15 minutes
@@ -47,74 +45,73 @@ if (!defined('STRICTER_PLUGIN_UPDATES'))
  **/
 
 class version_checker {
-    /**
-     * version-checker()
-     */
+	/**
+	 * Plugin instance.
+	 *
+	 * @see get_instance()
+	 * @type object
+	 */
+	protected static $instance = NULL;
+
+	/**
+	 * URL to this plugin's directory.
+	 *
+	 * @type string
+	 */
+	public $plugin_url = '';
+
+	/**
+	 * Path to this plugin's directory.
+	 *
+	 * @type string
+	 */
+	public $plugin_path = '';
+
+	/**
+	 * Access this plugin’s working instance
+	 *
+	 * @wp-hook plugins_loaded
+	 * @return  object of this class
+	 */
+	public static function get_instance()
+	{
+		NULL === self::$instance and self::$instance = new self;
+
+		return self::$instance;
+	}
+
+
+	/**
+	 * Loads translation file.
+	 *
+	 * Accessible to other classes to load different language files (admin and
+	 * front-end for example).
+	 *
+	 * @wp-hook init
+	 * @param   string $domain
+	 * @return  void
+	 */
+	public function load_language( $domain )
+	{
+		load_plugin_textdomain(
+			$domain,
+			FALSE,
+			$this->plugin_path . 'lang'
+		);
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 *
+	 */
+
     public function __construct() {
-        if ( is_admin() && function_exists('get_transient') ) {
-        	add_action('admin_menu', array($this, 'admin_menu'));
+	    $this->plugin_url    = plugins_url( '/', __FILE__ );
+        $this->plugin_path   = plugin_dir_path( __FILE__ );
+        $this->load_language( 'version-checker' );
 
-        	foreach ( array(
-        		'load-settings_page_sem-api-key',
-        		'load-update-core.php',
-        		'load-themes.php',
-        		'load-plugins.php',
-        		'wp_version_check',
-        		'load-tools_page_sem-tools',
-        		) as $hook )
-        		add_action($hook, array($this, 'get_memberships'), 11);
-
-        	foreach ( array(
-        		'load-themes.php',
-        		'wp_update_themes',
-        		'load-tools_page_sem-tools',
-        		) as $hook )
-        		add_action($hook, array($this, 'get_themes'), 12);
-
-        	foreach ( array(
-        		'load-plugins.php',
-        		'wp_update_plugins',
-        		'load-tools_page_sem-tools',
-        		) as $hook )
-        		add_action($hook, array($this, 'get_plugins'), 12);
-
-        	add_filter('http_request_args', array($this, 'http_request_args'), 1000, 2);
-        	add_action('admin_init', array($this, 'init'));
-
-        	add_action('admin_head', array($this, 'sem_news_css'));
-        	add_action('edit_user_profile', array($this, 'edit_news_pref'));
-        	add_action('show_user_profile', array($this, 'edit_news_pref'));
-        	add_action('profile_update', array($this, 'save_news_pref'));
-
-        	add_filter('update_feedback', array($this, 'update_feedback'), 100);
-        	add_action('option_ftp_credentials', array($this, 'option_ftp_credentials'));
-
-        	add_action('update-custom_bulk-activate-plugins', array($this, 'bulk_activate_plugins'));
-        	add_action('admin_footer', array($this, 'sem_news_feed'));
-
-        	foreach ( array(
-        		'load-update-core.php',
-        		'load-update.php',
-        		'load-tools_page_sem-tools',
-        		) as $hook )
-        		add_action($hook, array($this, 'maybe_disable_streams'), -1000);
-
-        } elseif ( is_admin() ) {
-        	add_action('admin_notices', array($this, 'add_warning'));
-        }
-
-        add_filter('transient_update_themes', array($this, 'update_themes'));
-        add_filter('site_transient_update_themes', array($this, 'update_themes'));
-        add_filter('transient_update_plugins', array($this, 'update_plugins'));
-        add_filter('site_transient_update_plugins', array($this, 'update_plugins'));
-
-	    # - Drop plugin upgrades when the slugs don't match
-	    if (STRICTER_PLUGIN_UPDATES)
-	        add_filter( 'site_transient_update_plugins', array($this,'disable_upgrades_plugin_name'), 1000 );
-
-        # Fix curl SSL
-        add_filter('http_api_curl', array($this, 'curl_ssl'));
-
+	    add_action( 'plugins_loaded', array ( $this, 'init' ) );
     }
 
     /**
@@ -132,9 +129,162 @@ class version_checker {
 		remove_action('admin_notices', 'update_nag', 3);
 		add_action('admin_notices', array($this, 'update_nag'), 3);
 		add_filter('admin_footer_text', array($this, 'admin_footer_text'), 20);
+
+
+		// more stuff: register actions and filters
+		if ( is_admin() && function_exists('get_transient') ) {
+			add_action('admin_menu', array($this, 'admin_menu'));
+
+		foreach ( array(
+		    'load-settings_page_sem-api-key',
+		    'load-update-core.php',
+		    'load-themes.php',
+		    'load-plugins.php',
+		    'wp_version_check',
+		    'load-tools_page_sem-tools',
+		    ) as $hook )
+		    add_action($hook, array($this, 'get_memberships'), 11);
+
+		foreach ( array(
+		    'load-themes.php',
+		    'wp_update_themes',
+		    'load-tools_page_sem-tools',
+		    ) as $hook )
+		    add_action($hook, array($this, 'get_themes'), 12);
+
+		foreach ( array(
+		    'load-plugins.php',
+		    'wp_update_plugins',
+		    'load-tools_page_sem-tools',
+		    ) as $hook )
+		    add_action($hook, array($this, 'get_plugins'), 12);
+
+		add_filter('http_request_args', array($this, 'http_request_args'), 1000, 2);
+		add_action('admin_init', array($this, 'init'));
+
+		add_action('admin_head', array($this, 'sem_news_css'));
+		add_action('edit_user_profile', array($this, 'edit_news_pref'));
+		add_action('show_user_profile', array($this, 'edit_news_pref'));
+		add_action('profile_update', array($this, 'save_news_pref'));
+
+		add_filter('update_feedback', array($this, 'update_feedback'), 100);
+		add_action('option_ftp_credentials', array($this, 'option_ftp_credentials'));
+
+		add_action('update-custom_bulk-activate-plugins', array($this, 'bulk_activate_plugins'));
+		add_action('admin_footer', array($this, 'sem_news_feed'));
+
+		foreach ( array(
+		    'load-update-core.php',
+		    'load-update.php',
+		    'load-tools_page_sem-tools',
+		    ) as $hook )
+		    add_action($hook, array($this, 'maybe_disable_streams'), -1000);
+
+		} elseif ( is_admin() ) {
+			add_action('admin_notices', array($this, 'add_warning'));
+		}
+
+		add_filter('transient_update_themes', array($this, 'update_themes'));
+		add_filter('site_transient_update_themes', array($this, 'update_themes'));
+		add_filter('transient_update_plugins', array($this, 'update_plugins'));
+		add_filter('site_transient_update_plugins', array($this, 'update_plugins'));
+
+		# - Drop plugin upgrades when the slugs don't match
+		if (STRICTER_PLUGIN_UPDATES)
+			add_filter( 'site_transient_update_plugins', array($this,'disable_upgrades_plugin_name'), 1000 );
+
+		# Fix curl SSL
+		add_filter('http_api_curl', array($this, 'curl_ssl'));
+
+		add_action('load-settings_page_sem-api-key', array($this, 'sem_api_key'));
+
+		add_action('load-update-core.php', array($this, 'sem_update_core'));
+
+		add_action('load-tools_page_sem-tools', array($this, 'sem_tools'));
+
+		add_action('load-update-core.php', array($this, 'sem_update_plugins'));
+		add_action('load-plugin-install.php', array($this, 'sem_update_plugins'));
+		add_action('load-update.php', array($this, 'sem_update_plugins'));
+		add_action('load-tools_page_sem-tools', array($this, 'sem_update_plugins'));
+
+		add_action('load-theme-install.php', array($this, 'sem_update_themes'));
+		add_action('load-update.php', array($this, 'sem_update_themes'));
+		add_action('load-tools_page_sem-tools', array($this, 'sem_update_themes'));
+
+		# WP 3.0 upgrade + work around broken add_site_option
+		if ( !get_site_option('sem_packages') ) {
+			if ( get_option('sem_api_key') ) {
+				update_site_option('sem_api_key', get_option('sem_api_key'));
+				update_site_option('sem_packages', get_option('sem_packages'));
+				delete_option('sem_api_key');
+				delete_option('sem_packages');
+			} else {
+				update_site_option('sem_api_key', '');
+				update_site_option('sem_packages', 'stable');
+			}
+		}
+
+		wp_cache_add_non_persistent_groups(array('sem_api'));
 	} # init()
 	
-	
+
+
+	function sem_api_key() {
+		if ( !class_exists('sem_api_key') )
+			include $this->plugin_path . '/sem-api-key.php';
+	}
+
+
+	function sem_tools() {
+		if ( function_exists('apache_setenv') )
+			@apache_setenv('no-gzip', 1);
+		@ini_set('zlib.output_compression', 0);
+		@ini_set('implicit_flush', 1);
+
+		if ( !class_exists('sem_tools') )
+			include $this->plugin_path . '/tools.php';
+
+		wp_enqueue_style('plugin-install');
+		wp_enqueue_script('plugin-install');
+		wp_enqueue_style('theme-install');
+		wp_enqueue_script('theme-install');
+		add_thickbox();
+		wp_enqueue_script('theme-preview');
+
+		#$folder = plugin_dir_url(__FILE__);
+		#wp_enqueue_script('sem-quicksearch-js', $folder . 'js/quicksearch.js', array('jquery'), '20100121', true);
+	} # sem_tools()
+
+	function sem_update_themes() {
+		if ( function_exists('apache_setenv') )
+			@apache_setenv('no-gzip', 1);
+		@ini_set('zlib.output_compression', 0);
+		@ini_set('implicit_flush', 1);
+
+		if ( !class_exists('sem_update_themes') )
+			include $this->plugin_path . '/themes.php';
+	}
+
+	function sem_update_plugins() {
+		if ( function_exists('apache_setenv') )
+			@apache_setenv('no-gzip', 1);
+		@ini_set('zlib.output_compression', 0);
+		@ini_set('implicit_flush', 1);
+
+		if ( !class_exists('sem_update_plugins') )
+			include $this->plugin_path . '/plugins.php';
+	}
+
+	function sem_update_core() {
+		if ( function_exists('apache_setenv') )
+			@apache_setenv('no-gzip', 1);
+		@ini_set('zlib.output_compression', 0);
+		@ini_set('implicit_flush', 1);
+
+		if ( !class_exists('sem_update_core') )
+			include $this->plugin_path . '/core.php';
+	}
+
 	/**
 	 * update_nag()
 	 *
@@ -1442,104 +1592,19 @@ EOS;
 
 
 	function disable_upgrades_plugin_name($updates) {
-	    if (!$updates->response)
-		    return $updates;
+		if (empty($updates) || empty($updates->response)) {
+			return $updates;
+		}
 
-	    foreach ($updates->response as $key => $response) {
-	        $slug = strpos($key, '/') !== false ? dirname($key) : basename($key, '.php');
-	        if ($slug != $response->slug) {
-	            unset($updates->response[$key]);
-	        }
-	    }
+		foreach ($updates->response as $key => $response) {
+			$slug = strpos($key, '/') !== false ? dirname($key) : basename($key, '.php');
+			if ($slug != $response->slug) {
+			   unset($updates->response[$key]);
+			}
+		}
 
-		    return $updates;
+		return $updates;
 	}
 } # version_checker
 
-
-function sem_api_key() {
-	if ( !class_exists('sem_api_key') )
-		include dirname(__FILE__) . '/sem-api-key.php';
-}
-
-add_action('load-settings_page_sem-api-key', 'sem_api_key');
-
-function sem_update_core() {
-	if ( function_exists('apache_setenv') )
-		@apache_setenv('no-gzip', 1);
-	@ini_set('zlib.output_compression', 0);
-	@ini_set('implicit_flush', 1);
-	
-	if ( !class_exists('sem_update_core') )
-		include dirname(__FILE__) . '/core.php';
-}
-
-add_action('load-update-core.php', 'sem_update_core');
-
-function sem_tools() {
-	if ( function_exists('apache_setenv') )
-		@apache_setenv('no-gzip', 1);
-	@ini_set('zlib.output_compression', 0);
-	@ini_set('implicit_flush', 1);
-	
-	if ( !class_exists('sem_tools') )
-		include dirname(__FILE__) . '/tools.php';
-	
-	wp_enqueue_style('plugin-install');
-	wp_enqueue_script('plugin-install');
-	wp_enqueue_style('theme-install');
-	wp_enqueue_script('theme-install');
-	add_thickbox();
-	wp_enqueue_script('theme-preview');
-	
-	#$folder = plugin_dir_url(__FILE__);
-	#wp_enqueue_script('sem-quicksearch-js', $folder . 'js/quicksearch.js', array('jquery'), '20100121', true);
-} # sem_tools()
-
-add_action('load-tools_page_sem-tools', 'sem_tools');
-
-function sem_update_plugins() {
-	if ( function_exists('apache_setenv') )
-		@apache_setenv('no-gzip', 1);
-	@ini_set('zlib.output_compression', 0);
-	@ini_set('implicit_flush', 1);
-	
-	if ( !class_exists('sem_update_plugins') )
-		include dirname(__FILE__) . '/plugins.php';
-}
-
-add_action('load-update-core.php', 'sem_update_plugins');
-add_action('load-plugin-install.php', 'sem_update_plugins');
-add_action('load-update.php', 'sem_update_plugins');
-add_action('load-tools_page_sem-tools', 'sem_update_plugins');
-
-function sem_update_themes() {
-	if ( function_exists('apache_setenv') )
-		@apache_setenv('no-gzip', 1);
-	@ini_set('zlib.output_compression', 0);
-	@ini_set('implicit_flush', 1);
-	
-	if ( !class_exists('sem_update_themes') )
-		include dirname(__FILE__) . '/themes.php';
-}
-
-add_action('load-theme-install.php', 'sem_update_themes');
-add_action('load-update.php', 'sem_update_themes');
-add_action('load-tools_page_sem-tools', 'sem_update_themes');
-
-# WP 3.0 upgrade + work around broken add_site_option
-if ( !get_site_option('sem_packages') ) {
-	if ( get_option('sem_api_key') ) {
-		update_site_option('sem_api_key', get_option('sem_api_key'));
-		update_site_option('sem_packages', get_option('sem_packages'));
-		delete_option('sem_api_key');
-		delete_option('sem_packages');
-	} else {
-		update_site_option('sem_api_key', '');
-		update_site_option('sem_packages', 'stable');
-	}
-}
-
-wp_cache_add_non_persistent_groups(array('sem_api'));
-
-$sem_version_checker = new version_checker();
+$version_checker = version_checker::get_instance();

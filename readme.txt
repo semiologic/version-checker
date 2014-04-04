@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.6 =
+
+- Code refactoring
+
 = 2.5 =
 
 - Call upgrader_process_complete filter when Mass update function completes
