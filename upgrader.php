@@ -214,7 +214,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		}
 
 		# force flush everything
-		wp_clean_plugins_cache( true );
+		wp_cache_delete( 'plugins', 'plugins' );
 		update_option('db_upgraded', true);
 		wp_cache_flush();
 		
