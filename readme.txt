@@ -27,6 +27,11 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.7 =
+
+- Updated the Semiologic Legacy theme notification message
+- Use more full proof WP version check to alter plugin behavior instead of relying on $wp_version constant.
+
 = 2.6 =
 
 - Code refactoring

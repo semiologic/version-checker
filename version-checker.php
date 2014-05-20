@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.6
+Version: 2.7
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -404,7 +404,7 @@ class version_checker {
 			if ( $themes_todo ) {
 				if ( !function_exists('get_themes') )
 					require_once ABSPATH . 'wp-includes/theme.php';
-				$themes = (version_compare($wp_version, '3.4', '>=')) ? wp_get_themes() : get_themes();
+				$themes = ( class_exists('wp_get_themes' )) ? wp_get_themes() : get_themes();
 				foreach ( $themes as $theme ) {
 					if ( $theme['Template'] != 'sem-reloaded' )
 						continue;
@@ -502,7 +502,7 @@ class version_checker {
 		
 		if ( $template == 'semiologic' || $stylesheet == 'semiologic' ) {
 			$msg[] = '<p>'
-				. sprintf(__('<strong>Important Notice</strong>: The theme that you are using has been marked as deprecated in 2009, in favor of a <a href="%1$s">new Semiologic theme</a>. Maintenance of the legacy theme will stop in 2010; it <strong>will</strong> break at some point. The new Semiologic theme ("Reloaded") has new layouts, <a href="%2$s">over 60 skins</a>, and a custom CSS editor; it also has slightly narrower widths (750px vs 770px, and 950px vs 970px). Please resize your site\'s header image if necessary, and <a href="%3$s">switch to the new theme</a>.', 'version-checker'), 'http://www.semiologic.com/software/sem-reloaded/', 'http://skins.semiologic.com', 'themes.php')
+				. sprintf(__('<strong>Important Notice</strong>: The theme that you are using has been replaced in favor of the current <a href="%1$s">Semiologic Reloaded theme</a>. Enhancements to this legacy theme have all but stopped, though limited efforts may occur from time to time to address compatibility issues with current WordPress versions. The newer Semiologic Reloaded theme has new layouts, widgets, dropdown menus, <a href="%2$s">over 60 skins</a>, and a custom CSS editor; it also has slightly narrower widths (750px vs 770px, and 950px vs 970px). Please resize your site\'s header image, if necessary, and <a href="%3$s">switch to the new theme</a>.', 'version-checker'), 'http://www.semiologic.com/software/sem-reloaded/', 'http://skins.semiologic.com', 'themes.php')
 				. '</p>' . "\n";
 			$theme = get_option('current_theme');
 			if ( trim($theme) == 'Semiologic' )
@@ -510,7 +510,7 @@ class version_checker {
 		}
 		
 		if ( $msg ) {
-			echo '<div id="update-nag" style="display:block; margin-top:50px; text-align:center;">' . "\n"
+			echo '<div id="update-nag" style="display:block; margin-top:50px; text-align:left;">' . "\n"
 				. implode('', $msg)
 				. '</div>' . "\n";
 		}
@@ -530,8 +530,8 @@ class version_checker {
 		$position = ( 'rtl' == get_bloginfo( 'text_direction' ) ) ? 'left' : 'right';
 		$top = 3.5;
 
-        global $wp_version;
-        if ( version_compare( $wp_version, '3.4', '>=' ) )
+		// WP 3.4+
+        if ( class_exists( 'WP_Theme') )
             $top = 1.2;
 
 		global $wp_ozh_adminmenu;
