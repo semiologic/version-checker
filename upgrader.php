@@ -123,7 +123,12 @@ class sem_upgrader extends Plugin_Upgrader {
 	 * @return bool|array
 	 **/
 
-	function bulk_upgrade($plugins) {
+	function bulk_upgrade($plugins, $args = array()) {
+
+		$defaults = array(
+			'clear_update_cache' => true,
+		);
+		$parsed_args = wp_parse_args( $args, $defaults );
 
 		$this->init();
 		$this->bulk = true;
@@ -205,16 +210,15 @@ class sem_upgrader extends Plugin_Upgrader {
 		remove_filter('upgrader_clear_destination', array($this, 'delete_old_plugin'));
 		
 		// Force refresh of plugin update information
+		wp_clean_plugins_cache( $parsed_args['clear_update_cache'] );
+
 		if ( class_exists('WP_Nav_Menu_Widget') ) {
-			delete_site_transient('update_plugins');
 			delete_site_transient('sem_update_plugins');
 		} else {
-			delete_transient('update_plugins');
 			delete_transient('sem_update_plugins');
 		}
 
 		# force flush everything
-		wp_cache_delete( 'plugins', 'plugins' );
 		update_option('db_upgraded', true);
 		wp_cache_flush();
 		
