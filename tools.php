@@ -84,6 +84,7 @@ class sem_tools {
 				}
 			}
 		} else {
+
 			echo '<div class="wrap">' . "\n";
 			
 			echo '<h2>' . __('Semiologic Packages', 'version-checker') . '</h2>' . "\n";

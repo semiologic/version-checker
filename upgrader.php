@@ -208,9 +208,6 @@ class sem_upgrader extends Plugin_Upgrader {
 		
 		// Cleanup our hooks, incase something else does a upgrade on this connection.
 		remove_filter('upgrader_clear_destination', array($this, 'delete_old_plugin'));
-		
-		// Force refresh of plugin update information
-		wp_clean_plugins_cache( $parsed_args['clear_update_cache'] );
 
 		if ( class_exists('WP_Nav_Menu_Widget') ) {
 			delete_site_transient('sem_update_plugins');
@@ -219,6 +216,8 @@ class sem_upgrader extends Plugin_Upgrader {
 		}
 
 		# force flush everything
+		// Force refresh of plugin update information
+		wp_clean_plugins_cache( $parsed_args['clear_update_cache'] );
 		update_option('db_upgraded', true);
 		wp_cache_flush();
 		
@@ -323,7 +322,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		}
 		
 		# force flush everything
-		wp_clean_plugins_cache( true );
+		wp_clean_plugins_cache();
 		update_option('db_upgraded', true);
 		wp_cache_flush();
 		

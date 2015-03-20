@@ -366,7 +366,7 @@ class sem_update_plugins {
 			$response = get_site_transient('sem_query_plugins');
 		else
 			$response = get_transient('sem_query_plugins');
-		if ( !empty($response) )
+		if ( !version_checker_debug && $response !== false && !empty($response) )
 			return $response;
 		
 		global $wp_version;

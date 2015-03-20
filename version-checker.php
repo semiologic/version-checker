@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.8
+Version: 2.9
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -37,6 +37,8 @@ if ( !defined('sem_api_version') )
 if (!defined('STRICTER_PLUGIN_UPDATES'))
 	define('STRICTER_PLUGIN_UPDATES', true);
 
+if ( !defined('version_checker_debug') )
+	define('version_checker_debug', false);
 
 /**
  * version_checker
@@ -162,7 +164,8 @@ class version_checker {
 		add_filter('http_request_args', array($this, 'http_request_args'), 1000, 2);
 		add_action('admin_init', array($this, 'init'));
 
-		add_action('admin_head', array($this, 'sem_news_css'));
+		add_action('admin_enqueue_scripts', array($this, 'sem_news_css'));
+		add_action('admin_enqueue_scripts', array($this, 'sem_tools_css'));
 		add_action('edit_user_profile', array($this, 'edit_news_pref'));
 		add_action('show_user_profile', array($this, 'edit_news_pref'));
 		add_action('profile_update', array($this, 'save_news_pref'));
@@ -406,7 +409,7 @@ class version_checker {
 					require_once ABSPATH . 'wp-includes/theme.php';
 				$themes = ( class_exists('wp_get_themes' )) ? wp_get_themes() : get_themes();
 				foreach ( $themes as $theme ) {
-					if ( $theme['Template'] != 'sem-reloaded' )
+					if ( $theme['Template'] != 'sem-reloaded' && $theme['Template'] != 'sem-pinnacle' )
 						continue;
 					
 					# type-transposition: convert from array to object if applicable
@@ -516,7 +519,37 @@ class version_checker {
 		}
 	} # update_nag()
 	
-	
+	/**
+	 * sem_tools_css()
+	 *
+	 * @return void
+	 **/
+
+	function sem_tools_css() {
+		echo <<<EOS
+<style type="text/css">
+.tools_page_sem-tools #availablethemes .action-links li {
+	float: left;
+	margin: 0 10px;
+}
+
+.tools_page_sem-tools #availablethemes .action-links .theme-detail {
+	display: none;
+}
+
+.tools_page_sem-tools #availablethemes .available-theme {
+	float: left;
+    padding: 0 50px 0 0;
+}
+
+.tools_page_sem-tools .tablenav.themes {
+	display: none;
+}
+</style>
+EOS;
+	} # sem_tools_css()
+
+
 	/**
 	 * sem_news_css()
 	 *

@@ -38,19 +38,22 @@ class sem_update_themes {
 	 **/
 
 	static function install_themes_semiologic($page = 1) {
+		global $version_checker;
+
+		include_once $version_checker->plugin_path . 'sem-class-wp-themes-list-table.php';
+		include_once $version_checker->plugin_path . 'sem-class-wp-theme-install-list-table.php';
+
 		$args = array('browse' => 'semiologic', 'page' => $page);
 		$api = themes_api('query_themes', $args);
-		
-		// wp 3.1/3.2 compat (see #520):
-		if (function_exists('_get_list_table')) {
-			global $wp_list_table;
-			$wp_list_table = _get_list_table('WP_Theme_Install_List_Table');
-			$wp_list_table->items = $api->themes;
-			$wp_list_table->set_pagination_args( array(
-				'total_items' => $api->info['results'],
-				'per_page' => 30,
-			) );
-		}
+
+		global $wp_list_table;
+		$wp_list_table = new WP_Theme_Install_List_Table();
+
+		$wp_list_table->items = $api->themes;
+		$wp_list_table->set_pagination_args( array(
+			'total_items' => $api->info['results'],
+			'per_page' => 30,
+		) );
 		
 		display_themes($api->themes, $api->info['page'], $api->info['pages']);
 	} # install_themes_semiologic()
@@ -155,7 +158,7 @@ class sem_update_themes {
 			$response = get_site_transient('sem_query_themes');
 		else
 			$response = get_transient('sem_query_themes');
-		if ( $response !== false && !empty($response) )
+		if ( !version_checker_debug && $response !== false && !empty($response) )
 			return $response;
 		
 		global $wp_version;

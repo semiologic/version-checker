@@ -2,8 +2,8 @@
 Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
-Requires at least: 2.8
-Tested up to: 4.0
+Requires at least: 3.7
+Tested up to: 4.1
 Stable tag: trunk
 
 Lets you update plugins, themes, and Semiologic Pro using packages from semiologic.com.
@@ -26,6 +26,14 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.9 =
+
+- Fix displaying of available Semiologic themes of the Tools->Semiologic installer page
+- Remove pre-WP 3.7 compatibility
+- WP 4.1 compat
+- Added debugging support to bypass caching
+- Fork wp-themes-list-table files per guidance
 
 = 2.8 =
 
