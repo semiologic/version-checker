@@ -108,6 +108,8 @@ class sem_upgrader extends Plugin_Upgrader {
 		$this->skin->after();
 		
 		if ( !$is_multi )
+			/** This action is documented in wp-admin/includes/class-wp-upgrader.php */
+			do_action( 'upgrader_process_complete', $this, $options['hook_extra'] );
 			$this->skin->footer();
 		
 		version_checker::force_flush();
@@ -150,7 +152,11 @@ class sem_upgrader extends Plugin_Upgrader {
 			return false;
 		}
 
-		$this->maintenance_mode(true);
+		$maintenance = ( is_multisite() && ! empty( $plugins ) );
+		foreach ( $plugins as $plugin )
+			$maintenance = $maintenance || ( is_plugin_active( $plugin ) && isset( $current->response[ $plugin] ) );
+		if ( $maintenance )
+			$this->maintenance_mode(true);
 		
 		$all = count($plugins);
 		$i = 1;
@@ -176,16 +182,16 @@ class sem_upgrader extends Plugin_Upgrader {
 			$this->skin->plugin_active = is_plugin_active($plugin);
 			
 			$result = $this->run(array(
-						'package' => $r->package,
-						'destination' => WP_PLUGIN_DIR,
-						'clear_destination' => true,
-						'clear_working' => true,
-						'is_multi' => true,
-						'hook_extra' => array(
-						'plugin' => $plugin
-						)
-					));
-			
+				'package' => $r->package,
+				'destination' => WP_PLUGIN_DIR,
+				'clear_destination' => true,
+				'clear_working' => true,
+				'is_multi' => true,
+				'hook_extra' => array(
+					'plugin' => $plugin
+				)
+			));
+
 			$results[$plugin] = $this->result;
 			
 			// Prevent credentials auth screen from displaying multiple times
@@ -215,7 +221,6 @@ class sem_upgrader extends Plugin_Upgrader {
 			delete_transient('sem_update_plugins');
 		}
 
-		# force flush everything
 		// Force refresh of plugin update information
 		wp_clean_plugins_cache( $parsed_args['clear_update_cache'] );
 		update_option('db_upgraded', true);
@@ -328,8 +333,7 @@ class sem_upgrader extends Plugin_Upgrader {
 		
 		return $results;
 	} # bulk_install()
-	
-	
+
 	/**
 	 * sem_permissions()
 	 *
@@ -500,8 +504,23 @@ class sem_upgrader_skin extends Plugin_Upgrader_Skin {
 	 **/
 
 	function after() {
-		return;
+		$this->sem_decrement_update_count();
 	} # after()
+
+	/**
+	 * sem_decrement_update_count()
+	 *
+	 * @return void
+	 **/
+	function sem_decrement_update_count() {
+		echo '<script type="text/javascript">
+				(function( wp ) {
+					if ( wp && wp.updates.decrementCount ) {
+						wp.updates.decrementCount( "plugin" );
+					}
+				})( window.wp );
+			</script>';
+	}
 } # sem_upgrader_skin
 
 
@@ -519,6 +538,7 @@ class sem_installer_skin extends Plugin_Installer_Skin {
 	 **/
 
 	function after() {
+		return;
 	} # after()
 	
 	

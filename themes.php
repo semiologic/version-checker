@@ -55,7 +55,8 @@ class sem_update_themes {
 			'per_page' => 30,
 		) );
 		
-		display_themes($api->themes, $api->info['page'], $api->info['pages']);
+//		display_themes($api->themes, $api->info['page'], $api->info['pages']);
+		$wp_list_table->display();
 	} # install_themes_semiologic()
 
 

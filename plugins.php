@@ -126,7 +126,7 @@ class sem_update_plugins {
 			
 			$totalpages = 1;
 			$page_links = paginate_links( array(
-				'base' => add_query_arg('paged', '%#%', $url),
+				'base' =>  esc_url(add_query_arg('paged', '%#%', $url)),
 				'format' => '',
 				'prev_text' => __('&laquo;', 'version-checker'),
 				'next_text' => __('&raquo;', 'version-checker'),
@@ -262,6 +262,9 @@ class sem_update_plugins {
 		$url = 'tools.php?page=sem-tools&amp;action=' . urlencode($_REQUEST['action']);
 		$title = __('Upgrade Plugins', 'version-checker');
 		$nonce = 'mass-upgrade';
+
+		wp_enqueue_script( 'updates' );
+
 		$upgrader = new sem_upgrader( new sem_upgrader_skin( compact('title', 'nonce', 'url', 'plugin') ) );
 		$upgrader->bulk_upgrade($plugins);
 	} # mass_upgrade()
@@ -431,17 +434,17 @@ class sem_update_plugins {
 			return false;
 		}
 		
-		if ( empty($obj->readme) || !trim($obj->readme) )
-			return false;
-		
+//		if ( empty($obj->readme) || !trim($obj->readme) )
+//			return false;
+
 		if ( !function_exists('Markdown') )
 			include_once dirname(__FILE__) . '/markdown/markdown.php';
 		global $allowedposttags;
 		$plugins_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
-		
+
 		$readme = str_replace(array("\r\n", "\r"), "\n", $obj->readme);
 		$readme = preg_split("/^\s*(==[^=].+?)\s*$/m", $readme, null, PREG_SPLIT_DELIM_CAPTURE);
-		
+
 		$header = array_shift($readme);
 		$header = explode("\n", $header);
 
@@ -450,15 +453,15 @@ class sem_update_plugins {
 			if ( preg_match("/^===\s*(.+?)\s*(?:===)?$/", $name, $name) )
 				$obj->name = end($name);
 		} while ( $header && !$obj->name );
-		
+
 		while ( $field = array_shift($header) ) {
 			if ( preg_match("/\s*Contributors\s*:\s*(.*)/i", $field, $author) )
 				$obj->author = end($author);
 		}
-		
+
 		$obj->description = wp_kses(Markdown(implode("\n", $header)), $allowedposttags);
 		$obj->sections = array();
-		
+
 		if ( $readme ) {
 			do {
 				$section = array_shift($readme);
@@ -481,7 +484,7 @@ class sem_update_plugins {
 				}
 			} while ( $readme );
 		}
-		
+
 		# sanitize
 		$obj->compatability = array();
 		

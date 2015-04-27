@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy, Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 3.7
-Tested up to: 4.1
+Tested up to: 4.2
 Stable tag: trunk
 
 Lets you update plugins, themes, and Semiologic Pro using packages from semiologic.com.
@@ -26,6 +26,13 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.10 =
+
+- Security update: Escape URLs returned by add_query_arg and remove_query_arg
+- Update notifications now cleared and Bulk Upgrades
+- Fix deprecated notifce for get_bloginfo( 'text_direction' ).  Use is_rtl()
+- Limit Plugin fields on the Tools->Semiologic in event of readme file parsing errors.
 
 = 2.9 =
 

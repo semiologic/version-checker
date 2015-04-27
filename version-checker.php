@@ -3,7 +3,7 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.9
+Version: 2.10
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: version-checker
@@ -252,10 +252,10 @@ class version_checker {
 
 		wp_enqueue_style('plugin-install');
 		wp_enqueue_script('plugin-install');
-		wp_enqueue_style('theme-install');
-		wp_enqueue_script('theme-install');
+		wp_enqueue_style('themes');
+		wp_enqueue_script('theme');
 		add_thickbox();
-		wp_enqueue_script('theme-preview');
+		wp_enqueue_script( 'updates' );
 
 		#$folder = plugin_dir_url(__FILE__);
 		#wp_enqueue_script('sem-quicksearch-js', $folder . 'js/quicksearch.js', array('jquery'), '20100121', true);
@@ -276,6 +276,8 @@ class version_checker {
 			@apache_setenv('no-gzip', 1);
 		@ini_set('zlib.output_compression', 0);
 		@ini_set('implicit_flush', 1);
+
+		wp_enqueue_script( 'updates' );
 
 		if ( !class_exists('sem_update_plugins') )
 			include $this->plugin_path . '/plugins.php';
@@ -545,6 +547,15 @@ class version_checker {
 .tools_page_sem-tools .tablenav.themes {
 	display: none;
 }
+
+.tools_page_sem-tools .plugins .name {
+	max-width: 200px;
+    overflow: hidden;
+    word-wrap: normal;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 </style>
 EOS;
 	} # sem_tools_css()
@@ -560,7 +571,7 @@ EOS;
 		if ( version_checker::get_news_pref() == 'false' )
 			return;
 		
-		$position = ( 'rtl' == get_bloginfo( 'text_direction' ) ) ? 'left' : 'right';
+		$position = ( is_rtl() ) ? 'left' : 'right';
 		$top = 3.5;
 
 		// WP 3.4+
