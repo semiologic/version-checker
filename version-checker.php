@@ -3,9 +3,9 @@
 Plugin Name: Version Checker
 Plugin URI: http://www.semiologic.com/software/version-checker/
 Description: Allows to update plugins, themes, and Semiologic Pro using packages from semiologic.com
-Version: 2.10
+Version: 2.11
 Author: Denis de Bernardy & Mike Koepke
-Author URI: http://www.getsemiologic.com
+Author URI: https://www.semiologic.com
 Text Domain: version-checker
 Domain Path: /lang
 License: Dual licensed under the MIT and GPLv2 licenses
@@ -411,7 +411,8 @@ class version_checker {
 					require_once ABSPATH . 'wp-includes/theme.php';
 				$themes = ( class_exists('wp_get_themes' )) ? wp_get_themes() : get_themes();
 				foreach ( $themes as $theme ) {
-					if ( $theme['Template'] != 'sem-reloaded' && $theme['Template'] != 'sem-pinnacle' )
+
+					if ( !in_array($theme['Template'], array('sem-reloaded', 'sem-pinnacle', 'sem-pinnacle-featured-child')) )
 						continue;
 					
 					# type-transposition: convert from array to object if applicable

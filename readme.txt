@@ -1,9 +1,9 @@
 === Version Checker ===
 Contributors: Denis-de-Bernardy, Mike_Koepke
-Donate link: http://www.semiologic.com/partners/
+Donate link: https://www.semiologic.com/donate/
 Tags: semiologic
 Requires at least: 3.7
-Tested up to: 4.2
+Tested up to: 4.3
 Stable tag: trunk
 
 Lets you update plugins, themes, and Semiologic Pro using packages from semiologic.com.
@@ -16,7 +16,7 @@ Lets you update plugins, themes, and Semiologic Pro using packages from semiolog
 
 = Help Me! =
 
-The [Semiologic forum](http://forum.semiologic.com) is the best place to report issues.
+The [Semiologic Support Page](https://www.semiologic.com/support/) is the best place to report issues.
 
 
 == Installation ==
@@ -26,6 +26,11 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.11 =
+
+- WP 4.3 compat
+- Tested against PHP 5.6
 
 = 2.10 =
 
